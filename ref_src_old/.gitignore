@@ -1,0 +1,4 @@
+*.log
+.codex
+*.urls
+*.pid

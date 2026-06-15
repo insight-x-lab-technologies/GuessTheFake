@@ -1,0 +1,37 @@
+body {
+  background-color: var(--bg);
+  background-image: var(--app-bg-overlay), var(--app-bg-image);
+  background-position: center, var(--app-bg-position);
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow: hidden;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body[data-active-screen='home'] {
+  background-image: var(--home-bg-overlay), var(--home-bg-image);
+  background-position: center, var(--home-bg-position);
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 680px), (max-height: 680px) {
+  body {
+    overflow: auto;
+  }
+}

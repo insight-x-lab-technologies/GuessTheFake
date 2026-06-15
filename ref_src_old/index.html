@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Não Pode Rir">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="Não Pode Rir">
+  <title>Não Pode Rir</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <!--<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">-->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Manrope:wght@500;700;800&family=Nunito:wght@400;600;700;800;900&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="theme-cosmic" data-active-screen="home">
+
+  <div class="stars" id="stars"></div>
+  <div class="notif" id="notif">✅</div>
+
+  <!-- RESULT OVERLAY -->
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-title" id="resultTitle" data-i18n="result.correctTitle">Riram!</div>
+    <div class="result-sub" id="resultSub">+10 pontos</div>
+    <div class="result-feedback-card" id="result-feedback-card">
+      <div class="result-feedback-title" data-i18n="result.feedbackTitle">Como foi essa piada?</div>
+      <div class="result-feedback-sub" id="result-feedback-summary" data-i18n="result.feedbackSubtitle">Sua avaliação local ajuda a priorizar melhores piadas.</div>
+      <div class="result-feedback-actions" id="result-feedback-actions">
+        <button class="btn btn-ghost btn-sm result-feedback-btn" type="button" data-action="rate-joke" data-rating="1">1★</button>
+        <button class="btn btn-ghost btn-sm result-feedback-btn" type="button" data-action="rate-joke" data-rating="2">2★</button>
+        <button class="btn btn-ghost btn-sm result-feedback-btn" type="button" data-action="rate-joke" data-rating="3">3★</button>
+        <button class="btn btn-ghost btn-sm result-feedback-btn" type="button" data-action="rate-joke" data-rating="4">4★</button>
+        <button class="btn btn-ghost btn-sm result-feedback-btn" type="button" data-action="rate-joke" data-rating="5">5★</button>
+        <button class="btn btn-ghost btn-sm result-feedback-toggle" type="button" id="result-never-again-btn" data-action="toggle-never-again" data-i18n="result.neverAgain">🚫 Não repetir</button>
+      </div>
+    </div>
+    <div class="action-row action-row-center action-row-wrap">
+      <button class="btn btn-success btn-lg" id="result-next-turn-btn" data-action="next-turn" data-i18n="result.nextTurn">➡️ Próximo turno</button>
+    </div>
+  </div>
+
+  <!-- ========== HOME ========== -->
+  <div class="screen active" id="screen-home">
+    <div class="page-shell">
+      <button class="home-fullscreen-btn" id="fullscreen-toggle" type="button" data-action="toggle-fullscreen"
+        aria-label="Tela cheia" title="Tela cheia" hidden>
+        <span aria-hidden="true">⛶</span>
+      </button>
+      <h1 class="logo" data-i18n="home.title">Não Pode Rir</h1>
+      <p class="logo-sub" data-i18n="home.subtitle">Leia piadas, segure o riso e vença a rodada</p>
+      <div class="home-grid">
+        <div class="card home-card home-actions-card">
+          <div class="flex-col home-actions">
+            <button class="btn btn-primary btn-lg btn-block" data-nav="setup" data-i18n="home.newGame">🎮 Nova Partida</button>
+            <button class="btn btn-secondary btn-lg btn-block btn-quick-game" data-action="quick-game">
+              <span data-i18n="home.quickGame">⚡ Jogo Rápido</span>
+              <span class="btn-quick-game-summary" id="quick-game-summary">🏆 | 👥4 | 🤹 🏠 🧢 | 🔁3</span>
+            </button>
+            <button class="btn btn-ghost btn-lg btn-block btn-quick-game" data-nav="multidevice">
+              <span data-i18n="home.multiDeviceGame">📡 Conectar Dispositivos</span>
+              <span class="btn-quick-game-summary" id="multi-device-summary">Off-line | 0 devices conectados</span>
+            </button>
+            <button class="btn btn-ghost btn-lg btn-block" data-nav="wordbank" data-i18n="home.wordBank">🧩 Conteúdo e Expansões</button>
+            <button class="btn btn-ghost btn-lg btn-block" data-nav="donate" data-i18n="home.donate">❤️ Donate</button>
+            <button class="btn btn-ghost btn-lg btn-block" data-nav="achievements" data-i18n="home.achievements">🏆 Troféus</button>
+            <button class="btn btn-ghost btn-lg btn-block" data-nav="leaderboard" data-i18n="home.leaderboard">🏅 Leaderboard</button>
+            <button class="btn btn-ghost btn-lg btn-block" data-nav="settings" data-i18n="home.settings">⚙️ Configurações</button>
+            <button class="btn btn-ghost btn-lg btn-block hidden" id="pwa-install-button" data-action="install-pwa" data-i18n="home.installOnDevice">📲 Instalar no dispositivo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ALL TIME LEADERBOARD ========== -->
+  <div class="screen" id="screen-leaderboard">
+    <div class="page-shell leaderboard-shell">
+      <header class="page-header page-header-tight leaderboard-page-header">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <div class="leaderboard-title-block">
+          <h1 class="page-title" data-i18n="leaderboard.title">All Time Leaderboard</h1>
+          <p class="leaderboard-subtitle" data-i18n="leaderboard.subtitle">Ranking dos melhores jogadores de Não Pode Rir em todas as partidas registradas.</p>
+        </div>
+      </header>
+      <div class="leaderboard-layout">
+        <aside class="card leaderboard-controls-card">
+          <section class="leaderboard-filter-group" aria-labelledby="leaderboard-filter-mode-title">
+            <h2 class="leaderboard-filter-title" id="leaderboard-filter-mode-title" data-i18n="leaderboard.filter.gameMode">Modo de jogo</h2>
+            <div class="leaderboard-filter-list" role="group" aria-labelledby="leaderboard-filter-mode-title">
+              <button class="leaderboard-filter-option selected" type="button" data-leaderboard-filter="mode" data-leaderboard-value="all">
+                <span class="leaderboard-filter-icon">👑</span>
+                <span>
+                  <span class="leaderboard-filter-name" data-i18n="leaderboard.filter.allModes">Todos os modos</span>
+                  <span class="leaderboard-filter-sub" data-i18n="leaderboard.filter.allModesSub">Todas as partidas</span>
+                </span>
+              </button>
+              <button class="leaderboard-filter-option" type="button" data-leaderboard-filter="mode" data-leaderboard-value="teams">
+                <span class="leaderboard-filter-icon">🤝</span>
+                <span>
+                  <span class="leaderboard-filter-name" data-i18n="setup.modeTeamsName">Dois Times</span>
+                  <span class="leaderboard-filter-sub" data-i18n="leaderboard.filter.teamsSub">Equipes competem</span>
+                </span>
+              </button>
+              <button class="leaderboard-filter-option" type="button" data-leaderboard-filter="mode" data-leaderboard-value="ffa">
+                <span class="leaderboard-filter-icon">🏆</span>
+                <span>
+                  <span class="leaderboard-filter-name" data-i18n="setup.modeFfaName">1 x 1</span>
+                  <span class="leaderboard-filter-sub" data-i18n="leaderboard.filter.ffaSub">Sem times</span>
+                </span>
+              </button>
+            </div>
+          </section>
+
+          <div class="leaderboard-summary-box">
+            <span class="leaderboard-summary-icon">⏱️</span>
+            <span>
+              <span class="leaderboard-summary-label" data-i18n="leaderboard.summaryLabel">Resultados salvos</span>
+              <strong id="leaderboard-summary"></strong>
+            </span>
+          </div>
+
+          <button class="btn btn-danger btn-block" data-action="reset-leaderboard" data-i18n="leaderboard.resetButton">Apagar resultados</button>
+        </aside>
+        <div class="card leaderboard-list-card">
+          <div class="leaderboard-list" id="leaderboard-list"></div>
+          <div class="leaderboard-list-footer" id="leaderboard-footer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ACHIEVEMENTS ========== -->
+  <div class="screen" id="screen-achievements">
+    <div class="page-shell achievements-shell">
+      <header class="page-header page-header-tight achievements-page-header">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <div class="leaderboard-title-block">
+          <h1 class="page-title" data-i18n="achievements.title">Troféus</h1>
+          <p class="leaderboard-subtitle" data-i18n="achievements.subtitle">Acompanhe suas conquistas locais e o progresso das próximas metas.</p>
+        </div>
+      </header>
+      <div class="achievements-layout">
+        <aside class="card achievements-summary">
+          <h2 class="card-title card-title-sm" data-i18n="achievements.summaryTitle">Resumo</h2>
+          <div class="achievements-summary-stats">
+            <div class="achievements-summary-stat">
+              <span class="achievements-summary-label" data-i18n="achievements.unlockedLabel">Troféus desbloqueados</span>
+              <strong id="achievements-summary-unlocked">0 / 0</strong>
+            </div>
+            <div class="achievements-summary-stat">
+              <span class="achievements-summary-label" data-i18n="achievements.matchesLabel">Partidas finalizadas</span>
+              <strong id="achievements-summary-matches">0</strong>
+            </div>
+            <div class="achievements-summary-stat">
+              <span class="achievements-summary-label" data-i18n="achievements.roundsLabel">Rodadas jogadas</span>
+              <strong id="achievements-summary-rounds">0</strong>
+            </div>
+            <div class="achievements-summary-stat">
+              <span class="achievements-summary-label" data-i18n="achievements.laughsLabel">Risadas acumuladas</span>
+              <strong id="achievements-summary-laughs">0</strong>
+            </div>
+          </div>
+          <div class="achievements-summary-note" id="achievements-summary-note" data-i18n="achievements.noneUnlocked">Nenhum troféu desbloqueado ainda</div>
+        </aside>
+        <div class="card achievements-list-card">
+          <div id="achievements-grid" class="achievements-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MULTI DEVICE ========== -->
+  <div class="screen" id="screen-multidevice">
+    <div class="page-shell">
+      <header class="page-header">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <h1 class="page-title" data-i18n="multiDevice.title">Partida Multi Device</h1>
+      </header>
+      <div class="card multidevice-choice-card" id="multidevice-choice-card">
+        <h2 class="card-title" data-i18n="multiDevice.chooseTitle">O que você quer fazer?</h2>
+        <p class="text-sm mb" data-i18n="multiDevice.chooseDesc">Abra uma sessão para controlar a partida ou conecte este device como tela auxiliar.</p>
+        <div class="multidevice-choice-actions">
+          <button class="btn btn-primary btn-lg btn-block" data-action="select-multidevice-host" data-i18n="multiDevice.chooseHost">📡 Abrir uma sessão</button>
+          <button class="btn btn-secondary btn-lg btn-block" data-action="select-multidevice-join" data-i18n="multiDevice.chooseJoin">🔗 Conectar em uma sessão</button>
+        </div>
+      </div>
+      <div class="multidevice-grid">
+        <div class="card multidevice-card hidden" id="multidevice-host-card">
+          <button class="btn btn-ghost btn-sm btn-nowrap multidevice-change-btn" data-action="reset-multidevice-choice" data-i18n="multiDevice.changeChoice">Trocar opção</button>
+          <h2 class="card-title" data-i18n="multiDevice.hostTitle">📡 Abrir sessão</h2>
+          <p class="text-sm mb" data-i18n="multiDevice.hostDesc">Este dispositivo controla a partida. O dispositivo auxiliar alterna entre timer e piada durante a rodada.</p>
+          <button class="btn btn-primary btn-lg btn-block" data-action="create-multidevice-host" data-i18n="multiDevice.openSession">Abrir sessão</button>
+        </div>
+        <div class="card multidevice-card multidevice-session hidden" id="multidevice-host-panel">
+          <div class="text-strong text-sm-title" id="multidevice-host-status" data-i18n="multiDevice.hostCreating">Criando sessão...</div>
+          <div class="qr-frame" id="multidevice-qr"></div>
+          <div class="copy-row">
+            <input class="inp mono-input" id="multidevice-link" readonly value="">
+            <button class="btn btn-ghost btn-sm btn-nowrap" data-action="copy-multidevice-link" data-i18n="common.copy">Copiar</button>
+          </div>
+          <div class="helper-box">
+            <span data-i18n="multiDevice.sessionCode">Código da sessão:</span>
+            <strong id="multidevice-session-code">---</strong>
+          </div>
+          <div class="text-meta" id="multidevice-guest-count">0 devices conectados</div>
+          <button class="btn btn-secondary btn-block" data-action="continue-multidevice-setup" data-i18n="multiDevice.continueSetup">Continuar configuração</button>
+        </div>
+
+        <div class="card multidevice-card hidden" id="multidevice-join-card">
+          <div class="multidevice-join-main">
+            <button class="btn btn-ghost btn-sm btn-nowrap multidevice-change-btn" data-action="reset-multidevice-choice" data-i18n="multiDevice.changeChoice">Trocar opção</button>
+            <h2 class="card-title" data-i18n="multiDevice.joinTitle">🔗 Conectar</h2>
+            <p class="text-sm mb" data-i18n="multiDevice.joinDesc">Entre como tela auxiliar para acompanhar a partida do host.</p>
+          </div>
+          <div class="multidevice-join-form">
+            <label class="toggle-label" for="multidevice-join-code" data-i18n="multiDevice.joinCodeLabel">Código ou link da sessão</label>
+            <input class="inp mt-xs mb-sm" id="multidevice-join-code" placeholder="Cole o código ou link" data-i18n-placeholder="multiDevice.joinCodePlaceholder">
+            <button class="btn btn-primary btn-lg btn-block" data-action="join-multidevice-session" data-i18n="multiDevice.joinSession">Conectar na sessão</button>
+            <div class="helper-box mt" id="multidevice-join-status" data-i18n="multiDevice.joinHelp">Você também pode escanear o QR Code exibido no host.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== GUEST WATCH ========== -->
+  <div class="screen" id="screen-guest">
+    <div class="page-shell page-shell-game guest-shell">
+      <div class="guest-header">
+        <div>
+          <div class="eyebrow eyebrow-accent" data-i18n="multiDevice.guestLabel">Tela auxiliar</div>
+          <h1 class="page-title" id="guest-round-title" data-i18n="multiDevice.waitingTitle">Aguardando dados da partida</h1>
+        </div>
+        <div class="guest-header-actions">
+          <div class="guest-connection-pill" id="guest-connection-status" data-i18n="multiDevice.connecting">Conectando...</div>
+          <button class="btn btn-secondary btn-sm btn-nowrap hidden" id="guest-reconnect-button" data-action="reconnect-multidevice-guest" data-i18n="multiDevice.reconnect">Reconectar</button>
+          <button class="btn btn-ghost btn-sm btn-nowrap" data-action="disconnect-multidevice-guest" data-i18n="multiDevice.disconnect">Desconectar</button>
+        </div>
+      </div>
+      <div class="guest-watch-layout">
+        <div class="card guest-timer-card center" id="guest-timer-card">
+          <div class="current-player mb-sm">
+            <div class="cp-label" id="guest-current-player-label" data-i18n="multiDevice.guestWaiting">Aguardando o host iniciar a partida.</div>
+            <div class="cp-name" id="guest-current-player-name">--</div>
+          </div>
+          <div class="timer-wrap guest-timer-wrap">
+            <svg class="timer-svg" viewBox="0 0 160 160">
+              <circle class="timer-track" cx="80" cy="80" r="68" />
+              <circle class="timer-prog" id="guest-timer-circle" cx="80" cy="80" r="68" stroke="#ffd93d" stroke-dasharray="427.3"
+                stroke-dashoffset="0" />
+            </svg>
+            <div class="timer-num" id="guest-timer-num">--</div>
+            <div class="timer-label" data-i18n="game.secondsLabel">SEGUNDOS</div>
+          </div>
+        </div>
+        <div class="card guest-joke-card hidden" id="guest-joke-card">
+          <h2 class="card-title card-title-sm" data-i18n="multiDevice.liveDrawing">📜 Piada na tela auxiliar</h2>
+          <div class="word-card word-card-memorize">
+            <div class="word-text word-text-memorize" id="guest-word-display">---</div>
+            <div id="guest-challenge-display" class="challenge-text hidden">
+              <span data-i18n="game.challengePrefix">🎯 Desafio:</span> <span id="guest-challenge-text">---</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SETUP ========== -->
+  <div class="screen" id="screen-setup">
+    <div class="page-shell">
+      <header class="page-header">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <h1 class="page-title" data-i18n="setup.title">Nova Partida</h1>
+      </header>
+      <div class="setup-grid">
+        <div class="setup-column setup-column-left">
+          <!-- STEP 1: MODE -->
+          <div class="card mb setup-block-mode">
+            <h2 class="card-title" data-i18n="setup.modeTitle">1️⃣ Modo de Jogo</h2>
+            <div class="mode-grid">
+              <div class="mode-card selected" id="mode-teams" data-mode="teams">
+                <div class="mode-icon">🤝</div>
+                <div class="mode-name" data-i18n="setup.modeTeamsName">Dois Times</div>
+                <div class="mode-desc" data-i18n="setup.modeTeamsDesc">Equipes competem</div>
+              </div>
+              <div class="mode-card" id="mode-ffa" data-mode="ffa">
+                <div class="mode-icon">🏆</div>
+                <div class="mode-name" data-i18n="setup.modeFfaName">1 x 1</div>
+                <div class="mode-desc" data-i18n="setup.modeFfaDesc">Sem times</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb hidden setup-block-assignment" id="companion-assignment-card">
+            <h2 class="card-title" data-i18n="multiDevice.assignmentTitle">Tela auxiliar</h2>
+            <div class="toggle-label" data-i18n="multiDevice.assignmentLabel">Quem usa a tela auxiliar</div>
+            <div class="toggle-sub mt-xs" data-i18n="multiDevice.assignmentSub">Escolha o time ou jogador que vai ler usando o dispositivo conectado.</div>
+            <select class="inp mt" id="companion-assignment-select"></select>
+          </div>
+
+          <!-- STEP 4: ROUNDS -->
+          <div class="card mb setup-block-rounds">
+            <h2 class="card-title" data-i18n="setup.matchTitle">4️⃣ Configurar Partida</h2>
+            <div class="toggle-wrap toggle-wrap-last">
+              <div>
+                <div class="toggle-label" data-i18n="setup.roundsLabel">Número de Rodadas</div>
+                <div class="toggle-sub" data-i18n="setup.roundsSub">Quantas rodadas por jogador</div>
+              </div>
+              <div class="range-wrap range-wrap-fixed">
+                <input type="range" class="range-inp" id="rounds-slider" min="1" max="5" value="3">
+                <div class="range-val" id="rounds-val">3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-column setup-column-right">
+          <!-- STEP 2: PLAYERS TEAMS -->
+          <div class="card mb setup-block-players" id="step-teams">
+            <h2 class="card-title" data-i18n="setup.teamPlayersTitle">2️⃣ Jogadores por Time</h2>
+            <input class="inp mb-sm" id="team-name-a" placeholder="Nome do Time A" value="Time A" data-team-name="A"
+              data-i18n-placeholder="setup.teamAPlaceholder">
+            <div class="section-head"><span id="team-label-a" class="team-label team-label-a">🔴 Time A</span></div>
+            <div id="team-a-players" class="flex-col mb"></div>
+            <div class="flex-row">
+              <input class="inp" id="inp-team-a" placeholder="Nome do jogador..." data-enter-submit="team-A"
+                data-i18n-placeholder="setup.playerNamePlaceholder">
+              <button class="btn btn-sm btn-team-a btn-nowrap" data-action="add-team-player" data-team="A"
+                data-i18n="common.add">+ Adicionar</button>
+            </div>
+            <div class="divider"></div>
+            <input class="inp mb-sm" id="team-name-b" placeholder="Nome do Time B" value="Time B" data-team-name="B"
+              data-i18n-placeholder="setup.teamBPlaceholder">
+            <div class="section-head"><span id="team-label-b" class="team-label team-label-b">🔵 Time B</span></div>
+            <div id="team-b-players" class="flex-col mb"></div>
+            <div class="flex-row">
+              <input class="inp" id="inp-team-b" placeholder="Nome do jogador..." data-enter-submit="team-B"
+                data-i18n-placeholder="setup.playerNamePlaceholder">
+              <button class="btn btn-sm btn-team-b btn-nowrap" data-action="add-team-player" data-team="B"
+                data-i18n="common.add">+ Adicionar</button>
+            </div>
+            <div class="helper-box mt" data-i18n="setup.teamHelper">
+              💡 Mínimo 1 por time, máximo 3 por time (até 6 jogadores)
+            </div>
+          </div>
+
+          <!-- STEP 2 FFA -->
+          <div class="card mb hidden setup-block-players" id="step-ffa">
+            <h2 class="card-title" data-i18n="setup.playersTitle">2️⃣ Jogadores</h2>
+            <div id="ffa-players" class="flex-col mb"></div>
+            <div class="flex-row">
+              <input class="inp" id="inp-ffa" placeholder="Nome do jogador..." data-enter-submit="ffa"
+                data-i18n-placeholder="setup.playerNamePlaceholder">
+              <button class="btn btn-secondary btn-sm btn-nowrap" data-action="add-ffa-player" data-i18n="common.add">+ Adicionar</button>
+            </div>
+            <div class="helper-box mt" data-i18n="setup.ffaHelper">
+              💡 Exatamente 2 jogadores
+            </div>
+          </div>
+
+          <!-- STEP 3: CHALLENGE & CATEGORIES -->
+          <div class="card mb setup-block-options">
+            <h2 class="card-title" data-i18n="setup.optionsTitle">3️⃣ Opções de Jogo</h2>
+            <div class="toggle-wrap" id="random-challenge-wrap">
+              <div>
+                <div class="toggle-label" data-i18n="setup.randomChallengeLabel">Desafio Aleatório</div>
+                <div class="toggle-sub" id="random-challenge-sub" data-i18n="setup.randomChallengeSub">Adiciona modificadores à mímica</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="random-challenge-toggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="mt">
+              <div class="toggle-label mb-xs" data-i18n="setup.categoriesLabel">Categorias Disponíveis</div>
+              <div class="category-grid" id="category-selection">
+                <!-- Categories will be populated by JS -->
+              </div>
+            </div>
+            <div id="diff-word-count" class="text-meta center mt"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg btn-block mb-lg setup-cta" data-action="start-game" data-i18n="setup.startGame">🎭 Começar o
+          Jogo!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== GAME ========== -->
+  <div class="screen" id="screen-game">
+    <div class="page-shell page-shell-game">
+      <div class="action-row action-row-between mb-sm">
+        <div class="round-info" id="round-display">Rodada 1 de 3</div>
+        <div class="action-row action-row-compact">
+          <button class="btn btn-secondary btn-sm hidden" id="score-manager-open-btn" data-action="open-score-manager" data-i18n="scoreManager.manageButton">⚖️ Gerenciar</button>
+          <button class="btn btn-ghost btn-sm" data-action="confirm-restart" data-i18n="common.restart">🔄 Reiniciar</button>
+        </div>
+      </div>
+      <div id="score-mini" class="score-mini-row"></div>
+      <div class="game-status-row">
+        <div class="current-player">
+          <div class="cp-label" data-i18n="game.currentPlayerLabel">Vez de fazer a mímica:</div>
+          <div class="cp-name" id="current-player-name">--</div>
+          <div id="current-team-badge" class="mt-xs"></div>
+        </div>
+        <div class="drawing-timer-dock" aria-hidden="true">
+          <div class="timer-wrap timer-wrap-compact">
+            <svg class="timer-svg" viewBox="0 0 160 160">
+              <circle class="timer-track" cx="80" cy="80" r="68" />
+              <circle class="timer-prog" data-timer-circle cx="80" cy="80" r="68" stroke="#ffd93d" stroke-dasharray="427.3"
+                stroke-dashoffset="0" />
+            </svg>
+            <div class="timer-num" data-timer-num>60</div>
+            <div class="timer-label" data-i18n="game.secondsLabel">SEGUNDOS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREPARING -->
+      <div id="preparing-state" class="card center">
+        <div class="emoji-hero mb-sm" id="game-ready-emoji">🎭</div>
+        <h2 class="section-title section-title-light mb-xs" id="game-ready-title" data-i18n="game.readyTitle">Prontos para receber a piada?</h2>
+        <div class="text-sm mb-lg" id="game-ready-sub" data-i18n="game.readySub">Só quem vai ler deve olhar! Os outros fechem os olhos! 👀</div>
+        <button class="btn btn-primary btn-lg btn-block" data-action="reveal-word" data-i18n="game.revealWord">🎲 Sortear Piada</button>
+      </div>
+
+      <!-- MEMORIZE -->
+      <div id="memorize-state" class="hidden">
+        <div class="center mb-sm">
+          <div class="eyebrow eyebrow-accent mb-xs" data-i18n="game.memorizeTitle">
+            ⚡ Prepare-se!
+          </div>
+          <div class="text-meta" data-i18n="game.startsIn">A piada aparece em...</div>
+        </div>
+        <div class="action-row action-row-center mb">
+          <div class="countdown-wrap">
+            <svg class="countdown-svg" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6" />
+              <circle id="memCircle" cx="40" cy="40" r="34" fill="none" stroke="#c77dff" stroke-width="6"
+                stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="0" class="countdown-progress" />
+            </svg>
+            <div id="mem-num" class="countdown-number">3</div>
+          </div>
+        </div>
+        <div class="text-sm center text-muted" data-i18n="game.readySub">
+          Só quem vai ler deve olhar! Os outros fechem os olhos! 👀
+        </div>
+      </div>
+
+      <!-- PLAYING -->
+      <div id="playing-state" class="hidden">
+        <div class="game-play-layout">
+          <div class="game-play-side">
+            <div class="timer-wrap">
+              <svg class="timer-svg" viewBox="0 0 160 160">
+                <circle class="timer-track" cx="80" cy="80" r="68" />
+                <circle class="timer-prog" id="timerCircle" data-timer-circle cx="80" cy="80" r="68" stroke="#ffd93d" stroke-dasharray="427.3"
+                  stroke-dashoffset="0" />
+              </svg>
+              <div class="timer-num" id="timer-num" data-timer-num>60</div>
+              <div class="timer-label" data-i18n="game.secondsLabel">SEGUNDOS</div>
+            </div>
+          </div>
+          <div class="game-play-main">
+            <div class="word-card">
+              <div class="word-text" id="word-display">---</div>
+              <div id="game-challenge-display" class="challenge-text hidden">
+                <span data-i18n="game.challengePrefix">🎯 Desafio:</span> <span id="game-challenge-text">---</span>
+              </div>
+            </div>
+            <div class="game-actions-grid">
+              <button class="btn btn-success btn-lg" data-action="mark-correct" data-i18n="game.correct">😂 Riram!</button>
+              <button class="btn btn-danger btn-lg" data-action="mark-wrong" data-i18n="game.wrong">😐 Ninguém riu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCORE MANAGER ========== -->
+  <div class="screen" id="screen-score-manager">
+    <div class="page-shell">
+      <header class="page-header">
+        <button class="btn btn-ghost btn-sm" data-action="close-score-manager" data-i18n="scoreManager.backToGame">← Voltar ao jogo</button>
+        <h1 class="page-title" data-i18n="scoreManager.title">Gerenciar placar</h1>
+      </header>
+      <div class="card score-manager-card">
+        <div class="score-manager-head">
+          <div>
+            <h2 class="card-title card-title-sm" data-i18n="scoreManager.currentScoreTitle">Placar atual</h2>
+            <div class="text-sm text-muted" id="score-manager-context"></div>
+          </div>
+          <button class="btn btn-ghost btn-sm" data-action="reset-score-manager-inputs" data-i18n="scoreManager.resetInputs">↺ Recarregar</button>
+        </div>
+        <div class="score-manager-list" id="score-manager-list"></div>
+        <div class="action-row action-row-center action-row-wrap mt">
+          <button class="btn btn-primary btn-lg" data-action="save-score-manager" data-i18n="scoreManager.saveAndReturn">Salvar e voltar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCOREBOARD ========== -->
+  <div class="screen" id="screen-score">
+    <div class="page-shell">
+      <h1 class="hero-title hero-title-score" data-i18n="score.title">🏆 Placar</h1>
+      <div class="text-sm center mb" id="score-subtitle"></div>
+      <div id="scoreboard-list" class="mb"></div>
+      <div class="card mb">
+        <h2 class="card-title card-title-sm" data-i18n="score.nextRoundTitle">🎊 Próxima Rodada</h2>
+        <div id="next-round-info" class="text-sm mb"></div>
+        <div class="action-row">
+          <button class="btn btn-primary btn-block" data-action="continue-game" data-i18n="common.continue">▶️ Continuar</button>
+          <button class="btn btn-ghost btn-block" data-action="confirm-restart" data-i18n="common.restart">🔄 Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FINAL ========== -->
+  <div class="screen" id="screen-final">
+    <div class="page-shell center">
+      <div class="emoji-trophy mb-sm" id="final-trophy">🏆</div>
+      <h1 class="logo logo-final" id="final-winner">--</h1>
+      <p class="logo-sub" data-i18n="final.winnerLabel">VENCEDOR!</p>
+      <div class="card my-lg text-left">
+        <h2 class="card-title" data-i18n="final.resultTitle">📊 Resultado Final</h2>
+        <div id="final-scoreboard"></div>
+      </div>
+      <div class="action-row action-row-wrap">
+        <button class="btn btn-primary btn-lg btn-block" data-action="confirm-restart" data-i18n="final.playAgain">🎮 Jogar de Novo</button>
+        <button class="btn btn-ghost btn-block" data-nav="home" data-i18n="common.home">🏠 Início</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== WORD BANK ========== -->
+  <div class="screen" id="screen-wordbank">
+    <div class="page-shell">
+      <header class="page-header page-header-tight">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <h1 class="page-title" data-i18n="wordbank.title">Conteúdo e Expansões</h1>
+      </header>
+      <div class="wordbank-layout">
+        <div class="wordbank-sidebar">
+          <div class="card wordbank-filter-card">
+            <div class="toggle-label mb-xs" data-i18n="setup.categoriesLabel">Categorias Disponíveis</div>
+            <div class="category-grid wordbank-category-grid" id="wordbank-category-selection">
+              <!-- Categories will be populated by JS -->
+            </div>
+          </div>
+
+          <!-- ADD WORD -->
+          <div class="card mb wordbank-add-card">
+            <h2 class="card-title card-title-sm" data-i18n="wordbank.addTitle">➕ Adicionar Piada</h2>
+            <div class="flex-col">
+              <input class="inp" id="inp-new-word" placeholder="Digite a piada..." data-enter-submit="add-word"
+                data-i18n-placeholder="wordbank.newWordPlaceholder">
+              <select class="inp" id="inp-word-cat">
+                <option value="trocadilhos" data-i18n="category.trocadilhos.option">🤹 Trocadilhos</option>
+                <option value="tiozao" data-i18n="category.tiozao.option">🧢 Tiozão</option>
+                <option value="cotidiano" data-i18n="category.cotidiano.option">🏠 Cotidiano</option>
+                <option value="familia" data-i18n="category.familia.option">💬 Família</option>
+                <option value="escola_trabalho" data-i18n="category.escola_trabalho.option">📚 Escola & Trabalho</option>
+                <option value="absurdo" data-i18n="category.absurdo.option">🤪 Absurdo</option>
+              </select>
+              <div class="text-meta px-xs" data-i18n="wordbank.addCategoryHint">Ela será adicionada à categoria selecionada.</div>
+              <button class="btn btn-secondary btn-block" data-action="add-word" data-i18n="wordbank.addButton">➕ Adicionar Piada</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- LIST -->
+        <div class="card wordbank-list-card">
+          <div class="action-row action-row-between mb">
+            <h2 class="card-title card-title-sm card-title-inline">
+              <span data-i18n="wordbank.listTitle">📋 Piadas</span> (<span id="word-count">0</span>)
+            </h2>
+            <button class="btn btn-ghost btn-sm" data-action="reset-words" data-i18n="wordbank.resetButton">↺ Restaurar</button>
+          </div>
+          <div id="wordbank-category-summary" class="text-sm text-muted mb-sm"></div>
+          <div class="words-container" id="words-list"></div>
+        </div>
+
+        <!-- ADD CORE CHALLENGE -->
+        <div class="card wordbank-challenge-add-card">
+          <h2 class="card-title card-title-sm" data-i18n="wordbank.addChallengeTitle">🎯 Adicionar Desafio</h2>
+          <div class="flex-col">
+            <input class="inp" id="inp-new-challenge" placeholder="Digite o desafio..." data-enter-submit="add-challenge"
+              data-i18n-placeholder="wordbank.newChallengePlaceholder">
+            <button class="btn btn-secondary btn-block" data-action="add-challenge" data-i18n="wordbank.addChallengeButton">➕ Adicionar Desafio</button>
+          </div>
+        </div>
+
+        <!-- CORE CHALLENGES -->
+        <div class="card wordbank-challenges-card">
+          <div class="action-row action-row-between mb">
+            <h2 class="card-title card-title-sm card-title-inline">
+              <span data-i18n="wordbank.challengesTitle">🎯 Desafios Core</span> (<span id="challenge-count">0</span>)
+            </h2>
+            <button class="btn btn-ghost btn-sm" data-action="reset-challenges" data-i18n="wordbank.resetButton">↺ Restaurar</button>
+          </div>
+          <div class="words-container challenges-container" id="challenges-list"></div>
+        </div>
+
+        <!-- INSTALL WORD PACK -->
+        <div class="card mb wordbank-install-card">
+          <h2 class="card-title card-title-sm" data-i18n="wordbank.installPackTitle">📦 Instalar pack</h2>
+          <p class="text-sm text-muted mb-sm" data-i18n="wordbank.installPackSub">Envie o arquivo .json comprado para liberar novas piadas neste dispositivo.</p>
+          <input type="file" id="pack-file-input" accept="application/json,.json" hidden>
+          <button class="btn btn-secondary btn-block" data-action="select-pack-file" data-i18n="wordbank.selectPackFile">📁 Escolher arquivo</button>
+          <div id="pack-install-status" class="pack-install-status" role="status"></div>
+          <div class="installed-packs">
+            <div class="installed-packs-title" data-i18n="wordbank.installedPacksTitle">Packs instalados</div>
+            <div id="installed-packs-list" class="installed-packs-list"></div>
+          </div>
+        </div>
+
+        <!-- PREMIUM PACK PREVIEW -->
+        <div class="card wordbank-pack-preview-card">
+          <div class="action-row action-row-between mb">
+            <h2 class="card-title card-title-sm card-title-inline" data-i18n="wordbank.packPreviewTitle">⭐ Conteúdo do pack</h2>
+          </div>
+          <div id="pack-preview-subtitle" class="text-sm mb-sm" data-i18n="wordbank.packPreviewPrompt">Clique em um pack instalado para ver piadas e desafios de leitura.</div>
+          <div class="pack-preview-section">
+            <div class="installed-packs-title" data-i18n="wordbank.packPreviewWordsTitle">Piadas do pack</div>
+            <div id="pack-preview-words" class="pack-preview-list"></div>
+          </div>
+          <div class="pack-preview-section">
+            <div class="installed-packs-title" data-i18n="wordbank.packPreviewChallengesTitle">Desafios de leitura do pack</div>
+            <div id="pack-preview-challenges" class="pack-preview-list"></div>
+          </div>
+        </div>
+
+        <div class="card wordbank-ranking-card">
+          <details class="joke-ranking-panel" open>
+            <summary class="joke-ranking-summary">
+              <span class="card-title card-title-sm card-title-inline" data-i18n="wordbank.jokeRankingTitle">🏅 Ranking local de piadas</span>
+            </summary>
+            <div class="joke-ranking-body">
+              <div id="joke-ranking-list" class="joke-ranking-list"></div>
+              <div class="joke-ranking-actions">
+                <button class="btn btn-danger btn-sm" type="button" data-action="clear-joke-stats" data-i18n="wordbank.clearJokeStats">Limpar estatísticas de piadas</button>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SETTINGS ========== -->
+  <div class="screen" id="screen-settings">
+    <div class="page-shell">
+      <header class="page-header">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <h1 class="page-title" data-i18n="settings.title">Configurações</h1>
+      </header>
+      <div class="settings-grid">
+        <div class="card">
+          <h2 class="card-title" data-i18n="settings.timerTitle">⏱️ Timer</h2>
+          <div class="toggle-wrap">
+            <div>
+              <div class="toggle-label" data-i18n="settings.roundTimeLabel">Tempo por Rodada</div>
+              <div class="toggle-sub" data-i18n="settings.roundTimeSub">Segundos para ler a piada</div>
+            </div>
+            <div class="range-wrap range-wrap-fixed">
+              <input type="range" class="range-inp" id="timer-slider" min="20" max="120" step="10" value="60">
+              <div class="range-val" id="timer-val">60s</div>
+            </div>
+          </div>
+          <div class="toggle-wrap">
+            <div>
+              <div class="toggle-label" data-i18n="settings.prepareTimeLabel">Tempo de Preparação</div>
+              <div class="toggle-sub" data-i18n="settings.prepareTimeSub">Segundos antes da piada aparecer</div>
+            </div>
+            <div class="range-wrap range-wrap-fixed">
+              <input type="range" class="range-inp" id="prepare-timer-slider" min="1" max="10" step="1" value="3">
+              <div class="range-val" id="prepare-timer-val">3s</div>
+            </div>
+          </div>
+          <div class="toggle-wrap">
+            <div>
+              <label class="toggle-label" for="correct-points-input" data-i18n="settings.correctPointsLabel">Pontos por risada</label>
+              <div class="toggle-sub" data-i18n="settings.correctPointsSub">Pontos para quem faz o outro lado rir</div>
+            </div>
+            <input class="inp points-input" id="correct-points-input" type="number" min="0" max="999" step="1" value="10">
+          </div>
+          <div class="toggle-wrap">
+            <div>
+              <label class="toggle-label" for="wrong-points-input" data-i18n="settings.wrongPenaltyPointsLabel">Pontos perdidos por não rir</label>
+              <div class="toggle-sub" data-i18n="settings.wrongPenaltyPointsSub">Desconta pontos quando ninguém ri ou o tempo acaba</div>
+            </div>
+            <input class="inp points-input" id="wrong-points-input" type="number" min="0" max="999" step="1" value="0">
+          </div>
+          <div class="toggle-wrap toggle-wrap-last">
+            <div>
+              <div class="toggle-label" data-i18n="settings.roundFlowLabel">Fluxo da rodada</div>
+              <div class="toggle-sub" data-i18n="settings.roundFlowSub">Preparação curta, piada sempre visível e marcação rápida de riso</div>
+            </div>
+            <div class="text-strong">🎤 → 😂</div>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="card-title" data-i18n="settings.generalTitle">⚙️ Configurações Gerais</h2>
+          <div class="flex-col mb">
+            <div>
+              <label class="toggle-label" for="language-select" data-i18n="settings.languageLabel">Idioma</label>
+              <div class="toggle-sub mt-xs" data-i18n="settings.languageSub">Altera a interface e o conteúdo disponível no jogo</div>
+            </div>
+            <select class="inp" id="language-select">
+              <option value="pt" data-i18n="language.pt">Português</option>
+              <option value="en" data-i18n="language.en">English</option>
+              <option value="es" data-i18n="language.es">Español</option>
+              <option value="fr" data-i18n="language.fr">Français</option>
+              <option value="de" data-i18n="language.de">Deutsch</option>
+              <option value="it" data-i18n="language.it">Italiano</option>
+            </select>
+          </div>
+          <div class="toggle-wrap">
+            <div>
+              <div class="toggle-label" data-i18n="settings.alertSoundLabel">Som de Alerta</div>
+              <div class="toggle-sub" data-i18n="settings.alertSoundSub">Beep nos últimos 10 segundos</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-sound" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-wrap">
+            <div>
+              <div class="toggle-label" data-i18n="settings.navigationSoundLabel">Som de Navegação</div>
+              <div class="toggle-sub" data-i18n="settings.navigationSoundSub">Som ao clicar nos botões da interface</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-navigation-sound" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-wrap">
+            <div>
+              <div class="toggle-label" data-i18n="settings.gameroomMusicLabel">Música dos menus</div>
+              <div class="toggle-sub" data-i18n="settings.gameroomMusicSub">Toca na página inicial, setup e configurações</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-gameroom-music" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="toggle-wrap toggle-wrap-last">
+            <div>
+              <div class="toggle-label" data-i18n="settings.gameplayMusicLabel">Música do gameplay</div>
+              <div class="toggle-sub" data-i18n="settings.gameplayMusicSub">Toca durante preparação, timer e placares</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-gameplay-music" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="card-title" data-i18n="settings.userIdTitle">🪪 ID de compra</h2>
+          <div class="flex-col">
+            <div>
+              <label class="toggle-label" for="user-id-display" data-i18n="settings.userIdLabel">Seu user_id</label>
+              <div class="toggle-sub mt-xs" data-i18n="settings.userIdSub">Use este código na compra de packs para que o arquivo seja emitido para este dispositivo.</div>
+            </div>
+            <div class="copy-row">
+              <input class="inp mono-input" id="user-id-display" readonly>
+              <button class="btn btn-ghost btn-sm" data-action="copy-user-id" data-i18n="settings.copyUserId">Copiar</button>
+            </div>
+            <div class="user-id-backup-actions">
+              <button class="btn btn-secondary btn-sm" data-action="export-user-id" data-i18n="settings.exportUserIdButton">Exportar user_id</button>
+              <button class="btn btn-ghost btn-sm" data-action="select-user-id-file" data-i18n="settings.importUserIdButton">Importar user_id</button>
+            </div>
+            <div class="user-id-backup-panel">
+              <p class="text-sm text-muted" data-i18n="settings.userIdBackupSub">Exporte um backup para restaurar este user_id depois de trocar de navegador ou restaurar a aplicação.</p>
+              <input type="file" id="user-id-file-input" accept="application/json,.json" hidden>
+              <div id="user-id-import-status" class="pack-install-status" role="status"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="card-title" data-i18n="settings.wordsTitle">🎲 Piadas</h2>
+          <div class="toggle-wrap toggle-wrap-last">
+            <div>
+              <div class="toggle-label" data-i18n="settings.shuffleWordsLabel">Embaralhar Piadas</div>
+              <div class="toggle-sub" data-i18n="settings.shuffleWordsSub">Ordem aleatória a cada partida</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-shuffle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="card-title" data-i18n="settings.appearanceTitle">🎨 Aparência</h2>
+          <div class="flex-col">
+            <div>
+              <label class="toggle-label" for="theme-select" data-i18n="settings.themeLabel">Tema visual</label>
+              <div class="toggle-sub mt-xs" data-i18n="settings.themeSub">Troque cores, transparências e tipografia da interface</div>
+            </div>
+            <select class="inp" id="theme-select">
+              <option value="cosmic" data-i18n="theme.cosmic">Cósmico</option>
+              <option value="liquid-glass" data-i18n="theme.liquid-glass">Outono</option>
+              <option value="material3" data-i18n="theme.material3">Primavera</option>
+              <option value="light-mode" data-i18n="theme.light-mode">Modo Claro</option>
+              <option value="dark-mode" data-i18n="theme.dark-mode">Modo Escuro</option>
+              <option value="high-contrast" data-i18n="theme.high-contrast">Alto Contraste</option>
+            </select>
+          </div>
+        </div>
+        <div class="card settings-reset-card">
+          <h2 class="card-title" data-i18n="settings.resetAllTitle">🧹 Restaurar aplicação</h2>
+          <div class="flex-col">
+            <p class="text-sm text-muted" data-i18n="settings.resetAllSub">Remove configurações, jogadores salvos, packs instalados e o user_id deste dispositivo.</p>
+            <button class="btn btn-danger btn-block" data-action="reset-app-defaults" data-i18n="settings.resetAllButton">Restaurar tudo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DONATE ========== -->
+  <div class="screen" id="screen-donate">
+    <div class="page-shell">
+      <header class="page-header page-header-tight">
+        <button class="btn btn-ghost btn-sm" data-nav="home" data-i18n="common.back">← Voltar</button>
+        <h1 class="page-title" data-i18n="donate.title">Apoie Não Pode Rir</h1>
+      </header>
+      <div class="donate-layout">
+        <div class="card">
+          <h2 class="card-title" data-i18n="donate.chooseTitle">❤️ Choose how to donate</h2>
+          <p class="text-sm mb" data-i18n="donate.subtitle">Pick your preferred platform to support the game and help fund new word packs, languages, and updates.</p>
+          <div class="donate-grid">
+            <button class="donate-option" data-action="donate-bmc">
+              <span class="donate-option-badge">☕</span>
+              <span class="donate-option-copy">
+                <span class="donate-option-title" data-i18n="donate.buyMeCoffee">Buy Me a Coffee</span>
+                <span class="donate-option-sub" data-i18n="donate.buyMeCoffeeSub">Fast one-time support through Buy Me a Coffee.</span>
+              </span>
+              <span class="donate-option-arrow">↗</span>
+            </button>
+            <button class="donate-option" data-action="donate-kofi">
+              <span class="donate-option-badge">🎁</span>
+              <span class="donate-option-copy">
+                <span class="donate-option-title" data-i18n="donate.koFi">Ko-fi</span>
+                <span class="donate-option-sub" data-i18n="donate.koFiSub">Donate with Ko-fi and keep the project growing.</span>
+              </span>
+              <span class="donate-option-arrow">↗</span>
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <h2 class="card-title card-title-sm" data-i18n="donate.whyTitle">🎭 Why donate?</h2>
+          <div class="how-to-list">
+            <div class="media-row media-row-start">
+              <div class="emoji-lg emoji-fixed">🌍</div>
+              <div class="text-sm" data-i18n="donate.whyLanguages">Your support helps fund new languages, content packs, and future word bank expansions.</div>
+            </div>
+            <div class="media-row media-row-start">
+              <div class="emoji-lg emoji-fixed">🛠️</div>
+              <div class="text-sm" data-i18n="donate.whyUpdates">Também ajuda a manter Não Pode Rir atualizado com polimento, balanceamento e novos recursos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-footer-panel">
+    <div class="footer-share" aria-label="Compartilhar Não Pode Rir" data-i18n-aria-label="share.footerAriaLabel">
+      <div class="share-grid">
+        <button class="share-platform share-whatsapp" type="button" data-action="share-platform" data-platform="whatsapp" aria-label="WhatsApp" title="WhatsApp">
+          <svg class="share-platform-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12.1 2a9.8 9.8 0 0 0-8.5 14.7L2.2 22l5.5-1.4A9.9 9.9 0 1 0 12.1 2zm0 17.8c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3.2.8.9-3.1-.2-.3a7.8 7.8 0 1 1 6.9 3.9zm4.4-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7 1-.3.2-.5.1a6.4 6.4 0 0 1-3.2-2.8c-.2-.3 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5s-.5-1.2-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.5.1-.8.4s-1 1-1 2.3 1 2.7 1.1 2.8c.1.2 1.9 2.9 4.6 4.1.6.3 1.1.4 1.5.5.6.2 1.2.2 1.7.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.2-.2-.2-.4-.3z" />
+          </svg>
+        </button>
+        <button class="share-platform share-instagram" type="button" data-action="share-platform" data-platform="instagram" aria-label="Instagram" title="Instagram">
+          <svg class="share-platform-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.2-2.7a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z" />
+          </svg>
+        </button>
+        <button class="share-platform share-tiktok" type="button" data-action="share-platform" data-platform="tiktok" aria-label="TikTok" title="TikTok">
+          <svg class="share-platform-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15.2 2c.4 3 2.1 4.8 4.8 5v3.2a7.5 7.5 0 0 1-4.7-1.7v6.8A6.7 6.7 0 1 1 9.1 8.6c.4 0 .8 0 1.2.1v3.4a3.3 3.3 0 1 0 1.7 2.9V2h3.2z" />
+          </svg>
+        </button>
+        <button class="share-platform share-facebook" type="button" data-action="share-platform" data-platform="facebook" aria-label="Facebook" title="Facebook">
+          <svg class="share-platform-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14 8.4V6.8c0-.8.2-1.3 1.3-1.3H17V2.2c-.3 0-1.4-.2-2.7-.2-2.7 0-4.5 1.6-4.5 4.6v1.8h-3v3.7h3V22H14v-9.9h3.1l.5-3.7H14z" />
+          </svg>
+        </button>
+        <button class="share-platform share-x" type="button" data-action="share-platform" data-platform="x" aria-label="X" title="X">
+          <svg class="share-platform-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.2 10.4 22 2h-2.4l-6.5 7-5-7H2l8 11.2L2 22h2.4l6.8-7.3 5.2 7.3H22l-7.8-11.6zm-2 2.1-1.1-1.6L6.5 4h1.2l4 5.7 1.1 1.6L17.6 20h-1.2l-4.2-7.5z" />
+          </svg>
+        </button>
+        <button class="share-platform share-copy" type="button" data-action="share-platform" data-platform="copy" aria-label="Copiar link" title="Copiar link">
+          <svg class="share-platform-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 7a5 5 0 0 1 5-5h4a5 5 0 0 1 0 10h-2V9h2a2 2 0 0 0 0-4h-4a2 2 0 0 0-2 2v2H8V7zm1 5H7a2 2 0 0 0 0 4h4a2 2 0 0 0 2-2v-2h3v2a5 5 0 0 1-5 5H7A5 5 0 0 1 7 9h2v3zm-1.5-1.5h9v3h-9v-3z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <span data-i18n="footer.copyPrefix">© 2025 Não Pode Rir v0.1 · Insight X Lab Technologies</span>
+    </footer>
+  </div>
+
+  <div id="bmc-embed-host" class="donation-embed-host" aria-hidden="true">
+    <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button"
+      data-slug="insight.x.lab.game.studio" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee"
+      data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="jokes-config.js"></script>
+  <script src="translations.js"></script>
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => { });
+      });
+    }
+  </script>
+</body>
+
+</html>
