@@ -4,7 +4,7 @@ Documento de avaliacao do estado atual e plano de evolucao para transformar a
 base React/TypeScript em um party/family game completo, local-first e
 hobby-friendly.
 
-Data da revisao: 2026-06-13
+Data da revisao: 2026-06-16
 Ultima atualizacao de implementacao: 2026-06-14
 
 ---
@@ -17,9 +17,12 @@ React, TypeScript e PWA. A separacao entre `src/core` e
 fim, e as regras principais estao cobertas por testes unitarios.
 
 O ponto atual do roadmap e: **Onda 5 de multi-device opcional em MVP
-local-first**. A plataforma existe, o jogo principal ja tem modos sociais
-locais, e as proximas lacunas relevantes estao em conteudo multi-idioma,
-smoke automatizado de viewport e transporte WebRTC real entre dispositivos.
+local-first, com Onda 6 de plataforma multi-jogos ainda pendente**. A
+plataforma existe, o jogo principal ja tem modos sociais locais, mas a revisao
+de gameplay de 2026-06-16 reposiciona as proximas prioridades: corrigir
+multi-device entre dispositivos fisicos, resolver fluxo real de "Nova partida",
+completar audio contextual, ampliar conteudo multi-idioma e elevar o padrao de
+UI desktop/tablet.
 
 Resumo executivo:
 
@@ -29,13 +32,18 @@ Resumo executivo:
 - **Conteudo:** pack embutido expandido para 50+ rodadas em sete categorias.
 - **Packs e dados locais:** import/export, validacao, ativacao granular e
   persistencia local foram conectados.
-- **Audio:** efeitos e musica de gameplay respeitam settings e bloqueios de
-  autoplay.
+- **Audio:** existe base tecnica com efeitos sintetizados e uma musica fixa de
+  gameplay, mas ainda falta trilha por tema/fase, musica de menus e SFX de
+  clique reutilizando os assets ja migrados de `ref_src_old/assets/songs`.
 - **Multi-device:** existe modulo isolado em `core/multiplayer`, host/join por
   codigo/link, sincronizacao local por `BroadcastChannel`, painel auxiliar e
-  fallback manual offline por snapshot. WebRTC/PeerJS real segue pendente.
-- **Proxima prioridade:** revisar smoke automatizado de viewport, conteudo em
-  ingles e, se necessario, sinalizacao/PeerJS para multi-device real.
+  fallback manual offline por snapshot. O teste local com dispositivo fisico
+  mostrou que ainda falta transporte real entre devices.
+- **UX desktop/tablet:** o shell funciona, mas telas de menu e utilitarias ainda
+  usam paineis estreitos, pouco hierarquizados e com baixa densidade visual para
+  telas grandes.
+- **Proxima prioridade:** Onda 7, focada em bugs de gameplay e confiabilidade
+  antes de novas mecanicas.
 
 ---
 
@@ -101,6 +109,10 @@ Resumo executivo:
 - Conteudo de rodada em ingles e demais idiomas.
 - Assinatura criptografica/licenciamento de packs.
 - Testes de UI smoke automatizados.
+- Fluxo explicito de nova partida/reiniciar partida quando ja existe jogo em
+  andamento.
+- Musica de menu por tema, musica de gameplay por tema e SFX de clique.
+- Paginas ou paineis de doacao e compartilhamento social.
 
 ---
 
@@ -332,6 +344,359 @@ em uma aplicacao backend-heavy.
    - Separar leaderboard/achievements por jogo e modo de forma navegavel.
    - Leaderboard ja filtra por jogo/modo; falta registry multi-jogos real e
      navegacao equivalente para achievements.
+
+### Onda 7 - Correcoes criticas de gameplay e fluxo
+
+Objetivo: remover atritos que quebram a confianca da partida antes de investir
+em polish visual maior.
+
+1. `[/]` **W7-01 - Multi-device real entre dispositivos fisicos**
+   - Diagnosticar por que o teste local em device fisico nao conecta.
+   - Documentar claramente que `BroadcastChannel` so atende abas na mesma
+     origem/dispositivo quando esse for o caso.
+   - Implementar transporte peer-to-peer real com WebRTC/PeerJS ou alternativa
+     equivalente, mantendo fallback manual offline.
+   - Definir estrategia de sinalizacao hobby-friendly: servidor opcional,
+     servico publico controlado por configuracao, ou modo LAN quando viavel.
+   - Exibir status de conexao, erro acionavel, reconexao e diferenca entre
+     host, guest e snapshot manual.
+   - Testar reducer/mensagens em unit tests e validar manualmente com dois
+     dispositivos fisicos na mesma rede.
+   - Implementado transporte WebRTC manual via offer/answer, DataChannel para
+     snapshots, status de conexao, erros acionaveis, reconexao por novo
+     pareamento e fallback por snapshot manual. A sinalizacao segue
+     local-first por troca manual de texto/clipboard, com STUN publico padrao e
+     override por `VITE_GTF_STUN_URLS`. Falta validacao manual registrada com
+     dois dispositivos fisicos.
+
+2. `[x]` **W7-02 - Nova partida deve reiniciar de verdade**
+   - Ao clicar em "Nova partida" pela navegacao, se houver partida em curso,
+     oferecer escolha clara: continuar, reiniciar partida atual ou abrir setup
+     limpo.
+   - Garantir que "Nova partida" no resultado final volte ao setup limpo, sem
+     reaproveitar estado antigo inesperado.
+   - Evitar que a navegacao para a tela `play` apenas revele uma partida antiga
+     quando a intencao do usuario for criar outra.
+   - Cobrir o fluxo com teste de UI ou teste de estado quando viavel.
+   - Implementado com painel de escolha para partidas em andamento, reset
+     explicito para setup limpo ao finalizar uma partida, pausa do timer
+     enquanto a escolha esta aberta e testes unitarios do estado de navegacao.
+
+3. `[x]` **W7-03 - Aplicar idioma e filtros ao iniciar nova partida**
+   - Ao trocar idioma em configuracoes, recalcular packs/categorias/rodadas
+     disponiveis antes de iniciar uma nova partida.
+   - Se a partida em andamento estiver em idioma anterior, indicar que a troca
+     vale para a proxima partida ou permitir reiniciar com novo idioma.
+   - Zerar selecoes invalidas de categoria/dificuldade quando o idioma mudar e
+     o pack ativo nao oferecer aquele conteudo.
+   - Testar regressao: trocar idioma com partida iniciada, clicar em "Nova
+     partida" e validar que o setup/rodadas usam o idioma novo.
+   - Implementado com recalculo de rodadas por idioma antes dos filtros,
+     normalizacao de categoria/dificuldade invalidas, aviso de idioma para
+     partida em andamento e testes unitarios dos filtros de setup.
+
+4. `[x]` **W7-04 - Feedback por clique no desktop/tablet durante gameplay**
+   - Investigar por que o click de feedback apos escolha nao funciona em
+     desktop/tablet.
+   - Garantir que a escolha da frase, revelacao, feedback de rodada e botao de
+     proxima rodada tenham hit areas consistentes em mouse, touch e teclado.
+   - Validar estados disabled/aria-pressed para nao bloquear cliques antes da
+     hora.
+   - Adicionar teste de interacao para escolher uma frase e registrar feedback
+     da rodada.
+   - Implementado mantendo cards revelados focaveis com `aria-disabled`, guarda
+     contra cliques tardios/repetidos, feedback de rodada com `aria-pressed` e
+     teste de interacao cobrindo escolha, feedback e proxima rodada.
+
+5. `[x]` **W7-05 - Recalibrar pontuacao com confirmacao visivel**
+   - Corrigir o botao "Recalibrar pontuacao" no desktop/tablet para produzir
+     feedback claro.
+   - Decidir UX: reset imediato com toast, dialogo de confirmacao, ou painel
+     para ajustar pontos manualmente por jogador/time.
+   - Garantir que a acao respeite modo individual e times.
+   - Testar `recalibrateScores` ja existente junto com a integracao de UI.
+   - Implementado com painel de confirmacao no placar, aviso de sucesso,
+     textos localizados, reset real para jogadores/times via regra pura e
+     teste de integracao cobrindo confirmacao em modo times.
+
+6. `[x]` **W7-06 - Persistencia controlada da partida em andamento**
+   - Decidir se partidas em andamento devem ser persistidas entre navegacao,
+     reload e troca de tela.
+   - Se persistir, criar acoes explicitas de continuar/reiniciar.
+   - Se nao persistir, limpar estado ao sair conforme contrato documentado.
+   - Evitar estados hibridos com settings novas e rodadas antigas.
+   - Implementado com storage versionado `gtf.game.guess-the-fake.quick-game.v1`
+     para partidas ativas, restauracao atras de escolha explicita
+     continuar/reiniciar/setup, preservacao de idioma/timer e limpeza ao abrir
+     setup limpo ou finalizar a partida.
+
+### Onda 8 - Audio, musica e microinteracoes
+
+Objetivo: transformar som e musica em parte real da experiencia, respeitando
+autoplay, tema, configuracoes e acessibilidade.
+
+1. `[x]` **W8-01 - Trilha de menu e gameplay por tema**
+   - Reutilizar musicas ja migradas de `ref_src_old/assets/songs`:
+     `cosmic_*`, `spring_*` e `autumn_*`.
+   - Mapear temas atuais para faixas disponiveis, incluindo fallback para temas
+     sem musica propria.
+   - Tocar `*_gameroom.mp3` em menus/home/setup e `*_gameplay.mp3` durante
+     intro/preparacao/jogo/revelacao.
+   - Trocar faixa suavemente ao mudar tema, fase ou tela.
+   - Manter audio bloqueado ate primeira interacao do usuario.
+   - Implementado com biblioteca `cosmic`, `spring` e `autumn`, fallback para
+     temas sem faixa propria, trilha de menu para telas/setup/final e gameplay
+     para intro/preparacao/jogo/revelacao.
+
+2. `[x]` **W8-02 - Servico de audio de plataforma**
+   - Evoluir `src/core/audio` para gerenciar biblioteca de faixas, eventos,
+     volume, mute, fade-in/fade-out e estado de desbloqueio.
+   - Remover dependencia de um unico import fixo em `App.tsx`.
+   - Evitar vazamento de `Audio`/`AudioContext` e pausar corretamente ao
+     desligar musica.
+   - Cobrir helpers puros com testes.
+   - Implementado em `src/core/audio`, com biblioteca de faixas, fade,
+     desbloqueio por interacao, SFX sintetizados, dedupe curto de eventos e
+     `dispose` no unmount.
+
+3. `[x]` **W8-03 - SFX de clique e navegacao**
+   - Adicionar SFX curto para clique em botoes, navegacao e selecao de cards.
+   - Respeitar `soundEnabled` em todos os eventos.
+   - Evitar sons duplicados em sequencias de clique/submit.
+   - Considerar biblioteca de arquivos curtos ou sintetizador leve por evento.
+   - Implementado com sintetizador leve para navegacao, clique, selecao de
+     cards, preview e eventos de resultado, respeitando volume/mute de efeitos.
+
+4. `[x]` **W8-04 - Controles de audio mais completos**
+   - Separar volume de musica e volume de efeitos.
+   - Adicionar preview/teste de som em configuracoes.
+   - Persistir preferencias em schema versionado.
+   - Respeitar `prefers-reduced-motion`/modo silencioso quando aplicavel.
+   - Implementado com settings v2, migracao de v1, sliders separados,
+     preview de som e fade desativado quando `prefers-reduced-motion` esta
+     ativo.
+
+### Onda 9 - Conteudo multi-idioma e curadoria
+
+Objetivo: fazer todos os idiomas publicados serem realmente jogaveis e sustentar
+varias sessoes familiares sem repeticao rapida.
+
+1. `[ ]` **W9-01 - Biblioteca minima por idioma/categoria/dificuldade**
+   - Criar pelo menos 75 itens por dificuldade, por categoria, por idioma
+     publicado.
+   - Idiomas alvo atuais: `pt`, `en`, `es`, `fr`, `de`, `it`.
+   - Categorias atuais: historia, geografia, ciencia, animais, cultura pop,
+     esportes e fatos bizarros.
+   - Antes de implementar, reavaliar o volume total: 75 x 3 dificuldades x 7
+     categorias x 6 idiomas = 9.450 rodadas, o que pode exigir geracao
+     assistida, importacao por packs ou ondas menores por idioma.
+
+2. `[ ]` **W9-02 - Estrategia escalavel de packs localizados**
+   - Separar conteudo builtin por idioma em arquivos/packs modulares.
+   - Carregar apenas o necessario para o idioma ativo quando viavel.
+   - Permitir packs externos por idioma sem misturar UI e conteudo.
+   - Exibir estado vazio com orientacao clara quando um idioma ainda nao tiver
+     conteudo suficiente.
+
+3. `[ ]` **W9-03 - Qualidade factual e revisao editorial**
+   - Criar checklist de revisao por rodada: frase falsa inequivoca, quatro
+     frases verdadeiras, explicacao curta e linguagem familiar.
+   - Marcar conteudo por faixa etaria quando necessario.
+   - Evitar temas sensiveis ou ambiguidade factual em jogo familiar.
+   - Adicionar metadados de fonte/revisao quando fizer sentido sem expor isso
+     durante a partida.
+
+4. `[ ]` **W9-04 - Ferramentas de autoria e validacao de conteudo**
+   - Criar script ou tela interna para auditar cobertura por idioma, categoria
+     e dificuldade.
+   - Falhar teste quando um idioma publicado nao atingir cobertura minima
+     definida para release.
+   - Detectar duplicidade de statements, IDs e explicacoes vazias.
+
+5. `[ ]` **W9-05 - Traducoes reais da UI**
+   - Substituir fallback em ingles para `es`, `fr`, `de` e `it` por traducoes
+     reais da plataforma e do jogo.
+   - Garantir que nomes de categorias, modos, achievements, settings e erros
+     estejam localizados.
+
+### Onda 10 - UX desktop/tablet e arquitetura de telas
+
+Objetivo: fazer desktop/tablet parecerem uma experiencia de produto final, com
+hierarquia fixa, mais largura util e layouts densos sem perder responsividade.
+
+1. `[x]` **W10-01 - Shell com titulo fixo e conteudo rolavel**
+   - No desktop/tablet, mover titulo de tela para uma area fixa do conteudo
+     principal.
+   - Deixar o card/lista rolavel logo abaixo, similar ao cabecalho fixo de
+     rodada "Vez de <Pessoa>".
+   - Aplicar a Leaderboard, Nova Partida, Trofeus, Packs, Multi-device,
+     Configuracoes, Doacao e Compartilhar.
+   - Preservar comportamento mobile com scroll natural.
+
+2. `[x]` **W10-02 - Paineis mais largos em telas grandes**
+   - Aumentar largura util dos paineis desktop/tablet alem dos atuais `58rem`
+     quando houver espaco.
+   - Usar grids responsivos de 2 ou 3 colunas para configuracoes, setup,
+     leaderboard e packs.
+   - Evitar cards dentro de cards; usar secoes e listas com hierarquia clara.
+
+3. `[x]` **W10-03 - Nova Partida profissional**
+   - Redesenhar setup com resumo da partida, selecao visual de modo, jogadores,
+     filtros, quantidade de rodadas e status de conteudo.
+   - Em desktop/tablet, abandonar o fluxo linear de uma coluna.
+   - Mostrar preview de categorias/dificuldades disponiveis e alertas de
+     conteudo insuficiente.
+   - Incluir comando explicito para reiniciar quando ja existir partida.
+
+4. `[x]` **W10-04 - Escala de fonte configuravel**
+   - Adicionar setting de tamanho de fonte com 5 niveis.
+   - Aplicar via CSS variables, sem usar fonte escalada diretamente por
+     viewport.
+   - Garantir que cards, botoes, nav, placar e modais continuem sem overflow.
+   - Persistir preferencia e adicionar testes de normalizacao.
+
+5. `[x]` **W10-05 - Extracao incremental de telas de `App.tsx`**
+   - Dividir `App.tsx` em componentes de tela: Home, Setup, GameBoard,
+     Leaderboard, Achievements, Packs, MultiDevice, Settings.
+   - Manter regras e helpers em `core`/`games`, sem mover logica de dominio
+     para componentes visuais.
+   - Reduzir risco antes de facelift maior e facilitar testes por tela.
+
+6. `[x]` **W10-06 - Smoke automatizado desktop/tablet/mobile**
+   - Adicionar Playwright ou smoke equivalente para home, setup, jogo,
+     leaderboard, packs, multi-device e settings.
+   - Cobrir desktop, tablet portrait/landscape e mobile portrait/landscape
+     definidos em `docs/DEVICE_VALIDATION.md`.
+   - Incluir verificacao basica de clique em card, feedback, recalibragem e
+     navegacao.
+
+### Onda 11 - Doacao, compartilhamento e crescimento organico
+
+Objetivo: recuperar recursos sociais do prototipo antigo de forma adequada a
+um PWA moderno, sem dependencias externas obrigatorias no caminho principal.
+
+1. `[x]` **W11-01 - Pagina de doacao**
+   - Criar tela/painel de doacao com Buy Me a Coffee e Ko-fi.
+   - Reutilizar intencao e conteudo do `ref_src_old`, adaptando a marca para
+     Guess the Fake.
+   - Links devem abrir em nova aba com `rel="noopener noreferrer"`.
+   - Se algum link nao estiver configurado, desabilitar a opcao com mensagem
+     clara.
+   - Adicionar entrada de navegacao sem poluir o fluxo principal do jogo.
+
+2. `[x]` **W11-02 - Compartilhamento social**
+   - Criar local dedicado para compartilhar o jogo.
+   - Reaproveitar estrategia do prototipo: Web Share API quando disponivel,
+     clipboard fallback e intents web para WhatsApp, Facebook e X.
+   - Para Instagram, TikTok e Threads, usar Web Share API quando suportado ou
+     copiar mensagem/link e abrir fallback web quando fizer sentido.
+   - Incluir icones reconheciveis, labels acessiveis e mensagem localizada.
+
+3. `[x]` **W11-03 - Compartilhar resultado da partida**
+   - Gerar texto curto com vencedor, modo, numero de rodadas e chamada para
+     jogar.
+   - Permitir compartilhar resultado final sem expor dados sensiveis locais.
+   - Usar a mesma infraestrutura de share da plataforma.
+
+4. `[x]` **W11-04 - Instalacao PWA e retorno ao jogo**
+   - Melhorar CTA de instalacao quando o navegador expuser `beforeinstallprompt`.
+   - Explicar estado offline/local-first com texto curto e nao intrusivo.
+   - Validar que links de convite multi-device e share preservam rota/params
+     importantes.
+
+### Onda 12 - Facelift visual e identidade premium
+
+Objetivo: elevar a percepcao de qualidade de todas as telas sem quebrar temas,
+contraste, responsividade e acessibilidade.
+
+1. `[x]` **W12-01 - Sistema de icones por tela e acao**
+   - Padronizar uso de `lucide-react` para navegacao, headers, metricas,
+     botoes e estados vazios.
+   - Evitar texto em botoes quando icone familiar com tooltip/label acessivel
+     resolver melhor.
+   - Garantir consistencia entre desktop, tablet e mobile.
+   - Implementado com marcas de tela em headers, icones em cards de setup,
+     metricas, estados de conteudo e acoes principais, mantendo labels
+     acessiveis nos controles.
+
+2. `[x]` **W12-02 - Arte e assets por contexto**
+   - Usar assets reais/gerados para dar identidade a home, setup, conquistas,
+     packs e estados vazios.
+   - Evitar decoracao generica que conflite com os fundos de tema.
+   - Criar diretrizes para assets por tema e fallback para alto contraste.
+   - Implementado com arte contextual local-first em CSS/tokens para a home,
+     badges visuais por contexto e previews tematicos sem depender de rede,
+     preservando contraste alto por variaveis especificas.
+
+3. `[x]` **W12-03 - Componentes de superficie mais sofisticados**
+   - Revisar cards, listas, metricas, badges, segmented controls, toggles,
+     sliders e empty states.
+   - Manter raio de borda e densidade coerentes com cada tema.
+   - Evitar paleta monotematica e excesso de gradientes roxos/azuis.
+   - Implementado com realces de superficie, hierarquia visual em cards e
+     metricas, icones consistentes e previews com paletas distintas por tema.
+
+4. `[x]` **W12-04 - Microinteracoes sem prejudicar legibilidade**
+   - Animar selecao, revelacao, pontuacao, trofeu desbloqueado e troca de tela.
+   - Respeitar `prefers-reduced-motion`.
+   - Garantir que animacoes nao atrasem o ritmo de party game.
+   - Implementado com animacoes curtas para selecao/revelacao, trofeu/resultado
+     e feedback visual de previews, todas desligadas em `prefers-reduced-motion`.
+
+5. `[x]` **W12-05 - Preview rico de temas**
+   - Em configuracoes, mostrar preview visual de tema com mini cards, placar,
+     botao e estado de resposta.
+   - Permitir trocar tema com feedback imediato.
+   - Preservar suporte a alto contraste.
+   - Implementado com grade de previews clicaveis em configuracoes, mini cards,
+     placar e estado de resposta por tema, `aria-pressed` e troca imediata do
+     tema ativo.
+
+### Onda 13 - Experiencia familiar memoravel
+
+Objetivo: evoluir de "quiz funcional" para uma experiencia social unica,
+repetivel e divertida em familia.
+
+1. `[ ]` **W13-01 - Momentos de mesa**
+   - Adicionar prompts opcionais de discussao antes da revelacao: "defenda sua
+     escolha", "vote em quem blefou melhor" ou "chance de mudar de ideia".
+   - Manter como configuracao para nao alongar partidas rapidas.
+   - Testar impacto em modos classico, todos palpitam e times.
+
+2. `[ ]` **W13-02 - Rodadas especiais**
+   - Criar tipos opcionais de rodada: morte subita, dobro ou nada, pista
+     gradual, rodada relampago e desafio por categoria.
+   - Modelar em regras puras antes da UI.
+   - Permitir desligar rodadas especiais para experiencia classica.
+
+3. `[ ]` **W13-03 - Perfis familiares locais**
+   - Evoluir jogadores recorrentes com avatar local, cor, apelido, estatisticas
+     e trofeus pessoais.
+   - Manter tudo local-first e exportavel.
+   - Evitar criar conta obrigatoria.
+
+4. `[ ]` **W13-04 - Narrativa de progresso**
+   - Criar trilhas de conquistas por categoria, dificuldade e estilo de jogo.
+   - Mostrar "proximo objetivo" contextual apos partidas.
+   - Conectar progresso a packs e curadoria de conteudo.
+
+5. `[ ]` **W13-05 - Balanceamento dinamico de partida**
+   - Sugerir dificuldade, quantidade de rodadas e modo com base em jogadores,
+     tempo disponivel e historico local.
+   - Evitar repetir categorias ou rodadas marcadas como fracas.
+   - Manter o usuario no controle final da configuracao.
+
+6. `[ ]` **W13-06 - Modo apresentador**
+   - Criar visual de sala para TV/projetor com placar, timer, revelacao e
+     efeitos maiores.
+   - Integrar com multi-device para host/controlador e tela de exibicao.
+   - Validar em desktop widescreen e tablet.
+
+7. `[ ]` **W13-07 - Packs tematicos premium/local-first**
+   - Criar formato de packs tematicos com capa, descricao, publico recomendado,
+     idioma, dificuldade e changelog.
+   - Preparar terreno para licenciamento/assinatura criptografica futura sem
+     bloquear packs comunitarios locais.
 
 ---
 

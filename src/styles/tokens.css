@@ -1,10 +1,13 @@
 :root {
   --font-body: 'Nunito', 'Manrope', sans-serif;
   --font-display: 'Fredoka One', 'Outfit', sans-serif;
+  --font-scale: 1;
   --screen-padding: clamp(0.85rem, 2.5vw, 2rem);
-  --title-page: clamp(1.75rem, 3.6vw, 3.15rem);
-  --title-card: clamp(1.05rem, 1.5vw, 1.35rem);
-  --text-card: clamp(0.88rem, 1.15vw, 1.05rem);
+  --title-page: calc(clamp(1.75rem, 3.6vw, 3.15rem) * var(--font-scale));
+  --title-card: calc(clamp(1.05rem, 1.5vw, 1.35rem) * var(--font-scale));
+  --text-card: calc(clamp(0.88rem, 1.15vw, 1.05rem) * var(--font-scale));
+  --text-ui: calc(1rem * var(--font-scale));
+  --text-small: calc(0.82rem * var(--font-scale));
   --motion-press: 120ms cubic-bezier(.2, .8, .2, 1);
   --motion-surface: 180ms ease;
   --motion-float: 18s ease-in-out;

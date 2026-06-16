@@ -2,7 +2,8 @@ import { createStorageKey, readVersioned, writeVersioned, type StorageAdapter } 
 
 export type MultiplayerRole = 'local' | 'host' | 'guest';
 export type MultiplayerStatus = 'idle' | 'hosting' | 'joined' | 'offline';
-export type MultiplayerTransportKind = 'broadcast-channel' | 'manual-offline' | 'peer-unavailable';
+export type MultiplayerTransportKind = 'broadcast-channel' | 'webrtc-manual' | 'manual-offline' | 'peer-unavailable';
+export type MultiplayerPeerStatus = 'idle' | 'signaling' | 'connecting' | 'connected' | 'disconnected' | 'failed';
 
 export type MultiplayerScoreRow = {
   name: string;
@@ -33,6 +34,7 @@ export type MultiplayerSessionState = {
   status: MultiplayerStatus;
   sessionCode: string;
   transport: MultiplayerTransportKind;
+  peerStatus: MultiplayerPeerStatus;
   guests: MultiplayerGuest[];
   lastSnapshot: MultiplayerGameSnapshot | null;
   error: string | null;
@@ -59,6 +61,16 @@ export type MultiplayerMessage =
     sentAt: string;
   };
 
+export type MultiplayerSignalKind = 'offer' | 'answer';
+
+export type MultiplayerSignalPayload = {
+  type: 'webrtc-signal';
+  kind: MultiplayerSignalKind;
+  sessionCode: string;
+  sdp: string;
+  sentAt: string;
+};
+
 export const MULTIPLAYER_STORAGE_VERSION = 1;
 export const MULTIPLAYER_STORAGE_KEY = createStorageKey('platform', 'multiplayer-session', MULTIPLAYER_STORAGE_VERSION);
 
@@ -71,6 +83,7 @@ export function createInitialMultiplayerSessionState(now = new Date().toISOStrin
     status: 'idle',
     sessionCode: '',
     transport: 'manual-offline',
+    peerStatus: 'idle',
     guests: [],
     lastSnapshot: null,
     error: null,
@@ -134,6 +147,7 @@ export function hostMultiplayerSession(
     status: 'hosting',
     sessionCode: state.sessionCode || createSessionCode(options.random),
     transport: options.transport ?? 'broadcast-channel',
+    peerStatus: options.transport === 'webrtc-manual' ? 'signaling' : 'idle',
     error: null,
     updatedAt: now
   };
@@ -158,6 +172,7 @@ export function joinMultiplayerSession(
         role: 'guest',
         status: 'offline',
         error: 'missing-session-code',
+        peerStatus: 'idle',
         updatedAt: now
       },
       message: null
@@ -172,6 +187,7 @@ export function joinMultiplayerSession(
       status: 'joined',
       sessionCode,
       transport: options.transport ?? 'broadcast-channel',
+      peerStatus: options.transport === 'webrtc-manual' ? 'signaling' : 'idle',
       guests: [],
       error: null,
       updatedAt: now
@@ -182,6 +198,19 @@ export function joinMultiplayerSession(
       guestId,
       sentAt: now
     }
+  };
+}
+
+export function updateMultiplayerPeerStatus(
+  state: MultiplayerSessionState,
+  peerStatus: MultiplayerPeerStatus,
+  options: { now?: string; error?: string | null } = {}
+): MultiplayerSessionState {
+  return {
+    ...state,
+    peerStatus,
+    error: options.error === undefined ? state.error : options.error,
+    updatedAt: options.now ?? new Date().toISOString()
   };
 }
 
@@ -282,6 +311,45 @@ export function parseMultiplayerMessage(raw: string): MultiplayerMessage | null 
   }
 }
 
+export function createWebRtcSignalPayload(
+  kind: MultiplayerSignalKind,
+  sessionCode: string,
+  sdp: string,
+  now = new Date().toISOString()
+): MultiplayerSignalPayload {
+  return {
+    type: 'webrtc-signal',
+    kind,
+    sessionCode: normalizeSessionCode(sessionCode),
+    sdp,
+    sentAt: now
+  };
+}
+
+export function serializeWebRtcSignalPayload(payload: MultiplayerSignalPayload) {
+  return JSON.stringify(payload, null, 2);
+}
+
+export function parseWebRtcSignalPayload(raw: string): MultiplayerSignalPayload | null {
+  try {
+    const parsed = JSON.parse(raw) as Partial<MultiplayerSignalPayload>;
+    if (!parsed || parsed.type !== 'webrtc-signal') return null;
+    if (parsed.kind !== 'offer' && parsed.kind !== 'answer') return null;
+    if (typeof parsed.sessionCode !== 'string' || !normalizeSessionCode(parsed.sessionCode)) return null;
+    if (typeof parsed.sdp !== 'string' || !parsed.sdp.trim()) return null;
+    if (typeof parsed.sentAt !== 'string' || !parsed.sentAt.trim()) return null;
+    return {
+      type: 'webrtc-signal',
+      kind: parsed.kind,
+      sessionCode: normalizeSessionCode(parsed.sessionCode),
+      sdp: parsed.sdp,
+      sentAt: parsed.sentAt
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function exportMultiplayerSnapshot(snapshot: MultiplayerGameSnapshot | null) {
   return JSON.stringify({ type: 'guess-the-fake.multiplayer-snapshot', version: 1, snapshot }, null, 2);
 }
@@ -296,7 +364,9 @@ export function importMultiplayerSnapshot(raw: string): MultiplayerGameSnapshot 
 }
 
 export function loadMultiplayerSession(storage: StorageAdapter = localStorage) {
-  return readVersioned(storage, MULTIPLAYER_STORAGE_KEY, createInitialMultiplayerSessionState(), MULTIPLAYER_STORAGE_VERSION);
+  return normalizeMultiplayerSessionState(
+    readVersioned(storage, MULTIPLAYER_STORAGE_KEY, createInitialMultiplayerSessionState(), MULTIPLAYER_STORAGE_VERSION)
+  );
 }
 
 export function saveMultiplayerSession(state: MultiplayerSessionState, storage: StorageAdapter = localStorage) {
@@ -309,6 +379,35 @@ function createGuestId(seed: string) {
     hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
   }
   return `${DEFAULT_GUEST_ID_PREFIX}-${hash.toString(16).padStart(8, '0')}`;
+}
+
+function normalizeMultiplayerSessionState(state: MultiplayerSessionState): MultiplayerSessionState {
+  const fallback = createInitialMultiplayerSessionState();
+  return {
+    ...fallback,
+    ...state,
+    transport: isTransportKind(state.transport) ? state.transport : fallback.transport,
+    peerStatus: isPeerStatus(state.peerStatus) ? state.peerStatus : fallback.peerStatus,
+    guests: Array.isArray(state.guests) ? state.guests : [],
+    lastSnapshot: isSnapshot(state.lastSnapshot) ? state.lastSnapshot : null,
+    error: typeof state.error === 'string' || state.error === null ? state.error : null
+  };
+}
+
+function isTransportKind(value: unknown): value is MultiplayerTransportKind {
+  return value === 'broadcast-channel'
+    || value === 'webrtc-manual'
+    || value === 'manual-offline'
+    || value === 'peer-unavailable';
+}
+
+function isPeerStatus(value: unknown): value is MultiplayerPeerStatus {
+  return value === 'idle'
+    || value === 'signaling'
+    || value === 'connecting'
+    || value === 'connected'
+    || value === 'disconnected'
+    || value === 'failed';
 }
 
 function isSnapshot(value: unknown): value is MultiplayerGameSnapshot {

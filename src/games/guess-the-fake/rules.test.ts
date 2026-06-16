@@ -200,6 +200,10 @@ describe('Guess the Fake rules', () => {
     expect(revealed.players.every(player => player.score === 0)).toBe(true);
     expect(revealed.teams[0].score).toBe(10);
     expect(getWinners(revealed).map(winner => winner.name)).toEqual(['Time 1']);
+
+    const recalibrated = recalibrateScores(revealed);
+    expect(recalibrated.players.every(player => player.score === 0)).toBe(true);
+    expect(recalibrated.teams.every(team => team.score === 0)).toBe(true);
   });
 
   it('applies streak multiplier after repeated correct guesses by the same subject', () => {

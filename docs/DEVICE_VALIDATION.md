@@ -16,6 +16,10 @@ validation. Values are CSS pixels, not physical hardware pixels.
 
 - Home / app shell.
 - Active game board via `?demo=game`.
+- Wave 10 automated smoke covers home, setup, leaderboard, packs,
+  multi-device, settings, card click, feedback, score recalibration, and core
+  navigation in Vitest/Testing Library across desktop, tablet, and mobile
+  viewport contracts.
 
 ## Findings Applied
 
@@ -29,6 +33,8 @@ validation. Values are CSS pixels, not physical hardware pixels.
   navigation, neutral home preview cards, and WebP background assets.
 - Verified the mobile nav computed as viewport-fixed after removing the mobile
   sidebar backdrop-filter containment issue.
+- Wave 10 widened desktop/tablet panels, added sticky panel headers, redesigned
+  setup into a responsive grid, and added persisted five-level font scaling.
 
 ## Notes
 

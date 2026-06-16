@@ -3,6 +3,7 @@ import {
   createInitialMultiplayerSessionState,
   createInviteUrl,
   createSessionStateMessage,
+  createWebRtcSignalPayload,
   disconnectMultiplayerSession,
   exportMultiplayerSnapshot,
   hostMultiplayerSession,
@@ -11,9 +12,12 @@ import {
   loadMultiplayerSession,
   normalizeSessionCode,
   parseMultiplayerMessage,
+  parseWebRtcSignalPayload,
   reduceMultiplayerMessage,
   saveMultiplayerSession,
   serializeMultiplayerMessage,
+  serializeWebRtcSignalPayload,
+  updateMultiplayerPeerStatus,
   type MultiplayerGameSnapshot
 } from './multiplayer';
 import type { StorageAdapter } from '../storage/storage';
@@ -85,6 +89,27 @@ describe('multiplayer session helpers', () => {
     ]);
   });
 
+  it('marks WebRTC manual sessions as signaling until a peer connects', () => {
+    const hosted = hostMultiplayerSession(createInitialMultiplayerSessionState(), {
+      random: () => 0,
+      transport: 'webrtc-manual'
+    });
+    expect(hosted).toMatchObject({
+      role: 'host',
+      status: 'hosting',
+      transport: 'webrtc-manual',
+      peerStatus: 'signaling'
+    });
+
+    const connected = updateMultiplayerPeerStatus(hosted, 'connected', {
+      now: '2026-06-14T10:05:00.000Z',
+      error: null
+    });
+    expect(connected.peerStatus).toBe('connected');
+    expect(connected.error).toBeNull();
+    expect(connected.updatedAt).toBe('2026-06-14T10:05:00.000Z');
+  });
+
   it('updates guest snapshots from host state messages', () => {
     const guest = joinMultiplayerSession(createInitialMultiplayerSessionState(), 'GTF-ABC123', {
       guestId: 'guest-1'
@@ -103,6 +128,19 @@ describe('multiplayer session helpers', () => {
     expect(parseMultiplayerMessage('{')).toBeNull();
   });
 
+  it('round-trips WebRTC signaling payloads and rejects invalid payloads', () => {
+    const payload = createWebRtcSignalPayload(
+      'offer',
+      'gtf-abc123',
+      'v=0\r\no=- 1 2 IN IP4 127.0.0.1',
+      '2026-06-14T12:03:00.000Z'
+    );
+    expect(payload.sessionCode).toBe('GTF-ABC123');
+    expect(parseWebRtcSignalPayload(serializeWebRtcSignalPayload(payload))).toEqual(payload);
+    expect(parseWebRtcSignalPayload('{"type":"webrtc-signal","kind":"offer"}')).toBeNull();
+    expect(parseWebRtcSignalPayload('{"type":"webrtc-signal","kind":"candidate","sessionCode":"GTF-ABC","sdp":"x","sentAt":"now"}')).toBeNull();
+  });
+
   it('exports and imports manual offline snapshots', () => {
     const exported = exportMultiplayerSnapshot(snapshot);
     expect(importMultiplayerSnapshot(exported)).toEqual(snapshot);
@@ -117,6 +155,30 @@ describe('multiplayer session helpers', () => {
 
     storage.setItem('gtf.platform.multiplayer-session.v1', '{');
     expect(loadMultiplayerSession(storage).status).toBe('idle');
+  });
+
+  it('normalizes previously saved sessions without peer fields', () => {
+    const storage = createMemoryStorage();
+    storage.setItem('gtf.platform.multiplayer-session.v1', JSON.stringify({
+      version: 1,
+      updatedAt: '2026-06-14T12:00:00.000Z',
+      value: {
+        role: 'host',
+        status: 'hosting',
+        sessionCode: 'GTF-OLD123',
+        transport: 'broadcast-channel',
+        guests: [],
+        lastSnapshot: null,
+        error: null,
+        updatedAt: '2026-06-14T12:00:00.000Z'
+      }
+    }));
+
+    expect(loadMultiplayerSession(storage)).toMatchObject({
+      role: 'host',
+      sessionCode: 'GTF-OLD123',
+      peerStatus: 'idle'
+    });
   });
 
   it('emits a guest-left message when disconnecting a joined guest', () => {

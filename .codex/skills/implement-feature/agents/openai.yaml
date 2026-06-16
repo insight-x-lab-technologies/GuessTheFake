@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Feature"
+  short_description: "Implement roadmap features from this repo"
+  default_prompt: "Use $implement-feature to implement roadmap item WX-Y."
