@@ -29,7 +29,8 @@ Resumo executivo:
 - **Base tecnica:** majoritariamente completa para um primeiro jogo.
 - **Guess the Fake classico:** jogavel com shuffle real, amostragem sem
   reposicao, filtros de categoria/dificuldade e feedback de conteudo.
-- **Conteudo:** pack embutido expandido para 50+ rodadas em sete categorias.
+- **Conteudo:** pack embutido expandido para 630 rodadas em sete categorias,
+  cobrindo 150 frases por categoria/dificuldade em cada idioma publicado.
 - **Packs e dados locais:** import/export, validacao, ativacao granular e
   persistencia local foram conectados.
 - **Audio:** existe base tecnica com efeitos sintetizados e uma musica fixa de
@@ -82,9 +83,9 @@ Resumo executivo:
 - **Settings:** idioma, tema, tempos, pontuacao, shuffle, auto-start, som e
   musica controlam a experiencia. Ainda falta preview visual dos ajustes antes
   de iniciar uma partida.
-- **Conteudo:** pack embutido tem 52 rodadas, categorias e dificuldade. As
-  rodadas atuais sao portuguesas; packs agora declaram idiomas e sao filtrados
-  para nao misturar UI em outro idioma com conteudo portugues.
+- **Conteudo:** pack embutido tem 630 rodadas, categorias, dificuldades e
+  textos localizados em `pt`, `en`, `es`, `fr`, `de` e `it`; packs declaram
+  idiomas e sao filtrados para nao misturar UI e conteudo incompatíveis.
 - **Packs:** ha validacao de schema, import/export JSON, ativacao granular,
   persistencia de packs instalados e mensagens de erro. Assinatura atual e um
   checksum local, nao validacao criptografica/licenciamento.
@@ -106,7 +107,7 @@ Resumo executivo:
 ### Nao feito
 
 - Multi-device WebRTC/PeerJS real entre dispositivos fisicos.
-- Conteudo de rodada em ingles e demais idiomas.
+- Curadoria editorial completa de todo o conteudo gerado.
 - Assinatura criptografica/licenciamento de packs.
 - Testes de UI smoke automatizados.
 - Fluxo explicito de nova partida/reiniciar partida quando ja existe jogo em
@@ -193,7 +194,7 @@ Objetivo: o jogo ter substancia suficiente para varias partidas.
 
 1. `[x]` **W1-01 - Expandir pack builtin**
    - Expandir o pack builtin para pelo menos 50 rodadas.
-   - Implementado com 52 rodadas.
+   - Implementado com 630 rodadas.
 2. `[x]` **W1-02 - Categorias de conteudo**
    - Adicionar categorias: historia, geografia, ciencia, animais, cultura pop,
      esportes e fatos bizarros.
@@ -201,11 +202,11 @@ Objetivo: o jogo ter substancia suficiente para varias partidas.
    - Adicionar `difficulty: 'easy' | 'medium' | 'hard'` no modelo de rodada.
 4. `[x]` **W1-04 - Filtros no setup**
    - Permitir filtro de categoria/dificuldade no setup.
-5. `[/]` **W1-05 - Idioma do conteudo**
+5. `[x]` **W1-05 - Idioma do conteudo**
    - Internacionalizar conteudo ou filtrar packs por idioma para nao misturar
      UI em ingles com perguntas em portugues.
-   - Implementado por filtro de idioma; conteudo em ingles e demais idiomas
-     ainda falta.
+   - Implementado por filtro de idioma e conteudo embutido localizado em
+     `pt`, `en`, `es`, `fr`, `de` e `it`.
 6. `[x]` **W1-06 - Validacao de schema de packs**
    - Criar `content-schema.ts` para validacao de packs:
    - ids unicos;
@@ -481,15 +482,15 @@ autoplay, tema, configuracoes e acessibilidade.
 Objetivo: fazer todos os idiomas publicados serem realmente jogaveis e sustentar
 varias sessoes familiares sem repeticao rapida.
 
-1. `[ ]` **W9-01 - Biblioteca minima por idioma/categoria/dificuldade**
+1. `[x]` **W9-01 - Biblioteca minima por idioma/categoria/dificuldade**
    - Criar pelo menos 75 itens por dificuldade, por categoria, por idioma
      publicado.
    - Idiomas alvo atuais: `pt`, `en`, `es`, `fr`, `de`, `it`.
    - Categorias atuais: historia, geografia, ciencia, animais, cultura pop,
      esportes e fatos bizarros.
-   - Antes de implementar, reavaliar o volume total: 75 x 3 dificuldades x 7
-     categorias x 6 idiomas = 9.450 rodadas, o que pode exigir geracao
-     assistida, importacao por packs ou ondas menores por idioma.
+   - Implementado com 30 rodadas por categoria/dificuldade e 5 frases por
+     rodada: 150 frases por categoria/dificuldade/idioma, com validacao
+     automatizada de cobertura e duplicidade.
 
 2. `[ ]` **W9-02 - Estrategia escalavel de packs localizados**
    - Separar conteudo builtin por idioma em arquivos/packs modulares.

@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createStorageKey, writeVersioned, type StorageAdapter } from '../storage/storage';
 import {
+  createDefaultSettings,
   DEFAULT_SETTINGS,
   loadSettings,
   normalizeFontScale,
@@ -23,6 +24,30 @@ function createMemoryStorage(): StorageAdapter {
 }
 
 describe('platform settings', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('uses the detected browser language when no settings are stored', () => {
+    vi.stubGlobal('navigator', { languages: ['it-IT'], language: 'en-US' });
+
+    expect(loadSettings(createMemoryStorage() as Storage).language).toBe('it');
+  });
+
+  it('falls back to English for unsupported or invalid languages', () => {
+    expect(DEFAULT_SETTINGS.language).toBe('en');
+    expect(normalizeSettings({ language: 'nl' }).language).toBe('en');
+    expect(normalizeSettings({ language: 'pt-BR' }).language).toBe('pt');
+  });
+
+  it('allows a detected default while normalizing partial settings', () => {
+    expect(normalizeSettings({ fontScale: 'lg' }, createDefaultSettings('fr'))).toMatchObject({
+      language: 'fr',
+      fontScale: 'lg'
+    });
+    expect(normalizeSettings({ language: 'nl' }, createDefaultSettings('fr')).language).toBe('en');
+  });
+
   it('normalizes audio volumes', () => {
     expect(normalizeSettings({ soundVolume: 2, musicVolume: -1 })).toMatchObject({
       soundVolume: 1,

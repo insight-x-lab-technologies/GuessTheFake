@@ -7,7 +7,8 @@ Esta auditoria compara o `ref_src_old` com a nova base React/TypeScript para dec
 - Temas: os temas visuais antigos foram reintroduzidos como tokens de plataforma: `cosmic`, `liquid-glass`, `material3`, `light-mode`, `dark-mode` e `high-contrast`.
 - Identidade visual: fundos por tela, gradientes de logo/titulo, cartões translúcidos, cartões de conteúdo, sombras, animação de estrelas e botões com press animation foram adaptados para o shell novo.
 - Responsividade: a estrutura atual mantém o layout de desktop, tablet e mobile já validado, mas agora usando os assets e tokens do jogo base.
-- i18n: a arquitetura nova preserva tradução centralizada, hoje com `pt` e `en`.
+- i18n: a arquitetura nova preserva tradução centralizada, com idiomas
+  publicados `pt`, `en`, `es`, `fr`, `de` e `it`.
 - Leaderboard: existe persistência local e agregação por jogador/jogo/modo.
 - Troféus: existe motor de progresso/desbloqueio e definições por jogo.
 - Packs: existe manifesto e tipo estruturado para content packs.
@@ -20,7 +21,9 @@ Esta auditoria compara o `ref_src_old` com a nova base React/TypeScript para dec
 ## Parcial ou simplificado
 
 - Temas: o look and feel voltou, mas ainda falta uma tela de preview rica como no jogo antigo.
-- i18n: o jogo antigo tinha mais idiomas; a base nova ainda só publica `pt` e `en`.
+- i18n: o conteúdo jogável embutido cobre `pt`, `en`, `es`, `fr`, `de` e
+  `it`; ainda há pontos de UI que podem depender de fallback enquanto a
+  tradução completa da interface evolui.
 - Leaderboard: falta filtro por modo, resumo lateral, reset pela UI, avatar/títulos e rankings mais detalhados.
 - Troféus: o motor existe, a persistência já é carregada/salva, mas ainda faltam
   mais metas reais e notificações ricas.

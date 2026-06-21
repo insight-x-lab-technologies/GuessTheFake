@@ -28,7 +28,7 @@ describe('score recalibration flow', () => {
     fireEvent.click(screen.getByRole('button', { name: /começar|start/i }));
     fireEvent.click(screen.getByRole('button', { name: /iniciar turno|start turn/i }));
     fireEvent.click(screen.getByRole('button', { name: /mostrar frases|show statements/i }));
-    fireEvent.click(await screen.findByRole('button', { name: /marco polo/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /cidade dentro do Sol|city inside the Sun/i }));
 
     expect(await screen.findByText(/Time 1: 10 pts/i)).toBeInTheDocument();
 

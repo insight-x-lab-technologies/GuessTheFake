@@ -75,7 +75,7 @@ import {
   summarizeContentFeedback,
   type ContentRating
 } from '../core/content-feedback/content-feedback';
-import { SUPPORTED_LANGUAGES, translate, type Language } from '../core/i18n/i18n';
+import { LANGUAGE_LOCALES, SUPPORTED_LANGUAGES, translate, type Language } from '../core/i18n/i18n';
 import {
   exportLeaderboard,
   filterLeaderboard,
@@ -461,7 +461,7 @@ export function App() {
   useEffect(() => {
     applyTheme(settings.theme);
     document.documentElement.style.setProperty('--font-scale', String(FONT_SCALE_VALUES[settings.fontScale]));
-    document.documentElement.lang = settings.language === 'pt' ? 'pt-BR' : 'en';
+    document.documentElement.lang = LANGUAGE_LOCALES[settings.language];
     document.title = t('game.title');
     saveSettings(settings);
   }, [settings, t]);
@@ -2940,7 +2940,15 @@ function supportsBroadcastChannel() {
 }
 
 function getLanguageLabel(language: Language) {
-  return language === 'pt' ? 'Português' : language === 'en' ? 'English' : language.toUpperCase();
+  const labels: Record<Language, string> = {
+    pt: 'Português do Brasil',
+    en: 'English',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    it: 'Italiano'
+  };
+  return labels[language];
 }
 
 function supportsWebRtc() {

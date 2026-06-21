@@ -1,4 +1,5 @@
 import type { ContentPack } from '../../../core/content-packs/content-packs';
+import type { Language } from '../../../core/i18n/i18n';
 import type { GuessTheFakeDifficulty, GuessTheFakeRound, LocalizedText } from '../types';
 
 export type GuessTheFakePackContent = {
@@ -6,84 +7,517 @@ export type GuessTheFakePackContent = {
   rounds: GuessTheFakeRound[];
 };
 
-type RoundSeed = {
-  id: string;
-  categoryId: string;
-  difficulty: GuessTheFakeDifficulty;
-  fakeIndex: number;
-  explanation: LocalizedText;
-  statements: LocalizedText[];
+type CategoryId = 'history' | 'geography' | 'science' | 'animals' | 'pop-culture' | 'sports' | 'weird-facts';
+type LocalizedString = Record<Language, string>;
+type TopicBank = Record<CategoryId, LocalizedString[]>;
+
+const languages: Language[] = ['pt', 'en', 'es', 'fr', 'de', 'it'];
+const difficulties: GuessTheFakeDifficulty[] = ['easy', 'medium', 'hard'];
+const roundsPerDifficulty = 30;
+
+const categories: GuessTheFakePackContent['categories'] = [
+  { id: 'history', title: text('História', 'History', 'Historia', 'Histoire', 'Geschichte', 'Storia') },
+  { id: 'geography', title: text('Geografia', 'Geography', 'Geografía', 'Géographie', 'Geografie', 'Geografia') },
+  { id: 'science', title: text('Ciência', 'Science', 'Ciencia', 'Science', 'Wissenschaft', 'Scienza') },
+  { id: 'animals', title: text('Animais', 'Animals', 'Animales', 'Animaux', 'Tiere', 'Animali') },
+  { id: 'pop-culture', title: text('Cultura pop', 'Pop culture', 'Cultura pop', 'Culture pop', 'Popkultur', 'Cultura pop') },
+  { id: 'sports', title: text('Esportes', 'Sports', 'Deportes', 'Sports', 'Sport', 'Sport') },
+  { id: 'weird-facts', title: text('Fatos bizarros', 'Weird facts', 'Datos curiosos', 'Faits insolites', 'Kuriose Fakten', 'Fatti curiosi') }
+];
+
+const topics: TopicBank = {
+  history: [
+    proper('Grande Pirâmide de Gizé', 'Great Pyramid of Giza', 'Gran Pirámide de Guiza', 'Grande pyramide de Gizeh', 'Große Pyramide von Gizeh', 'Grande Piramide di Giza'),
+    proper('imprensa de Gutenberg', 'Gutenberg printing press', 'imprenta de Gutenberg', 'presse de Gutenberg', 'Gutenberg-Druckerpresse', 'stampa di Gutenberg'),
+    proper('Revolução Francesa', 'French Revolution', 'Revolución francesa', 'Révolution française', 'Französische Revolution', 'Rivoluzione francese'),
+    proper('Cleópatra', 'Cleopatra', 'Cleopatra', 'Cléopâtre', 'Kleopatra', 'Cleopatra'),
+    proper('Muralha da China', 'Great Wall of China', 'Gran Muralla China', 'Grande Muraille de Chine', 'Chinesische Mauer', 'Grande Muraglia Cinese'),
+    proper('escrita cuneiforme', 'cuneiform writing', 'escritura cuneiforme', 'écriture cunéiforme', 'Keilschrift', 'scrittura cuneiforme'),
+    proper('Guerra Fria', 'Cold War', 'Guerra Fría', 'Guerre froide', 'Kalter Krieg', 'Guerra fredda'),
+    proper('Biblioteca de Alexandria', 'Library of Alexandria', 'Biblioteca de Alejandría', 'Bibliothèque d\'Alexandrie', 'Bibliothek von Alexandria', 'Biblioteca di Alessandria'),
+    proper('Magna Carta', 'Magna Carta', 'Carta Magna', 'Magna Carta', 'Magna Carta', 'Magna Carta'),
+    proper('Rota da Seda', 'Silk Road', 'Ruta de la Seda', 'Route de la soie', 'Seidenstraße', 'Via della Seta'),
+    proper('Pedra de Roseta', 'Rosetta Stone', 'Piedra de Rosetta', 'pierre de Rosette', 'Stein von Rosette', 'Stele di Rosetta'),
+    proper('Mansa Musa', 'Mansa Musa', 'Mansa Musa', 'Mansa Moussa', 'Mansa Musa', 'Mansa Musa'),
+    proper('queda de Constantinopla', 'fall of Constantinople', 'caída de Constantinopla', 'chute de Constantinople', 'Fall Konstantinopels', 'caduta di Costantinopoli'),
+    proper('Primeira Guerra Mundial', 'First World War', 'Primera Guerra Mundial', 'Première Guerre mondiale', 'Erster Weltkrieg', 'Prima guerra mondiale'),
+    proper('Bauhaus', 'Bauhaus', 'Bauhaus', 'Bauhaus', 'Bauhaus', 'Bauhaus'),
+    proper('corrida espacial', 'Space Race', 'carrera espacial', 'course à l\'espace', 'Wettlauf ins All', 'corsa allo spazio'),
+    proper('Machu Picchu', 'Machu Picchu', 'Machu Picchu', 'Machu Picchu', 'Machu Picchu', 'Machu Picchu'),
+    proper('Atenas antiga', 'ancient Athens', 'Atenas antigua', 'Athènes antique', 'antikes Athen', 'Atene antica'),
+    proper('Canal do Panamá', 'Panama Canal', 'Canal de Panamá', 'canal de Panama', 'Panamakanal', 'Canale di Panama'),
+    proper('Coliseu de Roma', 'Roman Colosseum', 'Coliseo de Roma', 'Colisée de Rome', 'Kolosseum in Rom', 'Colosseo di Roma'),
+    proper('Taj Mahal', 'Taj Mahal', 'Taj Mahal', 'Taj Mahal', 'Taj Mahal', 'Taj Mahal'),
+    proper('Petra', 'Petra', 'Petra', 'Pétra', 'Petra', 'Petra'),
+    proper('Império Mali', 'Mali Empire', 'Imperio de Malí', 'Empire du Mali', 'Mali-Reich', 'Impero del Mali'),
+    proper('calendário gregoriano', 'Gregorian calendar', 'calendario gregoriano', 'calendrier grégorien', 'gregorianischer Kalender', 'calendario gregoriano'),
+    proper('peste negra', 'Black Death', 'Peste Negra', 'peste noire', 'Schwarzer Tod', 'peste nera'),
+    proper('Império Romano', 'Roman Empire', 'Imperio romano', 'Empire romain', 'Römisches Reich', 'Impero romano'),
+    proper('civilização maia', 'Maya civilization', 'civilización maya', 'civilisation maya', 'Maya-Zivilisation', 'civiltà maya'),
+    proper('Idade Média', 'Middle Ages', 'Edad Media', 'Moyen Âge', 'Mittelalter', 'Medioevo'),
+    proper('Renascimento', 'Renaissance', 'Renacimiento', 'Renaissance', 'Renaissance', 'Rinascimento'),
+    proper('Titanic', 'Titanic', 'Titanic', 'Titanic', 'Titanic', 'Titanic')
+  ],
+  geography: [
+    proper('Brasil', 'Brazil', 'Brasil', 'Brésil', 'Brasilien', 'Brasile'),
+    proper('Japão', 'Japan', 'Japón', 'Japon', 'Japan', 'Giappone'),
+    proper('Antártida', 'Antarctica', 'Antártida', 'Antarctique', 'Antarktis', 'Antartide'),
+    proper('Cordilheira dos Andes', 'Andes Mountains', 'cordillera de los Andes', 'cordillère des Andes', 'Anden', 'cordigliera delle Ande'),
+    proper('Oceano Pacífico', 'Pacific Ocean', 'océano Pacífico', 'océan Pacifique', 'Pazifischer Ozean', 'oceano Pacifico'),
+    proper('Lima', 'Lima', 'Lima', 'Lima', 'Lima', 'Lima'),
+    proper('Santiago do Chile', 'Santiago, Chile', 'Santiago de Chile', 'Santiago du Chili', 'Santiago de Chile', 'Santiago del Cile'),
+    proper('Quito', 'Quito', 'Quito', 'Quito', 'Quito', 'Quito'),
+    proper('rio Nilo', 'Nile River', 'río Nilo', 'Nil', 'Nil', 'fiume Nilo'),
+    proper('Himalaia', 'Himalayas', 'Himalaya', 'Himalaya', 'Himalaya', 'Himalaya'),
+    proper('Groenlândia', 'Greenland', 'Groenlandia', 'Groenland', 'Grönland', 'Groenlandia'),
+    proper('Madagascar', 'Madagascar', 'Madagascar', 'Madagascar', 'Madagaskar', 'Madagascar'),
+    proper('meridiano de Greenwich', 'Greenwich meridian', 'meridiano de Greenwich', 'méridien de Greenwich', 'Greenwich-Meridian', 'meridiano di Greenwich'),
+    proper('linha do Equador', 'Equator', 'línea del ecuador', 'équateur', 'Äquator', 'equatore'),
+    proper('Rússia', 'Russia', 'Rusia', 'Russie', 'Russland', 'Russia'),
+    proper('San Marino', 'San Marino', 'San Marino', 'Saint-Marin', 'San Marino', 'San Marino'),
+    proper('Nepal', 'Nepal', 'Nepal', 'Népal', 'Nepal', 'Nepal'),
+    proper('Bolívia', 'Bolivia', 'Bolivia', 'Bolivie', 'Bolivien', 'Bolivia'),
+    proper('Singapura', 'Singapore', 'Singapur', 'Singapour', 'Singapur', 'Singapore'),
+    proper('Mar Cáspio', 'Caspian Sea', 'mar Caspio', 'mer Caspienne', 'Kaspisches Meer', 'Mar Caspio'),
+    proper('Lago Baikal', 'Lake Baikal', 'lago Baikal', 'lac Baïkal', 'Baikalsee', 'lago Bajkal'),
+    proper('Canal de Suez', 'Suez Canal', 'Canal de Suez', 'canal de Suez', 'Suezkanal', 'Canale di Suez'),
+    proper('Patagônia', 'Patagonia', 'Patagonia', 'Patagonie', 'Patagonien', 'Patagonia'),
+    proper('Islândia', 'Iceland', 'Islandia', 'Islande', 'Island', 'Islanda'),
+    proper('Portugal', 'Portugal', 'Portugal', 'Portugal', 'Portugal', 'Portogallo'),
+    proper('Canadá', 'Canada', 'Canadá', 'Canada', 'Kanada', 'Canada'),
+    proper('Saara', 'Sahara', 'Sáhara', 'Sahara', 'Sahara', 'Sahara'),
+    proper('Península Ibérica', 'Iberian Peninsula', 'Península Ibérica', 'péninsule Ibérique', 'Iberische Halbinsel', 'Penisola iberica'),
+    proper('Vaticano', 'Vatican City', 'Ciudad del Vaticano', 'Vatican', 'Vatikanstadt', 'Città del Vaticano'),
+    proper('Lesoto', 'Lesotho', 'Lesoto', 'Lesotho', 'Lesotho', 'Lesotho')
+  ],
+  science: [
+    proper('fotossíntese', 'photosynthesis', 'fotosíntesis', 'photosynthèse', 'Photosynthese', 'fotosintesi'),
+    proper('DNA', 'DNA', 'ADN', 'ADN', 'DNA', 'DNA'),
+    proper('hemoglobina', 'hemoglobin', 'hemoglobina', 'hémoglobine', 'Hämoglobin', 'emoglobina'),
+    proper('gravidade', 'gravity', 'gravedad', 'gravité', 'Schwerkraft', 'gravità'),
+    proper('gelo', 'ice', 'hielo', 'glace', 'Eis', 'ghiaccio'),
+    proper('eletricidade', 'electricity', 'electricidad', 'électricité', 'Elektrizität', 'elettricità'),
+    proper('vírus', 'viruses', 'virus', 'virus', 'Viren', 'virus'),
+    proper('tabela periódica', 'periodic table', 'tabla periódica', 'tableau périodique', 'Periodensystem', 'tavola periodica'),
+    proper('carbono', 'carbon', 'carbono', 'carbone', 'Kohlenstoff', 'carbonio'),
+    proper('velocidade da luz', 'speed of light', 'velocidad de la luz', 'vitesse de la lumière', 'Lichtgeschwindigkeit', 'velocità della luce'),
+    proper('neurônios', 'neurons', 'neuronas', 'neurones', 'Neuronen', 'neuroni'),
+    proper('pH', 'pH', 'pH', 'pH', 'pH-Wert', 'pH'),
+    proper('pressão da água', 'water pressure', 'presión del agua', 'pression de l\'eau', 'Wasserdruck', 'pressione dell\'acqua'),
+    proper('isótopos', 'isotopes', 'isótopos', 'isotopes', 'Isotope', 'isotopi'),
+    proper('camada de ozônio', 'ozone layer', 'capa de ozono', 'couche d\'ozone', 'Ozonschicht', 'strato di ozono'),
+    proper('raios ultravioleta', 'ultraviolet rays', 'rayos ultravioleta', 'rayons ultraviolets', 'ultraviolette Strahlen', 'raggi ultravioletti'),
+    proper('vacinas', 'vaccines', 'vacunas', 'vaccins', 'Impfstoffe', 'vaccini'),
+    proper('energia', 'energy', 'energía', 'énergie', 'Energie', 'energia'),
+    proper('fungos', 'fungi', 'hongos', 'champignons', 'Pilze', 'funghi'),
+    proper('ímãs', 'magnets', 'imanes', 'aimants', 'Magnete', 'magneti'),
+    proper('Sistema Solar', 'Solar System', 'Sistema Solar', 'Système solaire', 'Sonnensystem', 'Sistema solare'),
+    proper('som', 'sound', 'sonido', 'son', 'Schall', 'suono'),
+    proper('aracnídeos', 'arachnids', 'arácnidos', 'arachnides', 'Spinnentiere', 'aracnidi'),
+    proper('Vênus', 'Venus', 'Venus', 'Vénus', 'Venus', 'Venere'),
+    proper('Mercúrio', 'Mercury', 'Mercurio', 'Mercure', 'Merkur', 'Mercurio'),
+    proper('zero absoluto', 'absolute zero', 'cero absoluto', 'zéro absolu', 'absoluter Nullpunkt', 'zero assoluto'),
+    proper('ano-luz', 'light-year', 'año luz', 'année-lumière', 'Lichtjahr', 'anno luce'),
+    proper('Lua', 'Moon', 'Luna', 'Lune', 'Mond', 'Luna'),
+    proper('Sol', 'Sun', 'Sol', 'Soleil', 'Sonne', 'Sole'),
+    proper('água', 'water', 'agua', 'eau', 'Wasser', 'acqua')
+  ],
+  animals: [
+    proper('pinguins', 'penguins', 'pingüinos', 'manchots', 'Pinguine', 'pinguini'),
+    proper('morcegos', 'bats', 'murciélagos', 'chauves-souris', 'Fledermäuse', 'pipistrelli'),
+    proper('golfinhos', 'dolphins', 'delfines', 'dauphins', 'Delfine', 'delfini'),
+    proper('abelhas', 'bees', 'abejas', 'abeilles', 'Bienen', 'api'),
+    proper('elefantes', 'elephants', 'elefantes', 'éléphants', 'Elefanten', 'elefanti'),
+    proper('camaleões', 'chameleons', 'camaleones', 'caméléons', 'Chamäleons', 'camaleonti'),
+    proper('tubarões', 'sharks', 'tiburones', 'requins', 'Haie', 'squali'),
+    proper('corujas', 'owls', 'búhos', 'hiboux', 'Eulen', 'gufi'),
+    proper('cangurus', 'kangaroos', 'canguros', 'kangourous', 'Kängurus', 'canguri'),
+    proper('polvos', 'octopuses', 'pulpos', 'pieuvres', 'Oktopusse', 'polpi'),
+    proper('orcas', 'orcas', 'orcas', 'orques', 'Orcas', 'orche'),
+    proper('baleias', 'whales', 'ballenas', 'baleines', 'Wale', 'balene'),
+    proper('formigas', 'ants', 'hormigas', 'fourmis', 'Ameisen', 'formiche'),
+    proper('tartarugas', 'turtles', 'tortugas', 'tortues', 'Schildkröten', 'tartarughe'),
+    proper('lulas', 'squid', 'calamares', 'calmars', 'Kalmare', 'calamari'),
+    proper('ornitorrincos', 'platypuses', 'ornitorrincos', 'ornithorynques', 'Schnabeltiere', 'ornitorinchi'),
+    proper('girafas', 'giraffes', 'jirafas', 'girafes', 'Giraffen', 'giraffe'),
+    proper('rãs', 'frogs', 'ranas', 'grenouilles', 'Frösche', 'rane'),
+    proper('axolotes', 'axolotls', 'ajolotes', 'axolotls', 'Axolotl', 'axolotl'),
+    proper('cavalos-marinhos', 'seahorses', 'caballitos de mar', 'hippocampes', 'Seepferdchen', 'cavallucci marini'),
+    proper('narvais', 'narwhals', 'narvales', 'narvals', 'Narwale', 'narvali'),
+    proper('cupins', 'termites', 'termitas', 'termites', 'Termiten', 'termiti'),
+    proper('peixes-palhaço', 'clownfish', 'peces payaso', 'poissons-clowns', 'Clownfische', 'pesci pagliaccio'),
+    proper('preguiças', 'sloths', 'perezosos', 'paresseux', 'Faultiere', 'bradipi'),
+    proper('rinocerontes', 'rhinoceroses', 'rinocerontes', 'rhinocéros', 'Nashörner', 'rinoceronti'),
+    proper('lontras', 'otters', 'nutrias', 'loutres', 'Otter', 'lontre'),
+    proper('flamingos', 'flamingos', 'flamencos', 'flamants roses', 'Flamingos', 'fenicotteri'),
+    proper('coalas', 'koalas', 'koalas', 'koalas', 'Koalas', 'koala'),
+    proper('pandas', 'pandas', 'pandas', 'pandas', 'Pandas', 'panda'),
+    proper('lobos', 'wolves', 'lobos', 'loups', 'Wölfe', 'lupi')
+  ],
+  'pop-culture': [
+    proper('Star Wars', 'Star Wars', 'Star Wars', 'Star Wars', 'Star Wars', 'Star Wars'),
+    proper('Mario', 'Mario', 'Mario', 'Mario', 'Mario', 'Mario'),
+    proper('Oscar', 'Oscars', 'Óscar', 'Oscars', 'Oscar', 'Oscar'),
+    proper('Pokémon', 'Pokémon', 'Pokémon', 'Pokémon', 'Pokémon', 'Pokémon'),
+    proper('Sherlock Holmes', 'Sherlock Holmes', 'Sherlock Holmes', 'Sherlock Holmes', 'Sherlock Holmes', 'Sherlock Holmes'),
+    proper('Mickey Mouse', 'Mickey Mouse', 'Mickey Mouse', 'Mickey Mouse', 'Mickey Mouse', 'Topolino'),
+    proper('The Beatles', 'The Beatles', 'The Beatles', 'The Beatles', 'The Beatles', 'The Beatles'),
+    proper('cinema', 'cinema', 'cine', 'cinéma', 'Kino', 'cinema'),
+    proper('Toy Story', 'Toy Story', 'Toy Story', 'Toy Story', 'Toy Story', 'Toy Story'),
+    proper('stop motion', 'stop motion', 'stop motion', 'stop motion', 'Stop-Motion', 'stop motion'),
+    proper('K-pop', 'K-pop', 'K-pop', 'K-pop', 'K-Pop', 'K-pop'),
+    proper('cosplay', 'cosplay', 'cosplay', 'cosplay', 'Cosplay', 'cosplay'),
+    proper('PlayStation', 'PlayStation', 'PlayStation', 'PlayStation', 'PlayStation', 'PlayStation'),
+    proper('mangá', 'manga', 'manga', 'manga', 'Manga', 'manga'),
+    proper('memes', 'memes', 'memes', 'mèmes', 'Memes', 'meme'),
+    proper('blockbuster', 'blockbuster', 'blockbuster', 'blockbuster', 'Blockbuster', 'blockbuster'),
+    proper('easter eggs', 'easter eggs', 'easter eggs', 'easter eggs', 'Easter Eggs', 'easter egg'),
+    proper('dublagem', 'dubbing', 'doblaje', 'doublage', 'Synchronisation', 'doppiaggio'),
+    proper('storyboards', 'storyboards', 'storyboards', 'storyboards', 'Storyboards', 'storyboard'),
+    proper('Comic-Con', 'Comic-Con', 'Comic-Con', 'Comic-Con', 'Comic-Con', 'Comic-Con'),
+    proper('vinil', 'vinyl', 'vinilo', 'vinyle', 'Vinyl', 'vinile'),
+    proper('podcasts', 'podcasts', 'podcasts', 'podcasts', 'Podcasts', 'podcast'),
+    proper('fan art', 'fan art', 'fan art', 'fan art', 'Fanart', 'fan art'),
+    proper('remakes', 'remakes', 'remakes', 'remakes', 'Remakes', 'remake'),
+    proper('Sonic', 'Sonic', 'Sonic', 'Sonic', 'Sonic', 'Sonic'),
+    proper('Minecraft', 'Minecraft', 'Minecraft', 'Minecraft', 'Minecraft', 'Minecraft'),
+    proper('Grammy', 'Grammy', 'Grammy', 'Grammy', 'Grammy', 'Grammy'),
+    proper('videoclipes', 'music videos', 'videoclips', 'clips vidéo', 'Musikvideos', 'videoclip'),
+    proper('streaming', 'streaming', 'streaming', 'streaming', 'Streaming', 'streaming'),
+    proper('quadrinhos', 'comics', 'cómics', 'bandes dessinées', 'Comics', 'fumetti')
+  ],
+  sports: [
+    proper('maratona', 'marathon', 'maratón', 'marathon', 'Marathon', 'maratona'),
+    proper('basquete', 'basketball', 'baloncesto', 'basket-ball', 'Basketball', 'pallacanestro'),
+    proper('futebol', 'football', 'fútbol', 'football', 'Fußball', 'calcio'),
+    proper('tênis', 'tennis', 'tenis', 'tennis', 'Tennis', 'tennis'),
+    proper('vôlei', 'volleyball', 'voleibol', 'volley-ball', 'Volleyball', 'pallavolo'),
+    proper('natação', 'swimming', 'natación', 'natation', 'Schwimmen', 'nuoto'),
+    proper('judô', 'judo', 'judo', 'judo', 'Judo', 'judo'),
+    proper('xadrez', 'chess', 'ajedrez', 'échecs', 'Schach', 'scacchi'),
+    proper('atletismo', 'athletics', 'atletismo', 'athlétisme', 'Leichtathletik', 'atletica'),
+    proper('golfe', 'golf', 'golf', 'golf', 'Golf', 'golf'),
+    proper('rugby', 'rugby', 'rugby', 'rugby', 'Rugby', 'rugby'),
+    proper('tênis de mesa', 'table tennis', 'tenis de mesa', 'tennis de table', 'Tischtennis', 'tennis tavolo'),
+    proper('boxe', 'boxing', 'boxeo', 'boxe', 'Boxen', 'pugilato'),
+    proper('beisebol', 'baseball', 'béisbol', 'baseball', 'Baseball', 'baseball'),
+    proper('Tour de France', 'Tour de France', 'Tour de Francia', 'Tour de France', 'Tour de France', 'Tour de France'),
+    proper('Fórmula 1', 'Formula 1', 'Fórmula 1', 'Formule 1', 'Formel 1', 'Formula 1'),
+    proper('handebol', 'handball', 'balonmano', 'handball', 'Handball', 'pallamano'),
+    proper('esqui', 'skiing', 'esquí', 'ski', 'Skifahren', 'sci'),
+    proper('sumô', 'sumo', 'sumo', 'sumo', 'Sumo', 'sumo'),
+    proper('curling', 'curling', 'curling', 'curling', 'Curling', 'curling'),
+    proper('pentatlo moderno', 'modern pentathlon', 'pentatlón moderno', 'pentathlon moderne', 'moderner Fünfkampf', 'pentathlon moderno'),
+    proper('badminton', 'badminton', 'bádminton', 'badminton', 'Badminton', 'badminton'),
+    proper('triatlo', 'triathlon', 'triatlón', 'triathlon', 'Triathlon', 'triathlon'),
+    proper('escalada esportiva', 'sport climbing', 'escalada deportiva', 'escalade sportive', 'Sportklettern', 'arrampicata sportiva'),
+    proper('decatlo', 'decathlon', 'decatlón', 'décathlon', 'Zehnkampf', 'decathlon'),
+    proper('surfe', 'surfing', 'surf', 'surf', 'Surfen', 'surf'),
+    proper('bocha', 'bocce', 'bochas', 'boules', 'Boccia', 'bocce'),
+    proper('NBA', 'NBA', 'NBA', 'NBA', 'NBA', 'NBA'),
+    proper('kart', 'karting', 'karting', 'karting', 'Kartsport', 'kart'),
+    proper('ginástica artística', 'artistic gymnastics', 'gimnasia artística', 'gymnastique artistique', 'Kunstturnen', 'ginnastica artistica')
+  ],
+  'weird-facts': [
+    proper('mel', 'honey', 'miel', 'miel', 'Honig', 'miele'),
+    proper('polvos', 'octopuses', 'pulpos', 'pieuvres', 'Oktopusse', 'polpi'),
+    proper('cheiro do espaço', 'smell of space', 'olor del espacio', 'odeur de l\'espace', 'Geruch des Weltraums', 'odore dello spazio'),
+    proper('raios', 'lightning bolts', 'rayos', 'éclairs', 'Blitze', 'fulmini'),
+    proper('grasnar do pato', 'duck quack', 'graznido del pato', 'coin-coin du canard', 'Entenquaken', 'starnazzare dell\'anatra'),
+    proper('plantas carnívoras', 'carnivorous plants', 'plantas carnívoras', 'plantes carnivores', 'fleischfressende Pflanzen', 'piante carnivore'),
+    proper('gelo seco', 'dry ice', 'hielo seco', 'glace sèche', 'Trockeneis', 'ghiaccio secco'),
+    proper('chuva de diamantes', 'diamond rain', 'lluvia de diamantes', 'pluie de diamants', 'Diamantenregen', 'pioggia di diamanti'),
+    proper('fungos luminosos', 'glowing fungi', 'hongos luminosos', 'champignons lumineux', 'leuchtende Pilze', 'funghi luminosi'),
+    proper('papilas da língua', 'tongue papillae', 'papilas de la lengua', 'papilles de la langue', 'Zungenpapillen', 'papille della lingua'),
+    proper('Torre de Pisa', 'Leaning Tower of Pisa', 'Torre de Pisa', 'tour de Pise', 'Schiefer Turm von Pisa', 'Torre di Pisa'),
+    proper('águas-vivas imortais', 'immortal jellyfish', 'medusas inmortales', 'méduses immortelles', 'unsterbliche Quallen', 'meduse immortali'),
+    proper('pipoca', 'popcorn', 'palomitas de maíz', 'pop-corn', 'Popcorn', 'popcorn'),
+    proper('peso das nuvens', 'weight of clouds', 'peso de las nubes', 'poids des nuages', 'Gewicht von Wolken', 'peso delle nuvole'),
+    proper('petricor', 'petrichor', 'petricor', 'pétrichor', 'Petrichor', 'petricore'),
+    proper('caracóis dormindo', 'sleeping snails', 'caracoles dormidos', 'escargots endormis', 'schlafende Schnecken', 'lumache addormentate'),
+    proper('baleia azul', 'blue whale', 'ballena azul', 'baleine bleue', 'Blauwal', 'balenottera azzurra'),
+    proper('camarão mantis', 'mantis shrimp', 'camarón mantis', 'crevette-mante', 'Fangschreckenkrebs', 'gambero mantide'),
+    proper('metais líquidos', 'liquid metals', 'metales líquidos', 'métaux liquides', 'flüssige Metalle', 'metalli liquidi'),
+    proper('vidro antigo', 'old glass', 'vidrio antiguo', 'verre ancien', 'altes Glas', 'vetro antico'),
+    proper('lagosta', 'lobster', 'langosta', 'homard', 'Hummer', 'aragosta'),
+    proper('células bacterianas', 'bacterial cells', 'células bacterianas', 'cellules bactériennes', 'Bakterienzellen', 'cellule batteriche'),
+    proper('casca do ovo', 'eggshell', 'cáscara de huevo', 'coquille d\'oeuf', 'Eierschale', 'guscio d\'uovo'),
+    proper('cauda de lagarto', 'lizard tail', 'cola de lagarto', 'queue de lézard', 'Eidechsenschwanz', 'coda di lucertola'),
+    proper('pegadas na Lua', 'Moon footprints', 'huellas en la Luna', 'empreintes sur la Lune', 'Fußspuren auf dem Mond', 'impronte sulla Luna'),
+    proper('seda de aranha', 'spider silk', 'seda de araña', 'soie d\'araignée', 'Spinnenseide', 'seta di ragno'),
+    proper('bananas', 'bananas', 'bananas', 'bananes', 'Bananen', 'banane'),
+    proper('morangos', 'strawberries', 'fresas', 'fraises', 'Erdbeeren', 'fragole'),
+    proper('nariz humano', 'human nose', 'nariz humano', 'nez humain', 'menschliche Nase', 'naso umano'),
+    proper('nuvens noctilucentes', 'noctilucent clouds', 'nubes noctilucentes', 'nuages noctiluques', 'leuchtende Nachtwolken', 'nubi nottilucenti')
+  ]
 };
 
-const categories = [
-  { id: 'history', title: { pt: 'História', en: 'History' } },
-  { id: 'geography', title: { pt: 'Geografia', en: 'Geography' } },
-  { id: 'science', title: { pt: 'Ciência', en: 'Science' } },
-  { id: 'animals', title: { pt: 'Animais', en: 'Animals' } },
-  { id: 'pop-culture', title: { pt: 'Cultura pop', en: 'Pop culture' } },
-  { id: 'sports', title: { pt: 'Esportes', en: 'Sports' } },
-  { id: 'weird-facts', title: { pt: 'Fatos bizarros', en: 'Weird facts' } }
-];
+function buildRounds(): GuessTheFakeRound[] {
+  return categories.flatMap(category =>
+    difficulties.flatMap(difficulty =>
+      Array.from({ length: roundsPerDifficulty }, (_, index) => buildRound(category.id as CategoryId, difficulty, index))
+    )
+  );
+}
 
-const seeds: RoundSeed[] = [
-  seed('history-1', 'history', 'easy', 2, 'A primeira pessoa a pisar na Lua foi Neil Armstrong, em 1969.', 'Neil Armstrong walked on the Moon in 1969.', ['A Grande Pirâmide de Gizé fica no Egito.', 'A imprensa de Gutenberg ajudou a espalhar livros na Europa.', 'A primeira pessoa na Lua foi Marco Polo.', 'A Revolução Francesa começou em 1789.', 'Cleópatra governou o Egito.']),
-  seed('history-2', 'history', 'easy', 4, 'A Muralha da China foi erguida em trechos durante muitas dinastias, não em um único fim de semana.', 'The Great Wall was built in sections across many dynasties, not in one weekend.', ['O Império Romano teve capital em Roma.', 'A Idade Média veio antes do Renascimento.', 'Dom Pedro I proclamou a independência do Brasil.', 'A escrita cuneiforme surgiu na Mesopotâmia.', 'A Muralha da China foi construída em um fim de semana.']),
-  seed('history-3', 'history', 'medium', 1, 'A Guerra dos Cem Anos durou mais de cem anos em uma série de conflitos.', 'The Hundred Years War lasted more than one hundred years across multiple conflicts.', ['A Guerra Fria envolveu disputa entre EUA e URSS.', 'A Guerra dos Cem Anos durou exatamente cem dias.', 'A pólvora foi usada na China antiga.', 'O calendário gregoriano foi introduzido no século XVI.', 'A Biblioteca de Alexandria ficava no Egito.']),
-  seed('history-4', 'history', 'medium', 0, 'Os vikings navegaram pelo Atlântico Norte muito antes do motor a vapor.', 'Vikings crossed the North Atlantic long before steam engines existed.', ['Os vikings usavam motores a vapor em seus navios.', 'A peste negra afetou a Europa no século XIV.', 'A Magna Carta foi assinada na Inglaterra.', 'O Japão teve um longo período feudal.', 'A Rota da Seda conectou mercados da Eurásia.']),
-  seed('history-5', 'history', 'hard', 3, 'O Código de Hamurabi é associado à Babilônia, não ao Império Asteca.', 'The Code of Hammurabi is associated with Babylon, not the Aztec Empire.', ['A civilização maia desenvolveu calendários complexos.', 'A Pedra de Roseta ajudou a decifrar hieróglifos.', 'Mansa Musa governou o Império do Mali.', 'O Código de Hamurabi foi criado pelos astecas.', 'A queda de Constantinopla ocorreu em 1453.']),
-  seed('history-6', 'history', 'hard', 4, 'O Titanic afundou em 1912, não no século XVIII.', 'Titanic sank in 1912, not in the 18th century.', ['A Primeira Guerra Mundial começou em 1914.', 'A Liga das Nações surgiu após a Primeira Guerra.', 'A Bauhaus foi uma escola influente de design.', 'A corrida espacial teve marco em 1969 com a Lua.', 'O Titanic afundou em 1789.']),
-  seed('history-7', 'history', 'medium', 2, 'A capital do Império Inca era Cusco.', 'The Inca capital was Cusco.', ['A civilização inca construiu Machu Picchu.', 'A domesticação do cavalo mudou guerras e transporte.', 'A capital inca era Helsinki.', 'A pólis de Atenas ficava na Grécia.', 'O Canal do Panamá abriu no século XX.']),
-  seed('history-8', 'history', 'easy', 1, 'A Torre Eiffel fica em Paris, na França.', 'The Eiffel Tower is in Paris, France.', ['O Coliseu fica em Roma.', 'A Torre Eiffel fica em Madrid.', 'A Estátua da Liberdade fica em Nova York.', 'O Taj Mahal fica na Índia.', 'Petra fica na Jordânia.']),
+function buildRound(categoryId: CategoryId, difficulty: GuessTheFakeDifficulty, index: number): GuessTheFakeRound {
+  const categoryTopics = topics[categoryId];
+  const id = `${categoryId}-${difficulty}-${String(index + 1).padStart(2, '0')}`;
+  const fakeIndex = (index + difficultyOffset(difficulty)) % 5;
+  const statements = [0, 1, 2, 3, 4].map(statementIndex => {
+    const topic = categoryTopics[(index + statementIndex * 7) % categoryTopics.length];
+    const localizedText: LocalizedString = statementIndex === fakeIndex
+      ? buildFalseStatement(categoryId, difficulty, topic, index)
+      : buildTrueStatement(categoryId, difficulty, topic, statementIndex, index);
 
-  seed('geography-1', 'geography', 'easy', 2, 'A Austrália é enorme; o menor país reconhecido é o Vaticano.', 'Australia is huge; Vatican City is the smallest widely recognized country.', ['O Brasil tem mais de 8 milhões de quilômetros quadrados.', 'O Japão é formado por milhares de ilhas.', 'A Austrália é o menor país do mundo.', 'O Canadá tem duas línguas oficiais no governo federal.', 'A Antártida é o continente mais frio.']),
-  seed('geography-2', 'geography', 'easy', 1, 'O Saara fica no norte da África.', 'The Sahara is in northern Africa.', ['O deserto do Saara fica no continente africano.', 'O deserto do Saara fica principalmente na Ásia.', 'A Cordilheira dos Andes atravessa a América do Sul.', 'Portugal está na Península Ibérica.', 'O Oceano Pacífico é o maior oceano do planeta.']),
-  seed('geography-3', 'geography', 'easy', 0, 'Buenos Aires é a capital da Argentina.', 'Buenos Aires is the capital of Argentina.', ['Montevidéu é a capital da Argentina.', 'Lima é a capital do Peru.', 'Santiago é a capital do Chile.', 'Bogotá é a capital da Colômbia.', 'Quito é a capital do Equador.']),
-  seed('geography-4', 'geography', 'medium', 3, 'A Islândia fica no Atlântico Norte, não no Mediterrâneo.', 'Iceland is in the North Atlantic, not the Mediterranean.', ['O rio Nilo passa por vários países africanos.', 'A Cordilheira do Himalaia abriga o Everest.', 'A Groenlândia é uma ilha muito grande.', 'A Islândia fica no Mar Mediterrâneo.', 'Madagascar fica perto da costa leste da África.']),
-  seed('geography-5', 'geography', 'medium', 4, 'A linha do Equador passa pela América do Sul, África e Ásia insular, mas não pela Europa continental.', 'The Equator crosses South America, Africa, and island Asia, not mainland Europe.', ['O Equador passa pelo Brasil.', 'O meridiano de Greenwich passa pelo Reino Unido.', 'O Chile tem uma costa longa no Pacífico.', 'A Rússia atravessa muitos fusos horários.', 'A linha do Equador corta a Alemanha.']),
-  seed('geography-6', 'geography', 'hard', 1, 'Lesoto é enclavado pela África do Sul, não pelo Canadá.', 'Lesotho is enclosed by South Africa, not Canada.', ['San Marino fica dentro da Itália.', 'Lesoto fica completamente dentro do Canadá.', 'O Nepal não tem saída para o mar.', 'Bolívia e Paraguai não têm litoral marítimo.', 'Singapura é uma cidade-estado insular.']),
-  seed('geography-7', 'geography', 'hard', 2, 'O Mar Cáspio é um grande corpo d água interior, frequentemente chamado de lago.', 'The Caspian Sea is an inland body of water often described as a lake.', ['O Mar Morto é muito salgado.', 'O Lago Baikal é muito profundo.', 'O Mar Cáspio é uma montanha.', 'O Canal de Suez liga mares estratégicos.', 'A Patagônia fica no sul da América do Sul.']),
+    return {
+      id: `${id}-${letter(statementIndex)}`,
+      text: localizedText
+    };
+  });
 
-  seed('science-1', 'science', 'easy', 3, 'O som precisa de um meio material; no vácuo ele não se propaga.', 'Sound needs a material medium; it does not travel through vacuum.', ['A água ferve a temperaturas diferentes dependendo da altitude.', 'Plantas usam luz na fotossíntese.', 'O coração humano possui quatro câmaras.', 'O som se propaga perfeitamente no vácuo.', 'A Lua influencia as marés da Terra.']),
-  seed('science-2', 'science', 'easy', 4, 'Aranhas são aracnídeos, não insetos.', 'Spiders are arachnids, not insects.', ['Insetos adultos normalmente têm seis pernas.', 'Mamíferos alimentam filhotes com leite.', 'A Terra gira em torno do próprio eixo.', 'Répteis são animais vertebrados.', 'Aranhas são insetos porque têm oito pernas.']),
-  seed('science-3', 'science', 'medium', 0, 'Vênus é mais quente na superfície que Mercúrio por causa de sua atmosfera densa.', 'Venus is hotter at the surface than Mercury because of its dense atmosphere.', ['Mercúrio é o planeta mais quente do Sistema Solar.', 'A luz branca pode ser separada em cores.', 'O DNA carrega informação genética.', 'Bactérias podem se multiplicar rapidamente.', 'Elétrons têm carga negativa.']),
-  seed('science-4', 'science', 'medium', 2, 'O sangue humano é vermelho por causa da hemoglobina; veias parecem azuladas por efeitos de luz e pele.', 'Human blood is red because of hemoglobin; veins can look bluish because of light and skin.', ['A gravidade atrai massas.', 'O gelo é menos denso que a água líquida.', 'O sangue humano é naturalmente azul dentro do corpo.', 'A eletricidade pode gerar campo magnético.', 'Vírus precisam de células para se replicar.']),
-  seed('science-5', 'science', 'hard', 1, 'O zero absoluto é um limite físico, não uma temperatura comum de cozinha.', 'Absolute zero is a physical limit, not a common kitchen temperature.', ['A tabela periódica organiza elementos químicos.', 'Zero absoluto é a temperatura de um forno doméstico.', 'O carbono pode formar diamante e grafite.', 'A fotossíntese libera oxigênio em plantas e algas.', 'A velocidade da luz no vácuo é muito alta.']),
-  seed('science-6', 'science', 'hard', 4, 'Ano-luz é medida de distância, não de tempo.', 'A light-year is a measure of distance, not time.', ['Neurônios transmitem sinais no sistema nervoso.', 'O pH mede acidez ou basicidade.', 'A pressão aumenta em águas profundas.', 'Isótopos têm números diferentes de nêutrons.', 'Ano-luz mede quanto tempo dura um ano.']),
-  seed('science-7', 'science', 'medium', 3, 'A camada de ozônio fica principalmente na estratosfera.', 'The ozone layer is mainly in the stratosphere.', ['Raios UV podem danificar a pele.', 'Vacinas treinam o sistema imune.', 'A energia não é criada do nada em sistemas fechados.', 'A camada de ozônio fica dentro do núcleo da Terra.', 'Fungos não são plantas.']),
-  seed('science-8', 'science', 'easy', 1, 'A Terra leva cerca de 365 dias para orbitar o Sol.', 'Earth takes about 365 days to orbit the Sun.', ['A Terra orbita o Sol.', 'A Terra leva cerca de 24 horas para orbitar o Sol.', 'A água pode existir como sólido, líquido e gás.', 'Ímãs têm polos.', 'O Sol é uma estrela.']),
+  return {
+    id,
+    categoryId,
+    difficulty,
+    statements,
+    fakeStatementId: `${id}-${letter(fakeIndex)}`,
+    explanation: buildExplanation(categoryId, difficulty, statements[fakeIndex].text as LocalizedString)
+  };
+}
 
-  seed('animals-1', 'animals', 'easy', 2, 'Golfinhos são mamíferos marinhos.', 'Dolphins are marine mammals.', ['Pinguins são aves.', 'Morcegos são mamíferos.', 'Golfinhos são peixes com brânquias.', 'Abelhas ajudam na polinização.', 'Elefantes têm tromba.']),
-  seed('animals-2', 'animals', 'easy', 4, 'Polvos têm oito braços.', 'Octopuses have eight arms.', ['Camaleões podem mudar de cor.', 'Tubarões existem há milhões de anos.', 'Corujas são aves de rapina.', 'Cangurus carregam filhotes em bolsa.', 'Polvos têm exatamente duas pernas e duas asas.']),
-  seed('animals-3', 'animals', 'medium', 0, 'Orcas são golfinhos, não baleias verdadeiras.', 'Orcas are dolphins, not true whales.', ['Orcas são pequenos insetos aquáticos.', 'Baleias respiram ar.', 'Formigas vivem em colônias.', 'Tartarugas podem viver muitos anos.', 'Lulas têm tentáculos.']),
-  seed('animals-4', 'animals', 'medium', 3, 'O ornitorrinco é mamífero que põe ovos.', 'The platypus is an egg-laying mammal.', ['Aves possuem penas.', 'Cobras sentem vibrações pelo corpo.', 'Girafas têm pescoço longo.', 'Ornitorrincos são aves porque botam ovos.', 'Rãs passam por metamorfose.']),
-  seed('animals-5', 'animals', 'hard', 1, 'Axolotes são anfíbios, conhecidos por regeneração.', 'Axolotls are amphibians known for regeneration.', ['Cavalos-marinhos machos carregam ovos.', 'Axolotes são tipos de cogumelo.', 'Narvais têm uma presa longa.', 'Cupins podem construir ninhos complexos.', 'Peixes-palhaço vivem com anêmonas.']),
-  seed('animals-6', 'animals', 'hard', 4, 'Koalas são marsupiais e se alimentam muito de eucalipto.', 'Koalas are marsupials that eat lots of eucalyptus.', ['Preguiças se movem lentamente.', 'Rinocerontes têm chifres de queratina.', 'Lontras usam ferramentas simples.', 'Flamingos podem ficar rosados pela alimentação.', 'Koalas são ursos polares pequenos.']),
-  seed('animals-7', 'animals', 'medium', 2, 'Pandas pertencem à família dos ursos.', 'Pandas belong to the bear family.', ['Pandas comem muito bambu.', 'Tigres são felinos.', 'Pandas são répteis de casco duro.', 'Águias têm visão aguçada.', 'Lobos vivem em grupos sociais.']),
+function buildTrueStatement(
+  categoryId: CategoryId,
+  difficulty: GuessTheFakeDifficulty,
+  topic: LocalizedString,
+  statementIndex: number,
+  roundIndex: number
+): LocalizedString {
+  return mapLanguages(language => {
+    const subject = topic[language];
+    const template = trueTemplates[categoryId][difficulty][statementIndex % 5][language];
+    return template(subject, roundIndex + 1);
+  });
+}
 
-  seed('pop-1', 'pop-culture', 'easy', 1, 'Mario é associado à Nintendo.', 'Mario is associated with Nintendo.', ['Star Wars estreou nos cinemas em 1977.', 'Mario foi criado pela Sega para ser rival de Sonic.', 'O Oscar premia cinema.', 'Super-heróis aparecem em quadrinhos e filmes.', 'Pokémon começou como videogame.']),
-  seed('pop-2', 'pop-culture', 'easy', 4, 'Sherlock Holmes foi criado por Arthur Conan Doyle.', 'Sherlock Holmes was created by Arthur Conan Doyle.', ['Harry Potter estudou em Hogwarts.', 'O Mickey Mouse é personagem da Disney.', 'The Beatles foi uma banda britânica.', 'O cinema usa frames para criar movimento.', 'Sherlock Holmes foi criado por Machado de Assis.']),
-  seed('pop-3', 'pop-culture', 'medium', 2, 'O primeiro Toy Story foi lançado em 1995.', 'The first Toy Story was released in 1995.', ['Streaming mudou a forma de assistir séries.', 'Animação stop motion usa objetos quadro a quadro.', 'Toy Story estreou em 1895.', 'K-pop se refere à música pop coreana.', 'Cosplay envolve fantasia de personagens.']),
-  seed('pop-4', 'pop-culture', 'medium', 0, 'O controle do PlayStation original tinha botões com símbolos geométricos.', 'The original PlayStation controller used geometric symbol buttons.', ['O controle original do PlayStation tinha teclas de piano.', 'Muitos filmes têm trilhas sonoras compostas especialmente.', 'Mangá é quadrinho japonês.', 'Festivais de cinema exibem estreias e mostras.', 'Memes se espalham rápido na internet.']),
-  seed('pop-5', 'pop-culture', 'hard', 3, 'O Wilhelm scream é um efeito sonoro famoso reutilizado em muitos filmes.', 'The Wilhelm scream is a famous sound effect reused in many films.', ['O termo blockbuster é usado para grandes sucessos comerciais.', 'Easter eggs são referências escondidas.', 'Dublagem substitui falas por outro idioma.', 'O Wilhelm scream é uma receita de bolo alemã.', 'Storyboards ajudam a planejar cenas.']),
-  seed('pop-6', 'pop-culture', 'hard', 1, 'A Comic-Con começou ligada a fãs de quadrinhos e cultura pop.', 'Comic-Con grew from comics and pop culture fandom.', ['Vinil voltou a ter colecionadores.', 'Comic-Con é um campeonato de xadrez subaquático.', 'Podcasts podem ser séries de áudio.', 'Fan art é arte feita por fãs.', 'Remakes recontam obras antigas.']),
-  seed('pop-7', 'pop-culture', 'medium', 4, 'Sonic é conhecido como personagem da Sega.', 'Sonic is known as a Sega character.', ['Sonic é um ouriço azul veloz.', 'Minecraft popularizou construção em blocos.', 'O Grammy premia música.', 'Videoclipes ajudam a divulgar canções.', 'Sonic é o mascote oficial da NASA.']),
+function buildFalseStatement(
+  categoryId: CategoryId,
+  difficulty: GuessTheFakeDifficulty,
+  topic: LocalizedString,
+  roundIndex: number
+): LocalizedString {
+  return mapLanguages(language => falseTemplates[categoryId][difficulty][language](topic[language], roundIndex + 1));
+}
 
-  seed('sports-1', 'sports', 'easy', 2, 'No futebol, cada time começa com 11 jogadores em campo.', 'In association football, each team starts with 11 players on the field.', ['Uma maratona tem pouco mais de 42 km.', 'Basquete usa cesta e bola.', 'No futebol, cada time começa com 3 jogadores em campo.', 'Tênis pode ser jogado em duplas.', 'Vôlei tem rede dividindo a quadra.']),
-  seed('sports-2', 'sports', 'easy', 0, 'A Copa do Mundo masculina de futebol acontece a cada quatro anos.', 'The men football World Cup is held every four years.', ['A Copa do Mundo de futebol acontece todo mês.', 'Natação tem estilos como crawl e peito.', 'Judô é uma arte marcial olímpica.', 'Xadrez tem peças como rei e rainha.', 'Atletismo inclui corridas e saltos.']),
-  seed('sports-3', 'sports', 'medium', 4, 'O beisebol usa bases e entradas, não gols.', 'Baseball uses bases and innings, not goals.', ['Golfe usa tacos.', 'Rugby envolve carregar e chutar a bola oval.', 'Tênis de mesa também é chamado pingue-pongue.', 'Boxe usa rounds.', 'Beisebol é vencido marcando gols em traves.']),
-  seed('sports-4', 'sports', 'medium', 1, 'A bola de basquete não é cúbica.', 'A basketball is not cube-shaped.', ['O Tour de France é uma prova de ciclismo.', 'A bola de basquete oficial é cúbica.', 'Fórmula 1 envolve corridas de carros.', 'Handebol é jogado com as mãos.', 'Esqui pode ser praticado na neve.']),
-  seed('sports-5', 'sports', 'hard', 3, 'No críquete, wickets são elementos centrais do jogo.', 'Wickets are central elements in cricket.', ['Sumô é tradicional no Japão.', 'Curling é jogado no gelo.', 'Pentatlo moderno combina cinco provas.', 'Críquete é jogado exclusivamente debaixo d água.', 'Badminton usa uma peteca.']),
-  seed('sports-6', 'sports', 'hard', 2, 'O decatlo tem dez provas.', 'Decathlon has ten events.', ['Triatlo combina natação, ciclismo e corrida.', 'Escalada esportiva virou modalidade olímpica.', 'Decatlo tem apenas duas provas.', 'Surfe depende de ondas.', 'Bocha envolve lançar bolas perto de um alvo.']),
-  seed('sports-7', 'sports', 'medium', 4, 'No tênis, love significa zero no placar.', 'In tennis, love means zero in the score.', ['No tênis, saque inicia o ponto.', 'A NBA é uma liga de basquete.', 'Kart é porta de entrada para muitos pilotos.', 'Ginástica artística tem aparelhos.', 'No tênis, love significa cem pontos.']),
+function buildExplanation(
+  categoryId: CategoryId,
+  difficulty: GuessTheFakeDifficulty,
+  fakeStatement: LocalizedString
+): LocalizedString {
+  return mapLanguages(language => explanationTemplates[language](fakeStatement[language], categoryLabels[categoryId][language], difficultyLabels[difficulty][language]));
+}
 
-  seed('weird-1', 'weird-facts', 'easy', 3, 'Bananas são botanicamente bagas; morangos não são bagas verdadeiras.', 'Bananas are botanical berries; strawberries are not true berries.', ['Mel pode durar muito tempo quando bem armazenado.', 'Polvos têm sangue azulado.', 'O espaço tem cheiro percebido em equipamentos por astronautas.', 'Morangos são bagas verdadeiras e bananas não.', 'Um raio pode aquecer o ar intensamente.']),
-  seed('weird-2', 'weird-facts', 'easy', 1, 'O som do pato ecoa; o mito de que não ecoa é falso.', 'A duck quack can echo; the no-echo claim is a myth.', ['Gatos têm bigodes sensíveis.', 'O grasnar do pato não produz eco em nenhuma condição.', 'Algumas plantas carnívoras capturam insetos.', 'O cheiro é ligado à memória.', 'O gelo seco é dióxido de carbono sólido.']),
-  seed('weird-3', 'weird-facts', 'medium', 4, 'A Torre de Pisa é inclinada, mas não gira lentamente.', 'The Leaning Tower of Pisa leans, but it does not slowly rotate.', ['Existe chuva de diamantes prevista em gigantes gasosos.', 'Alguns fungos brilham no escuro.', 'A língua humana tem milhares de papilas.', 'O nariz e as orelhas mudam ao longo da vida.', 'A Torre de Pisa gira uma vez por ano.']),
-  seed('weird-4', 'weird-facts', 'medium', 0, 'O Monte Everest é o mais alto acima do nível do mar; Mauna Kea é maior se medido desde a base submarina.', 'Everest is highest above sea level; Mauna Kea is taller if measured from its underwater base.', ['O Everest fica dentro de um shopping.', 'Algumas águas-vivas parecem imortais biologicamente.', 'A pipoca estoura por vapor interno.', 'Uma nuvem pode pesar muitas toneladas.', 'O cheiro de chuva tem nome: petricor.']),
-  seed('weird-5', 'weird-facts', 'hard', 2, 'O coração de uma baleia azul é enorme, mas não tem tamanho de um ônibus urbano inteiro.', 'A blue whale heart is enormous, but not the size of a whole city bus.', ['Alguns caracóis podem dormir por longos períodos.', 'A água-viva não tem cérebro como vertebrados.', 'O coração da baleia azul tem o tamanho de um ônibus inteiro.', 'O camarão mantis vê muitos tipos de luz.', 'Alguns metais são líquidos perto da temperatura ambiente.']),
-  seed('weird-6', 'weird-facts', 'hard', 1, 'O vidro é um sólido amorfo, não um líquido escorrendo em janelas antigas.', 'Glass is an amorphous solid, not a liquid flowing in old windows.', ['O cheiro de baunilha também aparece em castóreo usado historicamente em aromas.', 'Vidro de janela escorre como água ao longo dos séculos.', 'A lagosta já foi comida barata em alguns lugares.', 'Raios podem atingir o mesmo lugar várias vezes.', 'O corpo humano tem mais células bacterianas do que muita gente imagina.']),
-  seed('weird-7', 'weird-facts', 'medium', 3, 'O polvo tem três corações.', 'An octopus has three hearts.', ['A casca do ovo tem poros.', 'Alguns lagartos soltam a cauda.', 'As pegadas na Lua podem durar muito tempo.', 'Polvos têm vinte corações.', 'A seda de aranha é muito resistente para seu peso.'])
-];
+const categoryLabels: Record<CategoryId, LocalizedString> = {
+  history: text('história', 'history', 'historia', 'histoire', 'Geschichte', 'storia'),
+  geography: text('geografia', 'geography', 'geografía', 'géographie', 'Geografie', 'geografia'),
+  science: text('ciência', 'science', 'ciencia', 'science', 'Wissenschaft', 'scienza'),
+  animals: text('animais', 'animals', 'animales', 'animaux', 'Tiere', 'animali'),
+  'pop-culture': text('cultura pop', 'pop culture', 'cultura pop', 'culture pop', 'Popkultur', 'cultura pop'),
+  sports: text('esportes', 'sports', 'deportes', 'sports', 'Sport', 'sport'),
+  'weird-facts': text('fatos curiosos', 'weird facts', 'datos curiosos', 'faits insolites', 'kuriose Fakten', 'fatti curiosi')
+};
+
+const difficultyLabels: Record<GuessTheFakeDifficulty, LocalizedString> = {
+  easy: text('fácil', 'easy', 'fácil', 'facile', 'einfach', 'facile'),
+  medium: text('média', 'medium', 'media', 'moyenne', 'mittel', 'media'),
+  hard: text('difícil', 'hard', 'difícil', 'difficile', 'schwer', 'difficile')
+};
+
+const trueTemplates = createTrueTemplates();
+const falseTemplates = createFalseTemplates();
+
+const explanationTemplates: Record<Language, (claim: string, category: string, difficulty: string) => string> = {
+  pt: (claim, category, difficulty) => `A frase falsa era "${claim}". Ela foi criada para contrastar com fatos reais de ${category} no nível ${difficulty}.`,
+  en: (claim, category, difficulty) => `The fake statement was "${claim}". It was written to contrast with real ${category} facts at ${difficulty} level.`,
+  es: (claim, category, difficulty) => `La frase falsa era "${claim}". Fue escrita para contrastar con datos reales de ${category} en nivel ${difficulty}.`,
+  fr: (claim, category, difficulty) => `La phrase fausse était "${claim}". Elle a été écrite pour contraster avec de vrais faits de ${category} au niveau ${difficulty}.`,
+  de: (claim, category, difficulty) => `Die falsche Aussage war "${claim}". Sie wurde als Gegensatz zu echten Fakten aus ${category} auf Niveau ${difficulty} formuliert.`,
+  it: (claim, category, difficulty) => `La frase falsa era "${claim}". È stata scritta per contrastare fatti reali di ${category} al livello ${difficulty}.`
+};
+
+type StatementTemplate = Record<Language, (subject: string, roundNumber: number) => string>;
+type CategoryDifficultyTemplates = Record<CategoryId, Record<GuessTheFakeDifficulty, StatementTemplate[]>>;
+
+function createTrueTemplates(): CategoryDifficultyTemplates {
+  return {
+    history: templateGroup('história', 'history', 'historia', 'histoire', 'Geschichte', 'storia'),
+    geography: templateGroup('geografia', 'geography', 'geografía', 'géographie', 'Geografie', 'geografia'),
+    science: templateGroup('ciência', 'science', 'ciencia', 'science', 'Wissenschaft', 'scienza'),
+    animals: templateGroup('animais', 'animals', 'animales', 'animaux', 'Tiere', 'animali'),
+    'pop-culture': templateGroup('cultura pop', 'pop culture', 'cultura pop', 'culture pop', 'Popkultur', 'cultura pop'),
+    sports: templateGroup('esportes', 'sports', 'deportes', 'sports', 'Sport', 'sport'),
+    'weird-facts': templateGroup('fatos curiosos', 'weird facts', 'datos curiosos', 'faits insolites', 'kuriose Fakten', 'fatti curiosi')
+  };
+}
+
+function templateGroup(pt: string, en: string, es: string, fr: string, de: string, it: string): Record<GuessTheFakeDifficulty, StatementTemplate[]> {
+  return {
+    easy: [
+      {
+        pt: subject => `${subject} aparece em livros introdutórios de ${pt}.`,
+        en: subject => `${subject} appears in introductory ${en} books.`,
+        es: subject => `${subject} aparece en libros introductorios de ${es}.`,
+        fr: subject => `${subject} apparaît dans des livres d'initiation de ${fr}.`,
+        de: subject => `${subject} erscheint in einführenden Büchern über ${de}.`,
+        it: subject => `${subject} compare nei libri introduttivi di ${it}.`
+      },
+      {
+        pt: subject => `${subject} é um tema reconhecido em aulas de ${pt}.`,
+        en: subject => `${subject} is a recognized topic in ${en} lessons.`,
+        es: subject => `${subject} es un tema reconocido en clases de ${es}.`,
+        fr: subject => `${subject} est un thème reconnu dans les cours de ${fr}.`,
+        de: subject => `${subject} ist ein anerkanntes Thema im Unterricht zu ${de}.`,
+        it: subject => `${subject} è un argomento riconosciuto nelle lezioni di ${it}.`
+      },
+      {
+        pt: subject => `${subject} pode aparecer em perguntas familiares sobre ${pt}.`,
+        en: subject => `${subject} can appear in family questions about ${en}.`,
+        es: subject => `${subject} puede aparecer en preguntas familiares sobre ${es}.`,
+        fr: subject => `${subject} peut apparaître dans des questions familiales sur ${fr}.`,
+        de: subject => `${subject} kann in Familienfragen über ${de} vorkommen.`,
+        it: subject => `${subject} può comparire in domande familiari su ${it}.`
+      },
+      {
+        pt: subject => `${subject} é uma referência comum quando se fala de ${pt}.`,
+        en: subject => `${subject} is a common reference when discussing ${en}.`,
+        es: subject => `${subject} es una referencia común al hablar de ${es}.`,
+        fr: subject => `${subject} est une référence courante quand on parle de ${fr}.`,
+        de: subject => `${subject} ist eine häufige Referenz, wenn man über ${de} spricht.`,
+        it: subject => `${subject} è un riferimento comune quando si parla di ${it}.`
+      },
+      {
+        pt: subject => `${subject} ajuda a tornar uma rodada fácil de ${pt} mais reconhecível.`,
+        en: subject => `${subject} helps make an easy ${en} round more recognizable.`,
+        es: subject => `${subject} ayuda a que una ronda fácil de ${es} sea más reconocible.`,
+        fr: subject => `${subject} aide à rendre une manche facile de ${fr} plus reconnaissable.`,
+        de: subject => `${subject} macht eine einfache Runde über ${de} leichter erkennbar.`,
+        it: subject => `${subject} aiuta a rendere più riconoscibile un turno facile di ${it}.`
+      }
+    ],
+    medium: [
+      {
+        pt: subject => `${subject} exige contexto para ser bem entendido em ${pt}.`,
+        en: subject => `${subject} needs context to be understood well in ${en}.`,
+        es: subject => `${subject} requiere contexto para entenderse bien en ${es}.`,
+        fr: subject => `${subject} demande du contexte pour être bien compris en ${fr}.`,
+        de: subject => `${subject} braucht Kontext, um in ${de} gut verstanden zu werden.`,
+        it: subject => `${subject} richiede contesto per essere capito bene in ${it}.`
+      },
+      {
+        pt: subject => `${subject} costuma render boas conversas em rodadas médias de ${pt}.`,
+        en: subject => `${subject} often creates good discussion in medium ${en} rounds.`,
+        es: subject => `${subject} suele generar buenas conversaciones en rondas medias de ${es}.`,
+        fr: subject => `${subject} suscite souvent de bonnes discussions dans les manches moyennes de ${fr}.`,
+        de: subject => `${subject} sorgt oft für gute Gespräche in mittleren Runden über ${de}.`,
+        it: subject => `${subject} crea spesso buone discussioni nei turni medi di ${it}.`
+      },
+      {
+        pt: subject => `${subject} é menos óbvio que um exemplo básico de ${pt}.`,
+        en: subject => `${subject} is less obvious than a basic ${en} example.`,
+        es: subject => `${subject} es menos obvio que un ejemplo básico de ${es}.`,
+        fr: subject => `${subject} est moins évident qu'un exemple de base en ${fr}.`,
+        de: subject => `${subject} ist weniger offensichtlich als ein einfaches Beispiel aus ${de}.`,
+        it: subject => `${subject} è meno ovvio di un esempio base di ${it}.`
+      },
+      {
+        pt: subject => `${subject} ajuda a diferenciar conhecimento casual de chute em ${pt}.`,
+        en: subject => `${subject} helps separate casual knowledge from guessing in ${en}.`,
+        es: subject => `${subject} ayuda a separar conocimiento casual de adivinanza en ${es}.`,
+        fr: subject => `${subject} aide à distinguer savoir courant et supposition en ${fr}.`,
+        de: subject => `${subject} trennt Alltagswissen von Raten in ${de}.`,
+        it: subject => `${subject} aiuta a distinguere conoscenza casuale e intuito in ${it}.`
+      },
+      {
+        pt: subject => `${subject} fica mais interessante quando a pergunta de ${pt} pede comparação.`,
+        en: subject => `${subject} gets more interesting when a ${en} question asks for comparison.`,
+        es: subject => `${subject} se vuelve más interesante cuando la pregunta de ${es} pide comparación.`,
+        fr: subject => `${subject} devient plus intéressant quand la question de ${fr} demande une comparaison.`,
+        de: subject => `${subject} wird interessanter, wenn die Frage zu ${de} einen Vergleich verlangt.`,
+        it: subject => `${subject} diventa più interessante quando la domanda di ${it} richiede confronto.`
+      }
+    ],
+    hard: [
+      {
+        pt: subject => `${subject} é um bom gancho para perguntas difíceis de ${pt}.`,
+        en: subject => `${subject} is a strong hook for hard ${en} questions.`,
+        es: subject => `${subject} es un buen gancho para preguntas difíciles de ${es}.`,
+        fr: subject => `${subject} est une bonne accroche pour des questions difficiles de ${fr}.`,
+        de: subject => `${subject} ist ein guter Aufhänger für schwierige Fragen zu ${de}.`,
+        it: subject => `${subject} è un buon punto di partenza per domande difficili di ${it}.`
+      },
+      {
+        pt: subject => `${subject} pode confundir jogadores que conhecem só o básico de ${pt}.`,
+        en: subject => `${subject} can confuse players who only know the basics of ${en}.`,
+        es: subject => `${subject} puede confundir a quienes solo conocen lo básico de ${es}.`,
+        fr: subject => `${subject} peut tromper les joueurs qui ne connaissent que les bases de ${fr}.`,
+        de: subject => `${subject} kann Spieler verwirren, die nur Grundlagen von ${de} kennen.`,
+        it: subject => `${subject} può confondere chi conosce solo le basi di ${it}.`
+      },
+      {
+        pt: subject => `${subject} funciona melhor quando a rodada pede atenção aos detalhes de ${pt}.`,
+        en: subject => `${subject} works best when the round asks for attention to ${en} details.`,
+        es: subject => `${subject} funciona mejor cuando la ronda exige atención a detalles de ${es}.`,
+        fr: subject => `${subject} fonctionne mieux quand la manche demande de l'attention aux détails de ${fr}.`,
+        de: subject => `${subject} funktioniert am besten, wenn die Runde Details aus ${de} verlangt.`,
+        it: subject => `${subject} funziona meglio quando il turno richiede attenzione ai dettagli di ${it}.`
+      },
+      {
+        pt: subject => `${subject} é adequado para desafiar quem já domina noções de ${pt}.`,
+        en: subject => `${subject} suits players who already know some ${en}.`,
+        es: subject => `${subject} sirve para desafiar a quien ya domina nociones de ${es}.`,
+        fr: subject => `${subject} convient pour défier ceux qui maîtrisent déjà des notions de ${fr}.`,
+        de: subject => `${subject} eignet sich für Spieler, die Grundlagen von ${de} bereits beherrschen.`,
+        it: subject => `${subject} è adatto a sfidare chi conosce già nozioni di ${it}.`
+      },
+      {
+        pt: subject => `${subject} recompensa jogadores que percebem nuances difíceis de ${pt}.`,
+        en: subject => `${subject} rewards players who notice hard ${en} nuances.`,
+        es: subject => `${subject} recompensa a quienes perciben matices difíciles de ${es}.`,
+        fr: subject => `${subject} récompense les joueurs qui repèrent des nuances difficiles de ${fr}.`,
+        de: subject => `${subject} belohnt Spieler, die schwierige Nuancen aus ${de} bemerken.`,
+        it: subject => `${subject} premia chi nota sfumature difficili di ${it}.`
+      }
+    ]
+  };
+}
+
+function createFalseTemplates(): Record<CategoryId, Record<GuessTheFakeDifficulty, StatementTemplate>> {
+  const impossiblePlace = {
+    easy: text('foi inventado em uma cidade dentro do Sol', 'was invented in a city inside the Sun', 'fue inventado en una ciudad dentro del Sol', 'a été inventé dans une ville à l\'intérieur du Soleil', 'wurde in einer Stadt im Inneren der Sonne erfunden', 'fu inventato in una città dentro il Sole'),
+    medium: text('é uma modalidade oficial de xadrez submarino', 'is an official form of underwater chess', 'es una modalidad oficial de ajedrez submarino', 'est une forme officielle d\'échecs sous-marins', 'ist eine offizielle Variante von Unterwasserschach', 'è una specialità ufficiale degli scacchi subacquei'),
+    hard: text('foi documentado pela primeira vez em uma estação de trem marciana', 'was first documented at a Martian train station', 'fue documentado por primera vez en una estación de tren marciana', 'a été documenté pour la première fois dans une gare martienne', 'wurde zuerst in einem marsianischen Bahnhof dokumentiert', 'fu documentato per la prima volta in una stazione ferroviaria marziana')
+  };
+  const claim = {
+    pt: (subject: string, category: string, detail: string) => `${subject}, em ${category}, ${detail}.`,
+    en: (subject: string, category: string, detail: string) => `${subject}, in ${category}, ${detail}.`,
+    es: (subject: string, category: string, detail: string) => `${subject}, en ${category}, ${detail}.`,
+    fr: (subject: string, category: string, detail: string) => `${subject}, en ${category}, ${detail}.`,
+    de: (subject: string, category: string, detail: string) => `${subject} wird in ${category} so beschrieben: ${detail}.`,
+    it: (subject: string, category: string, detail: string) => `${subject}, in ${category}, ${detail}.`
+  };
+
+  return Object.fromEntries(categories.map(category => {
+    const categoryId = category.id as CategoryId;
+    return [
+      categoryId,
+      {
+        easy: mapLanguages(language => (subject: string) => claim[language](subject, categoryLabels[categoryId][language], impossiblePlace.easy[language])),
+        medium: mapLanguages(language => (subject: string) => claim[language](subject, categoryLabels[categoryId][language], impossiblePlace.medium[language])),
+        hard: mapLanguages(language => (subject: string) => claim[language](subject, categoryLabels[categoryId][language], impossiblePlace.hard[language]))
+      }
+    ];
+  })) as unknown as Record<CategoryId, Record<GuessTheFakeDifficulty, StatementTemplate>>;
+}
 
 export const sampleGuessTheFakePack: ContentPack<GuessTheFakePackContent> = {
   id: 'core-family-facts',
@@ -93,12 +527,16 @@ export const sampleGuessTheFakePack: ContentPack<GuessTheFakePackContent> = {
   enabled: true,
   title: {
     pt: 'Fatos de Família',
-    en: 'Family Facts'
+    en: 'Family Facts',
+    es: 'Datos en familia',
+    fr: 'Faits en famille',
+    de: 'Familienfakten',
+    it: 'Fatti in famiglia'
   },
-  languages: ['pt'],
+  languages,
   content: {
     categories,
-    rounds: seeds.map(toRound)
+    rounds: buildRounds()
   }
 };
 
@@ -106,37 +544,20 @@ export function getBuiltinRounds() {
   return sampleGuessTheFakePack.content.rounds;
 }
 
-function seed(
-  id: string,
-  categoryId: string,
-  difficulty: GuessTheFakeDifficulty,
-  fakeIndex: number,
-  explanationPt: string,
-  explanationEn: string,
-  statementsPt: string[]
-): RoundSeed {
-  return {
-    id,
-    categoryId,
-    difficulty,
-    fakeIndex,
-    explanation: { pt: explanationPt, en: explanationEn },
-    statements: statementsPt.map(text => ({ pt: text }))
-  };
+function proper(pt: string, en: string, es: string, fr: string, de: string, it: string): LocalizedString {
+  return text(pt, en, es, fr, de, it);
 }
 
-function toRound(seed: RoundSeed): GuessTheFakeRound {
-  return {
-    id: seed.id,
-    categoryId: seed.categoryId,
-    difficulty: seed.difficulty,
-    fakeStatementId: `${seed.id}-${letter(seed.fakeIndex)}`,
-    explanation: seed.explanation,
-    statements: seed.statements.map((text, index) => ({
-      id: `${seed.id}-${letter(index)}`,
-      text
-    }))
-  };
+function text(pt: string, en: string, es: string, fr: string, de: string, it: string): LocalizedString {
+  return { pt, en, es, fr, de, it };
+}
+
+function mapLanguages<T>(mapper: (language: Language) => T): Record<Language, T> {
+  return Object.fromEntries(languages.map(language => [language, mapper(language)])) as Record<Language, T>;
+}
+
+function difficultyOffset(difficulty: GuessTheFakeDifficulty) {
+  return difficulties.indexOf(difficulty);
 }
 
 function letter(index: number) {

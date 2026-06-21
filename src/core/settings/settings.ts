@@ -1,4 +1,4 @@
-import { DEFAULT_LANGUAGE, type Language } from '../i18n/i18n';
+import { DEFAULT_LANGUAGE, detectClientLanguage, normalizeLanguage, type Language } from '../i18n/i18n';
 import { createStorageKey, readVersionedWithMigrations, writeVersioned } from '../storage/storage';
 import { DEFAULT_THEME, normalizeTheme, type ThemeId } from '../themes/themes';
 
@@ -48,40 +48,49 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   shuffleRounds: true
 };
 
+export function createDefaultSettings(language: Language = DEFAULT_LANGUAGE): PlatformSettings {
+  return {
+    ...DEFAULT_SETTINGS,
+    language
+  };
+}
+
 export const SETTINGS_VERSION = 3;
 export const SETTINGS_KEY = createStorageKey('platform', 'settings', SETTINGS_VERSION);
 const PREVIOUS_SETTINGS_KEY = createStorageKey('platform', 'settings', 1);
 const PREVIOUS_AUDIO_SETTINGS_KEY = createStorageKey('platform', 'settings', 2);
 
 export function loadSettings(storage: Storage = localStorage): PlatformSettings {
-  const settings = readVersionedWithMigrations(storage, SETTINGS_KEY, DEFAULT_SETTINGS, SETTINGS_VERSION, [
+  const defaultSettings = createDefaultSettings(detectClientLanguage());
+  const settings = readVersionedWithMigrations(storage, SETTINGS_KEY, defaultSettings, SETTINGS_VERSION, [
     {
       fromVersion: 1,
       key: PREVIOUS_SETTINGS_KEY,
-      migrate: value => normalizeSettings(value)
+      migrate: value => normalizeSettings(value, defaultSettings)
     },
     {
       fromVersion: 2,
       key: PREVIOUS_AUDIO_SETTINGS_KEY,
-      migrate: value => normalizeSettings(value)
+      migrate: value => normalizeSettings(value, defaultSettings)
     }
   ]);
-  return normalizeSettings(settings);
+  return normalizeSettings(settings, defaultSettings);
 }
 
 export function saveSettings(settings: PlatformSettings, storage: Storage = localStorage) {
   writeVersioned(storage, SETTINGS_KEY, normalizeSettings(settings), SETTINGS_VERSION);
 }
 
-export function normalizeSettings(value: unknown): PlatformSettings {
+export function normalizeSettings(value: unknown, fallback: PlatformSettings = DEFAULT_SETTINGS): PlatformSettings {
   const candidate = value && typeof value === 'object' ? value as Partial<PlatformSettings> : {};
   return {
-    ...DEFAULT_SETTINGS,
+    ...fallback,
     ...candidate,
+    language: candidate.language === undefined ? fallback.language : normalizeLanguage(candidate.language, DEFAULT_LANGUAGE),
     theme: normalizeTheme(candidate.theme),
     fontScale: normalizeFontScale(candidate.fontScale),
-    soundVolume: normalizeVolume(candidate.soundVolume, DEFAULT_SETTINGS.soundVolume),
-    musicVolume: normalizeVolume(candidate.musicVolume, DEFAULT_SETTINGS.musicVolume)
+    soundVolume: normalizeVolume(candidate.soundVolume, fallback.soundVolume),
+    musicVolume: normalizeVolume(candidate.musicVolume, fallback.musicVolume)
   };
 }
 
