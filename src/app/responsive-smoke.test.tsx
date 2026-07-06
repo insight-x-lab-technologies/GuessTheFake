@@ -79,4 +79,35 @@ describe('responsive app smoke', () => {
     fireEvent.click(screen.getByRole('button', { name: /leaderboard/i }));
     expect(screen.getByRole('heading', { name: /leaderboard/i })).toBeInTheDocument();
   });
+
+  it('keeps utility data actions inside compact mobile disclosures', () => {
+    setViewport(402, 874);
+    const { container } = render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /leaderboard/i }));
+    const leaderboardDisclosure = container.querySelector('[data-mobile-actions="leaderboard"]');
+    expect(leaderboardDisclosure).toBeInstanceOf(HTMLDetailsElement);
+    expect(leaderboardDisclosure).not.toHaveAttribute('open');
+    expect(within(leaderboardDisclosure as HTMLElement).getByText(/ações|actions/i)).toBeInTheDocument();
+    expect(within(leaderboardDisclosure as HTMLElement).getByRole('button', { name: /exportar ranking|export ranking/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /packs/i }));
+    const packsDisclosure = container.querySelector('[data-mobile-actions="packs"]');
+    expect(packsDisclosure).toBeInstanceOf(HTMLDetailsElement);
+    expect(packsDisclosure).not.toHaveAttribute('open');
+    expect(within(packsDisclosure as HTMLElement).getByRole('button', { name: /importar pack|import pack/i })).toBeInTheDocument();
+  });
+
+  it('marks only the selected New Game mode with a persistent indicator', () => {
+    setViewport(402, 874);
+    render(<App />);
+
+    fireEvent.click(screen.getAllByRole('button', { name: /nova partida|new match/i })[0]);
+    const selectedMode = screen.getByRole('button', { name: /clássico|classic/i });
+    const otherMode = screen.getByRole('button', { name: /todos palpitam|everyone guesses/i });
+
+    expect(selectedMode).toHaveAttribute('aria-pressed', 'true');
+    expect(within(selectedMode).getByText(/selecionado|selected/i)).toBeInTheDocument();
+    expect(within(otherMode).queryByText(/selecionado|selected/i)).not.toBeInTheDocument();
+  });
 });

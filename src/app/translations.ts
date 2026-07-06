@@ -14,6 +14,7 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
       growth: 'Apoiar',
       newGame: 'Nova partida',
       continue: 'Continuar',
+      actions: 'Ações',
       navLabel: 'Principal',
       dismiss: 'Fechar'
     },
@@ -335,6 +336,7 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
       growth: 'Support',
       newGame: 'New match',
       continue: 'Continue',
+      actions: 'Actions',
       navLabel: 'Primary',
       dismiss: 'Dismiss'
     },

@@ -27,6 +27,8 @@ describe('gameplay click feedback flow', () => {
     expect(statementGrid).toHaveAttribute('aria-disabled', 'true');
 
     const feedbackGroup = screen.getByLabelText(/feedback da rodada|round feedback/i);
+    const resultPanel = feedbackGroup.closest('[data-layout="mobile-stack"]');
+    expect(resultPanel).toBeInTheDocument();
     const goodFeedback = within(feedbackGroup).getByRole('button', { name: /boa|good/i });
     fireEvent.click(goodFeedback);
 

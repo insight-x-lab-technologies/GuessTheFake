@@ -197,6 +197,26 @@ import {
 import styles from './App.module.css';
 import { translations } from './translations';
 
+function ResponsiveActions({
+  children,
+  label,
+  name
+}: {
+  children: ReactNode;
+  label: string;
+  name: string;
+}) {
+  return (
+    <>
+      <div className={`${styles.actionCluster} ${styles.desktopActions}`}>{children}</div>
+      <details className={styles.mobileActionDisclosure} data-mobile-actions={name}>
+        <summary>{label}</summary>
+        <div className={styles.actionCluster}>{children}</div>
+      </details>
+    </>
+  );
+}
+
 type Screen = 'home' | 'play' | 'leaderboard' | 'achievements' | 'packs' | 'multiDevice' | 'growth' | 'settings';
 
 const screenToneClass: Record<Screen, string> = {
@@ -1721,6 +1741,11 @@ export function App() {
                           >
                             <strong>{t(mode.titleKey)}</strong>
                             <span>{t(mode.descriptionKey)}</span>
+                            {selectedModeId === mode.id ? (
+                              <span className={styles.modeSelected}>
+                                <CheckCircle2 size={14} /> {t('setup.selected')}
+                              </span>
+                            ) : null}
                           </button>
                         ))}
                       </div>
@@ -1989,7 +2014,7 @@ export function App() {
                 ) : null}
 
                 {gameState.phase === 'revealed' ? (
-                  <div className={styles.resultPanel}>
+                  <div className={styles.resultPanel} data-layout="mobile-stack">
                     {Object.values(gameState.roundGuesses).some(guess => guess.correct) ? (
                       <CheckCircle2 size={28} />
                     ) : (
@@ -2082,7 +2107,7 @@ export function App() {
                 <h2 className={styles.pageTitle}>{t('leaderboard.title')}</h2>
                 <p>{t('leaderboard.subtitle')}</p>
               </div>
-              <div className={styles.actionCluster}>
+              <ResponsiveActions label={t('app.actions')} name="leaderboard">
                 <Button variant="ghost" icon={<Download size={18} />} onClick={() => downloadJson('guess-the-fake-leaderboard.json', exportLeaderboard(leaderboard))}>
                   {t('leaderboard.export')}
                 </Button>
@@ -2100,7 +2125,7 @@ export function App() {
                 >
                   {t('leaderboard.reset')}
                 </Button>
-              </div>
+              </ResponsiveActions>
             </div>
             <input
               ref={leaderboardFileInputRef}
@@ -2302,14 +2327,14 @@ export function App() {
                 <h2 className={styles.pageTitle}>{t('packs.title')}</h2>
                 <p>{t('packs.subtitle')}</p>
               </div>
-              <div className={styles.actionCluster}>
+              <ResponsiveActions label={t('app.actions')} name="packs">
                 <Button variant="secondary" icon={<Upload size={18} />} onClick={() => packFileInputRef.current?.click()}>
                   {t('packs.import')}
                 </Button>
                 <Button variant="ghost" icon={<Download size={18} />} onClick={() => downloadJson('guess-the-fake-packs.json', exportPacks(allPacks))}>
                   {t('packs.export')}
                 </Button>
-              </div>
+              </ResponsiveActions>
             </div>
             <input
               ref={packFileInputRef}

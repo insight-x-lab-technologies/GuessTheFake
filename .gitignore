@@ -10,3 +10,4 @@ scripts/*.log
 scripts/*.pid
 scripts/*.urls
 temp.txt
+sample/

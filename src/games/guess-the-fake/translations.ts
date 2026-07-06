@@ -58,6 +58,7 @@ const pt: TranslationTree = {
     }
   },
   setup: {
+    selected: 'Selecionado',
     title: 'Preparar partida',
     subtitle: 'Configure modo, pessoas, filtros e quantidade antes de abrir a mesa.',
     optionsTitle: 'Opções da partida',
@@ -144,6 +145,7 @@ const en: TranslationTree = {
     }
   },
   setup: {
+    selected: 'Selected',
     title: 'Prepare match',
     subtitle: 'Set mode, people, filters, and round count before opening the table.',
     optionsTitle: 'Match options',
