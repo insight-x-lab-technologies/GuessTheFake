@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getNewMatchNavigationDecision, hasMatchInProgress } from './new-match-flow';
-import type { GuessTheFakePhase } from '../games/guess-the-fake/types';
+import type { GuessTheFakePhase } from '../game/types';
 
 describe('new match flow helpers', () => {
   it('treats active gameplay phases as in-progress matches', () => {

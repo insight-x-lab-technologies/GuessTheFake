@@ -21,24 +21,40 @@ export type AchievementCounters = {
 
 export type AchievementState = {
   counters: AchievementCounters;
+  // Same counters split by the mode a round or match was played in. Unlocks
+  // stay global; per-mode unlocks are derived from these counters.
+  modeCounters: Record<string, AchievementCounters>;
   unlocked: Record<string, string>;
+};
+
+export type AchievementModeFilter = 'all' | (string & {});
+
+export type AchievementProgressItem = {
+  definition: AchievementDefinition;
+  progress: number;
+  unlocked: boolean;
 };
 
 export const ACHIEVEMENTS_VERSION = 1;
 export const ACHIEVEMENTS_KEY = createStorageKey('platform', 'achievements', ACHIEVEMENTS_VERSION);
 
+export function createDefaultAchievementCounters(): AchievementCounters {
+  return {
+    matchesFinished: 0,
+    roundsPlayed: 0,
+    correctGuesses: 0,
+    longestStreak: 0,
+    perfectMatches: 0,
+    categoriesPlayed: {},
+    packsUsed: {},
+    contentFeedbackCount: 0
+  };
+}
+
 export function createDefaultAchievementState(): AchievementState {
   return {
-    counters: {
-      matchesFinished: 0,
-      roundsPlayed: 0,
-      correctGuesses: 0,
-      longestStreak: 0,
-      perfectMatches: 0,
-      categoriesPlayed: {},
-      packsUsed: {},
-      contentFeedbackCount: 0
-    },
+    counters: createDefaultAchievementCounters(),
+    modeCounters: {},
     unlocked: {}
   };
 }
@@ -66,6 +82,7 @@ export function evaluateAchievementsWithUnlocks(
 ) {
   const next: AchievementState = {
     counters: { ...state.counters },
+    modeCounters: { ...state.modeCounters },
     unlocked: { ...state.unlocked }
   };
   const newlyUnlocked: AchievementDefinition[] = [];
@@ -82,15 +99,39 @@ export function evaluateAchievementsWithUnlocks(
 }
 
 export function normalizeAchievementState(state: Partial<AchievementState>): AchievementState {
-  const defaults = createDefaultAchievementState();
+  const modeCounters = isRecord(state.modeCounters) ? state.modeCounters : {};
   return {
-    counters: {
-      ...defaults.counters,
-      ...state.counters,
-      categoriesPlayed: { ...defaults.counters.categoriesPlayed, ...state.counters?.categoriesPlayed },
-      packsUsed: { ...defaults.counters.packsUsed, ...state.counters?.packsUsed }
-    },
-    unlocked: { ...defaults.unlocked, ...state.unlocked }
+    counters: normalizeCounters(state.counters),
+    modeCounters: Object.fromEntries(
+      Object.entries(modeCounters).map(([modeId, counters]) => [modeId, normalizeCounters(counters)])
+    ),
+    unlocked: { ...state.unlocked }
+  };
+}
+
+function normalizeCounters(counters: Partial<AchievementCounters> | undefined): AchievementCounters {
+  const defaults = createDefaultAchievementCounters();
+  return {
+    ...defaults,
+    ...counters,
+    categoriesPlayed: { ...defaults.categoriesPlayed, ...counters?.categoriesPlayed },
+    packsUsed: { ...defaults.packsUsed, ...counters?.packsUsed }
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, Partial<AchievementCounters>> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function updateModeCounters(
+  state: AchievementState,
+  modeId: string,
+  update: (counters: AchievementCounters) => AchievementCounters
+): AchievementState {
+  const current = state.modeCounters[modeId] ?? createDefaultAchievementCounters();
+  return {
+    ...state,
+    modeCounters: { ...state.modeCounters, [modeId]: update(current) }
   };
 }
 
@@ -111,5 +152,38 @@ export function getAchievementSummary(state: AchievementState, definitions: Achi
     totalCount: definitions.length,
     completionPercent: definitions.length ? Math.round((totalProgress / definitions.length) * 100) : 0,
     nextLocked: definitions.find(definition => !normalized.unlocked[definition.id]) ?? null
+  };
+}
+
+export function getAchievementProgressView(
+  state: AchievementState,
+  definitions: AchievementDefinition[],
+  modeId: AchievementModeFilter = 'all'
+) {
+  const normalized = normalizeAchievementState(state);
+  const modeCounters = modeId === 'all' ? null : normalized.modeCounters[modeId] ?? null;
+  const counters = modeId === 'all' ? normalized.counters : modeCounters ?? createDefaultAchievementCounters();
+  const items: AchievementProgressItem[] = definitions.map(definition => {
+    const progress = Math.min(definition.getProgress(counters), definition.target);
+    return {
+      definition,
+      progress,
+      unlocked: modeId === 'all' ? Boolean(normalized.unlocked[definition.id]) : progress >= definition.target
+    };
+  });
+  const unlockedCount = items.filter(item => item.unlocked).length;
+  const totalProgress = items.reduce((sum, item) => sum + item.progress / item.definition.target, 0);
+
+  return {
+    counters,
+    hasData: modeId === 'all'
+      || Boolean(modeCounters && (modeCounters.roundsPlayed > 0 || modeCounters.matchesFinished > 0)),
+    items,
+    summary: {
+      unlockedCount,
+      totalCount: definitions.length,
+      completionPercent: definitions.length ? Math.round((totalProgress / definitions.length) * 100) : 0,
+      nextLocked: items.find(item => !item.unlocked)?.definition ?? null
+    }
   };
 }

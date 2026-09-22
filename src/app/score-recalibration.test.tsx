@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS, SETTINGS_KEY, SETTINGS_VERSION } from '../core/settings/settings';
 import { writeVersioned } from '../core/storage/storage';
@@ -25,10 +25,11 @@ describe('score recalibration flow', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: /nova partida|new match/i })[0]);
     fireEvent.change(screen.getByLabelText(/modo|mode/i), { target: { value: 'teams' } });
+    await waitFor(() => expect(screen.getByRole('button', { name: /começar|start/i })).toBeEnabled());
     fireEvent.click(screen.getByRole('button', { name: /começar|start/i }));
     fireEvent.click(screen.getByRole('button', { name: /iniciar turno|start turn/i }));
     fireEvent.click(screen.getByRole('button', { name: /mostrar frases|show statements/i }));
-    fireEvent.click(await screen.findByRole('button', { name: /cidade dentro do Sol|city inside the Sun/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /Napoleão Bonaparte tinha|Napoleon Bonaparte was over/i }));
 
     expect(await screen.findByText(/Time 1: 10 pts/i)).toBeInTheDocument();
 

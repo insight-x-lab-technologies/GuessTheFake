@@ -1,10 +1,14 @@
 import type { Language, TranslationTree } from '../core/i18n/i18n';
-import { guessTheFakeTranslations } from '../games/guess-the-fake/translations';
+import { guessTheFakeTranslations } from '../game/translations';
+import { de } from './locales/de';
+import { es } from './locales/es';
+import { fr } from './locales/fr';
+import { it } from './locales/it';
 
-const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
+const shellTranslations: Record<'pt' | 'en', TranslationTree> = {
   pt: {
     app: {
-      kicker: 'Plataforma familiar de jogos',
+      kicker: 'Jogo de mesa para a família',
       home: 'Início',
       settings: 'Configurações',
       leaderboard: 'Leaderboard',
@@ -19,7 +23,7 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
       dismiss: 'Fechar'
     },
     home: {
-      subtitle: 'Uma base nova, responsiva e pronta para crescer com novos jogos, mantendo placar, troféus, packs, temas e configurações compartilhadas.',
+      subtitle: 'Cinco afirmações por rodada, só uma é falsa. Descubra qual, some pontos com velocidade e sequência, e acompanhe placar, troféus e packs local-first.',
       previewLabel: 'Preview neutro de cards de exemplo',
       previewOne: 'Uma frase da mesa parece convincente demais.',
       previewTwo: 'O grupo compara pistas antes de revelar a resposta.',
@@ -204,7 +208,10 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
       streakMetric: 'Maior streak',
       categoriesMetric: 'Categorias',
       feedbackMetric: 'Feedbacks',
-      unlocked: 'Desbloqueado'
+      unlocked: 'Desbloqueado',
+      modeFilter: 'Modo',
+      allModes: 'Todos os modos',
+      modeEmpty: 'Nenhuma partida no modo {mode} ainda. Jogue uma rodada nesse modo para ver o progresso aqui.'
     },
     feedbackStats: {
       title: 'Saúde do conteúdo',
@@ -326,7 +333,7 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
   },
   en: {
     app: {
-      kicker: 'Family game platform',
+      kicker: 'A family table game',
       home: 'Home',
       settings: 'Settings',
       leaderboard: 'Leaderboard',
@@ -341,7 +348,7 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
       dismiss: 'Dismiss'
     },
     home: {
-      subtitle: 'A new responsive base ready to grow with more games while sharing scores, trophies, packs, themes, and settings.',
+      subtitle: 'Five statements per round, only one is fake. Spot it, score on speed and streaks, and keep scores, trophies, and packs local-first.',
       previewLabel: 'Neutral preview of example cards',
       previewOne: 'One table statement sounds a little too polished.',
       previewTwo: 'The group compares clues before the reveal.',
@@ -526,7 +533,10 @@ const platformTranslations: Record<'pt' | 'en', TranslationTree> = {
       streakMetric: 'Best streak',
       categoriesMetric: 'Categories',
       feedbackMetric: 'Feedback',
-      unlocked: 'Unlocked'
+      unlocked: 'Unlocked',
+      modeFilter: 'Mode',
+      allModes: 'All modes',
+      modeEmpty: 'No matches in {mode} mode yet. Play a round in this mode to see progress here.'
     },
     feedbackStats: {
       title: 'Content health',
@@ -669,14 +679,11 @@ function mergeTranslations(base: TranslationTree, extra: TranslationTree): Trans
   return merged;
 }
 
-const ptTranslations = mergeTranslations(platformTranslations.pt, guessTheFakeTranslations.pt);
-const enTranslations = mergeTranslations(platformTranslations.en, guessTheFakeTranslations.en);
+const shellByLanguage: Record<Language, TranslationTree> = { ...shellTranslations, es, fr, de, it };
 
-export const translations: Record<Language, TranslationTree> = {
-  pt: ptTranslations,
-  en: enTranslations,
-  es: enTranslations,
-  fr: enTranslations,
-  de: enTranslations,
-  it: enTranslations
-};
+export const translations = Object.fromEntries(
+  (Object.keys(shellByLanguage) as Language[]).map(language => [
+    language,
+    mergeTranslations(shellByLanguage[language], guessTheFakeTranslations[language])
+  ])
+) as Record<Language, TranslationTree>;

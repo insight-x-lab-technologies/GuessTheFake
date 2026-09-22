@@ -11,13 +11,14 @@ Implement one roadmap item from the GuessTheFake repository end to end.
 
 Before changing files, read these project documents in this order:
 
-1. `README.md`
-2. `docs/FEATURE_IMPLEMENTATION_GUIDE.md`
-3. Every document directly referenced by `docs/FEATURE_IMPLEMENTATION_GUIDE.md`, especially:
-   - `docs/ARCHITECTURE.md`
+1. `CLAUDE.md`
+2. `README.md`
+3. `docs/FEATURE_IMPLEMENTATION_GUIDE.md`
+4. Every document directly referenced by `docs/FEATURE_IMPLEMENTATION_GUIDE.md`, especially:
    - `docs/ROADMAP.md`
+   - `docs/ARCHITECTURE.md`
    - `docs/FRONTEND_SYSTEM.md`
-4. Source files directly affected by the requested roadmap item.
+5. Source files directly affected by the requested roadmap item.
 
 If any required document is missing, state that explicitly and continue with the best available context.
 
@@ -43,13 +44,14 @@ Treat the roadmap item as the requested scope. Do not silently implement unrelat
 2. Classify the feature using the guide categories:
    - Gameplay
    - Conteudo
-   - Plataforma
+   - App
    - UI/UX
    - Integracao opcional
 3. Choose the correct ownership boundary:
-   - Reusable platform code belongs in `src/core`.
-   - GuessTheFake-specific domain code belongs in `src/games/guess-the-fake`.
+   - Modules that don't know what a round is belong in `src/core`.
+   - Guess the Fake domain code (rules, modes, content, copy) belongs in `src/game`.
    - App orchestration/screens may live in `src/app`.
+   - `src/core` must never import from `src/game`.
    - Pure game rules must not depend on React, DOM, storage, timers, audio, or network.
 4. Implement the smallest coherent slice that satisfies the roadmap item.
 5. Add or update tests for changed rules, validators, storage, settings, helpers, or regressions.

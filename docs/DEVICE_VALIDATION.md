@@ -21,6 +21,16 @@ validation. Values are CSS pixels, not physical hardware pixels.
   navigation in Vitest/Testing Library across desktop, tablet, and mobile
   viewport contracts.
 
+The automated smoke lives in `src/app/responsive-smoke.test.tsx` and exercises
+five viewports: 1440x900 (desktop), 820x1180 and 1180x820 (iPad 10), 402x874 and
+874x402 (iPhone 17). The iPhone Max and Galaxy Tab S9 rows above remain
+manual-only.
+
+Caveat: the smoke runs in jsdom, which does not compute CSS layout. It verifies
+structure, roles, and interaction — not overflow, wrapping, or breakpoints. Any
+visually relevant change still needs `npm run dev` plus a real browser or device
+check.
+
 ## Findings Applied
 
 - Added a compact low-height landscape mode for phone-wide layouts.

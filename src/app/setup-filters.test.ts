@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getAvailableDifficultiesForCategory, normalizeSetupFilters } from './setup-filters';
-import type { GuessTheFakeRound } from '../games/guess-the-fake/types';
+import type { GuessTheFakeRound } from '../game/types';
 
 const rounds: GuessTheFakeRound[] = [
   {

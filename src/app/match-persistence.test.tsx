@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { savePersistedGuessTheFakeMatch, GUESS_THE_FAKE_QUICK_GAME_KEY } from '../games/guess-the-fake/match-storage';
-import { getBuiltinRounds } from '../games/guess-the-fake/data/sample-pack';
-import { createInitialGuessTheFakeState, startMatch } from '../games/guess-the-fake/rules';
+import { savePersistedGuessTheFakeMatch, GUESS_THE_FAKE_QUICK_GAME_KEY } from '../game/match-storage';
+import { getBuiltinRounds } from '../test/builtin';
+import { createInitialGuessTheFakeState, startMatch } from '../game/rules';
 import { App } from './App';
 
 describe('active match persistence', () => {

@@ -16,6 +16,7 @@ describe('gameplay click feedback flow', () => {
     render(<App />);
 
     fireEvent.click(screen.getAllByRole('button', { name: /nova partida|new match/i })[0]);
+    await waitFor(() => expect(screen.getByRole('button', { name: /começar|start/i })).toBeEnabled());
     fireEvent.click(screen.getByRole('button', { name: /começar|start/i }));
     fireEvent.click(screen.getByRole('button', { name: /iniciar turno|start turn/i }));
     fireEvent.click(screen.getByRole('button', { name: /mostrar frases|show statements/i }));

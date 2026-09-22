@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App';
 
@@ -59,6 +59,7 @@ describe('responsive app smoke', () => {
     render(<App />);
 
     fireEvent.click(screen.getAllByRole('button', { name: /nova partida|new match/i })[0]);
+    await waitFor(() => expect(screen.getByRole('button', { name: /começar|start/i })).toBeEnabled());
     fireEvent.click(screen.getByRole('button', { name: /começar|start/i }));
     fireEvent.click(screen.getByRole('button', { name: /iniciar turno|start turn/i }));
     fireEvent.click(screen.getByRole('button', { name: /mostrar frases|show statements/i }));

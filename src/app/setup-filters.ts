@@ -1,4 +1,4 @@
-import type { GuessTheFakeDifficulty, GuessTheFakeRound } from '../games/guess-the-fake/types';
+import type { GuessTheFakeDifficulty, GuessTheFakeRound } from '../game/types';
 
 export type SetupFilters = {
   categoryId: string;

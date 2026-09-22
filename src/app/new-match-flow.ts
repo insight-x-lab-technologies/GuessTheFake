@@ -1,4 +1,4 @@
-import type { GuessTheFakePhase } from '../games/guess-the-fake/types';
+import type { GuessTheFakePhase } from '../game/types';
 
 export type NewMatchNavigationDecision = 'show-setup' | 'show-choice';
 

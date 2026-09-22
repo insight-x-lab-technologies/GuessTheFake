@@ -10,28 +10,29 @@ testadas e entregues no Guess the Fake. Use junto com `docs/ROADMAP.md`,
 
 Toda sessao de feature deve comecar lendo:
 
+- `CLAUDE.md`
 - `README.md`
-- `docs/ARCHITECTURE.md`
 - `docs/ROADMAP.md`
+- `docs/ARCHITECTURE.md`
 - `docs/FRONTEND_SYSTEM.md`
-- arquivos diretamente afetados em `src/app`, `src/core` ou
-  `src/games/guess-the-fake`
+- arquivos diretamente afetados em `src/app`, `src/core` ou `src/game`
 
 Depois disso, classifique a feature:
 
 - **Gameplay:** regras, pontuacao, rodada, modos, times, streaks.
 - **Conteudo:** packs, categorias, dificuldade, validacao, traducoes.
-- **Plataforma:** storage, settings, leaderboard, achievements, themes, PWA.
+- **App:** storage, settings, leaderboard, achievements, themes, PWA.
 - **UI/UX:** telas, fluxo, acessibilidade, responsividade, microinteracoes.
 - **Integracao opcional:** audio, multi-device, import/export.
 
 Defina tambem o limite arquitetural:
 
-- Codigo reutilizavel por varios jogos pertence a `src/core`.
-- Codigo especifico do Guess the Fake pertence a
-  `src/games/guess-the-fake`.
-- Orquestracao de tela pode ficar em `src/app`, mas regras de jogo nao devem
-  depender da UI.
+- `src/game` - regras de rodada, pontuacao, conteudo e copy do jogo.
+- `src/core` - modulos que nao sabem o que e uma rodada: storage, i18n, temas,
+  settings, audio, share, leaderboard, achievements, packs, multiplayer.
+- `src/app` - orquestracao de tela, timers e efeitos colaterais.
+
+Regra dura: `core` **nunca** importa de `game`.
 
 ---
 
@@ -45,16 +46,17 @@ Cada feature deve entregar, quando aplicavel:
    - Versionar storage ou schema se a mudanca quebrar dado antigo.
 
 2. **Regras puras**
-   - Regras de partida devem ser funcoes testaveis.
+   - Regras de partida devem ser funcoes testaveis em `src/game/rules.ts`.
    - Evitar `Date.now`, `setTimeout`, DOM, localStorage, audio ou rede dentro
      das regras.
    - Passar valores externos por parametros.
 
 3. **Persistencia**
-   - Usar `core/storage` com chave versionada.
+   - Usar `core/storage` com chave versionada
+     `gtf.<scope>.<name>.v<n>`.
    - Tratar dado ausente, invalido e versao antiga.
-   - Nao reutilizar nomes antigos do prototipo como `npr_`, `joke`, `word`,
-     `mime` ou `drawing` fora de adaptadores explicitos.
+   - O scope `platform` e um nome historico mantido de proposito; renomear
+     orfanaria os dados locais de quem ja joga. Leia como "do app inteiro".
 
 4. **UI**
    - Usar componentes e tokens existentes.
@@ -65,12 +67,16 @@ Cada feature deve entregar, quando aplicavel:
    - Preservar responsividade documentada em `FRONTEND_SYSTEM.md`.
 
 5. **i18n**
-   - Todo texto visivel deve entrar nas traducoes.
+   - Todo texto visivel deve entrar nas traducoes dos seis idiomas: `pt`/`en`
+     em `src/app/translations.ts` (shell) e `src/game/translations.ts` (jogo);
+     `es/fr/de/it` em `src/app/locales/` e `src/game/locales/`. O teste de
+     paridade falha se faltar chave.
    - Se conteudo de jogo nao existir em um idioma, filtrar ou indicar
      claramente o idioma do pack.
 
 6. **Documentacao**
-   - Atualizar `docs/ROADMAP.md` quando uma feature muda o status de uma onda.
+   - Atualizar `docs/ROADMAP.md` quando uma feature muda o status de um item,
+     incluindo a linha "Ultima atualizacao de implementacao".
    - Criar nota curta no documento mais especifico quando houver novo contrato,
      schema ou fluxo de teste.
 
@@ -111,9 +117,11 @@ Para features que mudam fluxo de tela:
 ### Comandos padrao
 
 ```bash
-npm test
-npm run build
+npm test        # vitest run (27 arquivos, 103 testes hoje)
+npm run build   # tsc -b && vite build (typecheck + bundle)
 ```
+
+Nao existe script de lint. O typecheck acontece dentro de `npm run build`.
 
 Para mudancas visuais, tambem usar o servidor local:
 
@@ -138,10 +146,10 @@ Antes de considerar uma feature pronta:
 - [ ] Regras novas ou alteradas tem testes unitarios.
 - [ ] Storage/schema tem fallback para dados invalidos quando aplicavel.
 - [ ] Textos visiveis estao em i18n.
-- [ ] Build passa.
+- [ ] `npm test` e `npm run build` passam.
 - [ ] A UI nao quebra em mobile retrato/paisagem.
 - [ ] O roadmap foi atualizado se o status mudou.
-- [ ] Nenhum codigo novo acopla `core` a `guess-the-fake`.
+- [ ] Nenhum import novo de `core` para `game`.
 
 ---
 
@@ -152,18 +160,24 @@ sem perder o contexto do projeto:
 
 ```text
 Voce esta trabalhando no projeto GuessTheFake, um PWA local-first em Vite,
-React e TypeScript para criar uma plataforma de party/family games. Antes de
-implementar qualquer coisa, leia README.md e os documentos em docs,
-principalmente ARCHITECTURE.md, ROADMAP.md, FRONTEND_SYSTEM.md e
+React e TypeScript. E um jogo unico e isolado: entre cinco afirmacoes, achar a
+falsa. Nao e uma plataforma de varios jogos e nao deve virar uma. Antes de
+implementar qualquer coisa, leia CLAUDE.md, README.md e os documentos em docs,
+principalmente ROADMAP.md, ARCHITECTURE.md, FRONTEND_SYSTEM.md e
 FEATURE_IMPLEMENTATION_GUIDE.md. Depois leia os arquivos relevantes em src.
 
 Contexto essencial:
-- A base antiga esta em ref_src_old apenas como referencia de produto e ideias.
-- O codigo ativo fica em src.
-- Codigo reutilizavel de plataforma pertence a src/core.
-- Codigo especifico do jogo Guess the Fake pertence a src/games/guess-the-fake.
+- src/game tem regras puras, conteudo e traducoes do jogo.
+- src/core tem modulos que nao sabem o que e uma rodada (storage, i18n, temas,
+  settings, audio, share, leaderboard, achievements, packs, multiplayer).
+- src/app orquestra telas, timers e efeitos colaterais.
+- core nunca importa de game.
 - Regras de jogo devem ser puras e testaveis.
-- O app deve continuar sendo PWA estatico, local-first e sem backend por padrao.
+- O app deve continuar sendo PWA estatico, local-first e sem backend.
+- src/app/App.tsx e so o shell. Estado e efeitos ficam em hooks de
+  src/app/hooks/ e cada tela e um componente visual em src/app/screens/ que
+  recebe dados e callbacks por props. Nao coloque logica de dominio nas telas.
+- A UI esta traduzida nos seis idiomas; chave nova entra em todos.
 - Nao deixe botoes ou settings decorativos: conecte a funcionalidade real ou
   marque explicitamente como "em breve" e desabilite.
 

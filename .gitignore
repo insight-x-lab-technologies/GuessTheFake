@@ -11,3 +11,4 @@ scripts/*.pid
 scripts/*.urls
 temp.txt
 sample/
+content-review/
