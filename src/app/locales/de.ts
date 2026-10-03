@@ -14,7 +14,14 @@ export const de: TranslationTree = {
     continue: 'Weiter',
     actions: 'Aktionen',
     navLabel: 'Hauptnavigation',
-    dismiss: 'Schließen'
+    dismiss: 'Schließen',
+    updateReady: 'Neue Version verfügbar',
+    updateHint: 'Lade neu, wenn die Runde endet; die Partie bleibt gespeichert.',
+    updateAction: 'Neu laden',
+    offlineReady: 'Bereit zum Offline-Spielen',
+    offlineReadyHint: 'Das Spiel funktioniert auf diesem Gerät ohne Internet.',
+    offline: 'Offline',
+    offlineHint: 'Keine Verbindung. Das Spiel läuft weiter; neue Musik und Teilen können fehlschlagen.'
   },
   home: {
     subtitle: 'Fünf Aussagen pro Runde, nur eine ist falsch. Finde sie, punkte mit Tempo und Serien und behalte Punkte, Trophäen und Packs lokal auf deinem Gerät.',

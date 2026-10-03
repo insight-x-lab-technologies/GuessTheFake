@@ -71,11 +71,47 @@ export function getToneForEvent(event: AudioEvent) {
   return { frequency: 420, durationMs: 80 };
 }
 
-export function createPlatformAudioService(options: { tracks: ThemeAudioTracks }): PlatformAudioService {
+export type TrackLoader = (url: string) => Promise<string>;
+
+// Downloads a track once with a plain GET and plays it from a blob URL. A
+// media element streams with Range requests, whose 206 responses the service
+// worker cannot cache; a full GET lets the runtime audio cache keep the track
+// for offline play. Falls back to the original URL when anything is missing.
+export function createBlobTrackLoader(): TrackLoader {
+  const loaded = new Map<string, Promise<string>>();
+  return (url) => {
+    const cached = loaded.get(url);
+    if (cached) return cached;
+    if (typeof fetch !== 'function' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
+      return Promise.resolve(url);
+    }
+    const pending = fetch(url)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Track request failed: ${response.status}`);
+        return response.blob();
+      })
+      .then((blob) => URL.createObjectURL(blob))
+      .catch(() => {
+        loaded.delete(url);
+        return url;
+      });
+    loaded.set(url, pending);
+    return pending;
+  };
+}
+
+export function createPlatformAudioService(options: {
+  tracks: ThemeAudioTracks;
+  loadTrack?: TrackLoader;
+}): PlatformAudioService {
+  const loadTrack = options.loadTrack ?? createBlobTrackLoader();
   let unlocked = false;
   let audioContext: AudioContext | null = null;
   let music: HTMLAudioElement | null = null;
   let currentTrackUrl = '';
+  let wantsMusic = false;
+  let musicVolume = 0;
+  let musicFadeMs = 0;
   let fadeTimer: number | null = null;
   let lastEventAt = 0;
   let lastEvent: AudioEvent | null = null;
@@ -147,16 +183,26 @@ export function createPlatformAudioService(options: { tracks: ThemeAudioTracks }
       const trackUrl = options.tracks[trackTheme][zone];
       const targetVolume = clampAudioVolume(settings.musicVolume, 0.35);
       const fadeMs = reducedMotion ? 0 : 260;
+      wantsMusic = true;
+      musicVolume = targetVolume;
+      musicFadeMs = fadeMs;
 
       if (currentTrackUrl !== trackUrl) {
         const startNextTrack = () => {
           music?.pause();
-          music = new Audio(trackUrl);
-          music.loop = true;
-          music.volume = 0;
+          music = null;
           currentTrackUrl = trackUrl;
-          music.play().catch(() => undefined);
-          fadeTo(targetVolume, fadeMs);
+          // The track downloads on first play; settings may change meanwhile,
+          // so the latest wish, volume and fade are read when it resolves.
+          loadTrack(trackUrl).then((source) => {
+            if (currentTrackUrl !== trackUrl || music) return;
+            music = new Audio(source);
+            music.loop = true;
+            music.volume = 0;
+            if (!wantsMusic) return;
+            music.play().catch(() => undefined);
+            fadeTo(musicVolume, musicFadeMs);
+          }).catch(() => undefined);
         };
 
         if (music) {
@@ -202,11 +248,13 @@ export function createPlatformAudioService(options: { tracks: ThemeAudioTracks }
     },
 
     stopMusic() {
+      wantsMusic = false;
       clearFade();
       music?.pause();
     },
 
     dispose() {
+      wantsMusic = false;
       clearFade();
       music?.pause();
       music = null;

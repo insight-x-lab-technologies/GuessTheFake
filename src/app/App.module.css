@@ -250,6 +250,42 @@
   width: 2rem;
 }
 
+.toastWithAction {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+
+.toast .toastAction {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-contrast);
+  font-weight: 800;
+  height: auto;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.9rem;
+  width: auto;
+}
+
+.offlinePill {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  bottom: calc(var(--screen-padding) + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow-panel);
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 800;
+  gap: 0.35rem;
+  left: 50%;
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  pointer-events: none;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
 .visuallyHidden {
   border: 0;
   clip: rect(0 0 0 0);

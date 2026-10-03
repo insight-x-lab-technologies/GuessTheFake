@@ -100,8 +100,15 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
 - **Multiplayer e serverless**: `BroadcastChannel` entre abas do mesmo device,
   WebRTC com troca **manual** de offer/answer por copiar-colar, e snapshot
   offline. Nao ha servidor de sinalizacao, sala ou lobby.
-- **PWA**: configurado so em `vite.config.ts`. Nao ha `virtual:pwa-register`
-  nem UX de atualizacao/offline no app.
+- **PWA**: configurado em `vite.config.ts` com `registerType: 'prompt'`.
+  `app/hooks/usePwaStatus.ts` registra via
+  `virtual:pwa-register`; `screens/PwaStatusNotices.tsx` mostra toast de nova
+  versao, "pronto offline" e pill offline. Musica (mp3) e fundos de temas
+  nao-padrao ficam fora do precache (runtime CacheFirst). Nao reative
+  `includeManifestIcons`: entradas duplicadas zeram o precache inteiro.
+- **Assets**: mestres editaveis em `art-source/` (nao vao para o bundle);
+  derivados regenerados pelos scripts de `scripts/` (ver "Assets" em
+  `docs/ARCHITECTURE.md`).
 - **Storage usa o scope `platform`** (`gtf.platform.settings.v3`, etc). E nome
   historico, mantido de proposito: renomear orfanaria dados locais reais. Leia
   como "do app inteiro".
@@ -136,16 +143,19 @@ Regras nao negociaveis:
 
 ```bash
 npm run dev      # vite --host 0.0.0.0
-npm test         # vitest run (34 arquivos, 170 testes)
+npm test         # vitest run (37 arquivos, 179 testes)
 npm run audit:content  # cobertura do conteudo builtin
 npm run review:content # folha de revisao humana (REVIEW_LANG, REVIEW_COMPARE)
 npm run build    # tsc -b && vite build (typecheck + bundle)
 npm run preview
+npm run test:e2e # Playwright: smoke em Chromium real (build + preview, 3 viewports)
+npm run screenshots    # apos build: screenshots do manifesto e docs/sample
 ```
 
 Nao existe script de lint. Typecheck acontece dentro de `npm run build`.
 
 Antes de considerar uma tarefa pronta: `npm test` e `npm run build` passando.
+Se mexer em fluxo de tela, PWA ou layout, rode tambem `npm run test:e2e`.
 Para mudanca visual relevante, subir `npm run dev` e conferir os viewports de
 `docs/DEVICE_VALIDATION.md` (desktop, mobile retrato, mobile paisagem,
 e `?demo=game` quando o tabuleiro for afetado).

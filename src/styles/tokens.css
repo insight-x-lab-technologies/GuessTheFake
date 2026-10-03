@@ -413,31 +413,37 @@
   :root[data-theme='cosmic'],
   :root:not([data-theme]) {
     --home-bg-image: url("../assets/background/cosmic_mobile_bg_home.webp");
+    --app-bg-image: url("../assets/background/cosmic_mobile_bg_app.webp");
     --home-bg-position: center top;
   }
 
   :root[data-theme='liquid-glass'] {
     --home-bg-image: url("../assets/background/autumn_mobile_bg_home.webp");
+    --app-bg-image: url("../assets/background/autumn_mobile_bg_app.webp");
     --home-bg-position: center top;
   }
 
   :root[data-theme='material3'] {
     --home-bg-image: url("../assets/background/spring_mobile_bg_home.webp");
+    --app-bg-image: url("../assets/background/spring_mobile_bg_app.webp");
     --home-bg-position: center top;
   }
 
   :root[data-theme='light-mode'] {
     --home-bg-image: url("../assets/background/light_mobile_bg_home.webp");
+    --app-bg-image: url("../assets/background/light_mobile_bg_app.webp");
     --home-bg-position: center top;
   }
 
   :root[data-theme='dark-mode'] {
     --home-bg-image: url("../assets/background/dark_mobile_bg_home.webp");
+    --app-bg-image: url("../assets/background/dark_mobile_bg_app.webp");
     --home-bg-position: center top;
   }
 
   :root[data-theme='high-contrast'] {
     --home-bg-image: url("../assets/background/contrast_mobile_bg_home.webp");
+    --app-bg-image: url("../assets/background/contrast_mobile_bg_app.webp");
     --home-bg-position: center top;
   }
 }

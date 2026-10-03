@@ -14,7 +14,14 @@ export const fr: TranslationTree = {
     continue: 'Continuer',
     actions: 'Actions',
     navLabel: 'Principale',
-    dismiss: 'Fermer'
+    dismiss: 'Fermer',
+    updateReady: 'Nouvelle version disponible',
+    updateHint: 'Rechargez à la fin de la manche ; la partie est sauvegardée.',
+    updateAction: 'Recharger',
+    offlineReady: 'Prêt à jouer hors ligne',
+    offlineReadyHint: 'Le jeu fonctionne sans internet sur cet appareil.',
+    offline: 'Hors ligne',
+    offlineHint: 'Pas de connexion. Le jeu continue ; la nouvelle musique et le partage peuvent échouer.'
   },
   home: {
     subtitle: 'Cinq affirmations par manche, une seule est fausse. Trouvez-la, marquez des points grâce à la rapidité et aux séries, et gardez scores, trophées et packs sur votre appareil.',

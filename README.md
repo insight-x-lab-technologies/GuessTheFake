@@ -19,7 +19,9 @@ It is a single, self-contained game: no backend, no accounts, no game launcher.
 - Local scores, trophies, content packs, content feedback, themes, and settings,
   all persisted in versioned localStorage.
 - Optional local-first multi-device companion screen (no server).
-- 34 test files / 170 tests in Vitest, including a responsive smoke across five
+- Light first visit: about 1.8 MB precached; music loops download the first
+  time they play and then work offline. In-app update and offline notices.
+- 37 test files / 179 tests in Vitest, including a responsive smoke across five
   viewports and a content coverage audit.
 
 Known limits: multi-device pairing is manual.
@@ -32,6 +34,7 @@ npm run dev      # vite --host 0.0.0.0
 npm test         # vitest run
 npm run build    # tsc -b && vite build
 npm run preview
+npm run test:e2e # Playwright smoke in real Chromium (3 viewports)
 ```
 
 There is no lint script. Typecheck runs inside `npm run build`.

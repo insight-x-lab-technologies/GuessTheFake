@@ -3,8 +3,8 @@
 Documento de avaliacao do estado atual e plano de evolucao do Guess the Fake:
 um jogo unico, local-first, hobby-friendly, publicado como PWA estatico.
 
-Data da revisao: 2026-09-22
-Ultima atualizacao de implementacao: 2026-10-03 (modo solo e Onda 13 completa: W13-01 a W13-07)
+Data da revisao: 2026-10-03
+Ultima atualizacao de implementacao: 2026-10-03 (Onda 14 completa: W14-01 a W14-06)
 
 > Nota de 2026-08-07: o projeto deixou de ser descrito como "plataforma de
 > varios jogos". Guess the Fake e um jogo isolado. A antiga Onda 6 (registry
@@ -19,9 +19,9 @@ Ultima atualizacao de implementacao: 2026-10-03 (modo solo e Onda 13 completa: W
 
 A base em Vite, React, TypeScript e PWA esta madura. O jogo e completavel do
 inicio ao fim, as regras principais estao cobertas por testes unitarios, e
-`npm test` (34 arquivos, 170 testes) e `npm run build` passam.
+`npm test` (37 arquivos, 179 testes) e `npm run build` passam.
 
-O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8 a 13 completas; Ondas 5 e 7
+O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8 a 14 completas; Ondas 5 e 7
 entregues com um item parcial cada (adiados).** O modo solo (desafio pessoal
 com recorde) foi entregue junto com a Onda 13.
 
@@ -60,8 +60,12 @@ Resumo executivo:
   partida, modo apresentador e packs tematicos. Design em
   `docs/superpowers/specs/2026-10-03-solo-mode-design.md` e
   `docs/superpowers/specs/2026-10-03-onda-13-design.md`.
+- **Onda 14:** primeira visita leve (precache ~1.8 MB, musica sob demanda),
+  icones corretos, fundos retrato, toast de atualizacao/offline, vitrine
+  (OG, screenshots) e smoke Playwright em navegador real.
 - **Proxima prioridade:** validacao manual em aparelhos reais (apresentador em
-  TV, multi-device com dois aparelhos) e teste de navegador real.
+  TV, multi-device com dois aparelhos) e Onda 15 (juice/FX). Ondas 14 a 19
+  propostas em 2026-10-03.
 
 ---
 
@@ -94,8 +98,10 @@ Resumo executivo:
 - Shell responsivo para desktop, tablet e mobile, com validacao documentada em
   `docs/DEVICE_VALIDATION.md` e smoke automatizado por viewport em
   `src/app/responsive-smoke.test.tsx`.
-- PWA configurado via `vite-plugin-pwa` e assets principais em `src/assets` e
-  `public/assets/icons`.
+- PWA via `vite-plugin-pwa` em modo prompt: toast de atualizacao, aviso
+  offline, precache de ~1.8 MB, musica e fundos extras em runtime cache,
+  icones maskable/monochrome/apple-touch, screenshots e imagens OG (Onda 14).
+- Smoke em navegador real (Playwright, 3 viewports) em `e2e/`.
 - Servico de audio com trilha de menu/gameplay por tema, SFX sintetizados e
   volumes separados.
 - Shell fino em `src/app/App.tsx`, estado e timers em hooks
@@ -133,9 +139,6 @@ Resumo executivo:
   derivado dos contadores.
 - **Leaderboard:** registra partidas/vitorias e tem filtro por modo, detalhe por
   jogador, ordenacoes alternativas, metricas agregadas e import/export JSON.
-- **PWA:** manifesto e service worker sao gerados no build por
-  `vite-plugin-pwa`; o app trata `beforeinstallprompt`, mas nao ha
-  `virtual:pwa-register` nem UX de atualizacao/offline dentro do app.
 
 ### Nao feito
 
@@ -143,7 +146,6 @@ Resumo executivo:
 - Pareamento peer-to-peer automatico entre dispositivos fisicos.
 - Assinatura criptografica/licenciamento de packs.
 - Lint/format configurados (nao ha ESLint/Prettier no repositorio).
-- Teste de navegador real (Playwright ou equivalente).
 
 ---
 
@@ -816,6 +818,289 @@ repetivel e divertida em familia.
      `getPackLicenseStatus` e `canonicalizePackForSigning`; pack builtin com
      meta; tela Packs mostra capa, publico, versao, licenca e changelog.
    - Solo: igual; packs instalados ativos entram na chave do desafio.
+
+### Ondas 14 a 19 - Proposta pos-Onda 13 (2026-10-03)
+
+Diagnostico que originou estas ondas (revisao de 2026-10-03):
+
+- **Peso de assets:** as 6 faixas em `src/assets/songs` somam ~32 MB (~200
+  kbps MP3) e sao todas precacheadas pelo PWA (`globPatterns` inclui `mp3`).
+  A primeira instalacao baixa ~33 MB, o mesmo tamanho do zip para itch.io.
+- **Icones:** `icon-512.png` tem 484 kB e `maskable-512.png` e o mesmo arquivo
+  (sem area segura de maskable; Android corta a arte).
+- **Backgrounds:** `flowers_desktop_bg_app` e copia byte a byte de
+  `spring_desktop_bg_app`; `flowers`, `dark`, `light` e `contrast` nao tem
+  musica propria. A arte da home (cosmic/spring/autumn) e forte; as telas
+  internas so usam o fundo com paineis translucidos.
+- **Avatar:** um unico `player-default.svg` para todos os perfis.
+- **Gameplay mobile:** cabecalho, placar e tres botoes utilitarios ocupam ~40%
+  da altura antes do primeiro card; os 5 cards nao cabem numa tela de 844px.
+  Timer e um texto ("60s restantes"), sem urgencia visual.
+- **Revelacao e final:** funcionais, mas sem momento "uau" (sem carimbo,
+  confete, contagem de pontos ou podio).
+- **Docs:** `docs/sample/` mostra a UI antiga (conteudo por template e kicker
+  "Plataforma familiar de jogos").
+- **Monetizacao:** so doacao (Buy Me a Coffee/Ko-fi). Packs tematicos ja tem
+  meta de licenca e string canonica de assinatura (W13-07), sem verificacao.
+
+Regras destas ondas: custo recorrente zero; qualquer gasto unico fica marcado
+como `(custo)` e e opcional. Nada de backend, anuncios ou coleta de dados.
+Cada item declara o comportamento no solo, conforme
+`docs/superpowers/specs/2026-10-03-solo-mode-design.md`.
+
+### Onda 14 - Peso, instalacao e divida de assets
+
+Objetivo: primeira visita leve, instalacao bonita em qualquer loja/launcher e
+base pronta para divulgar o jogo.
+
+1. `[x]` **W14-01 - Audio leve e sob demanda**
+   - Reencodar trilhas para ~96 kbps (Opus/WebM com fallback AAC/MP3) ou
+     encurtar para loops de 60-90s com crossfade.
+   - Tirar `mp3` do precache; usar `runtimeCaching` (CacheFirst) para baixar a
+     faixa do tema ativo so quando a musica tocar pela primeira vez.
+   - Meta: precache total abaixo de 3 MB; zip do itch abaixo de 12 MB.
+   - Solo: igual.
+   - Entregue (2026-10-03): loops de 90s a 96 kbps MP3 com emenda em
+     crossfade de 4s (`scripts/encode-music.sh`, mestres em
+     `art-source/songs`), ~1 MB por faixa. `mp3` saiu do precache; runtime
+     cache `gtf-music` (CacheFirst). `core/audio` baixa a faixa por GET
+     inteiro e toca de blob URL (respostas 206 do `<audio>` nao sao
+     cacheaveis). Precache: ~1.8 MB; zip de `dist`: ~11.5 MB com sourcemaps, ~10.7 MB sem `*.map` (era ~33 MB).
+     Achado no caminho: o precache estava vazio desde sempre (icones
+     duplicados => `add-to-cache-list-conflicting-entries`); corrigido com
+     `includeManifestIcons: false` e coberto por teste e2e offline.
+2. `[x]` **W14-02 - Icones e maskable corretos**
+   - Gerar `maskable-512.png` com area segura (80%) e fundo cheio a partir do
+     `icon.svg`; otimizar PNGs (oxipng/squoosh) para < 60 kB.
+   - Adicionar `apple-touch-icon` 180px e `monochrome` para Android 13+.
+   - Solo: igual.
+   - Entregue (2026-10-03): `scripts/render-icons.mjs` gera todos a partir do
+     `icon.svg`; `scripts/optimize-png.py` quantiza (libimagequant). Maior
+     arquivo: 28 kB.
+3. `[x]` **W14-03 - Limpeza de backgrounds**
+   - Remover duplicata `flowers`/`spring` ou criar arte propria de `flowers`.
+   - Criar `*_mobile_bg_app` para temas que so tem desktop, evitando
+     recorte ruim no retrato.
+   - Mover PNGs-fonte para fora de `src/` (ex.: `art-source/`) para nao
+     confundir com assets de bundle.
+   - Solo: igual.
+   - Entregue (2026-10-03): `flowers` (sem uso, copia de `spring`) removido;
+     `*_mobile_bg_app.webp` nos seis temas via
+     `scripts/compose-mobile-bg.py` (mantem faixas de cima e de baixo da
+     arte); PNGs-fonte em `art-source/background`. Fundos dos temas
+     nao-padrao saem do precache (runtime cache `gtf-backgrounds`).
+4. `[x]` **W14-04 - Atualizacao e offline visiveis**
+   - Usar `virtual:pwa-register` com toast "nova versao disponivel - recarregar"
+     e indicador discreto de offline.
+   - Testar o hook de atualizacao com mock do registro.
+   - Solo: igual.
+   - Entregue (2026-10-03): `registerType: 'prompt'`, hook
+     `usePwaStatus` + `PwaStatusNotices` (toast de nova versao com
+     "Recarregar", toast "pronto offline", pill offline), textos nos seis
+     idiomas, testes com registro mockado.
+5. `[x]` **W14-05 - Vitrine para lojas e redes**
+   - Imagem Open Graph/Twitter (1200x630) por idioma, `meta description`,
+     e `screenshots` no manifesto (instalacao rica no Chrome/Android).
+   - Atualizar `docs/sample/` com capturas da UI atual.
+   - Solo: igual.
+   - Entregue (2026-10-03): `og-<lang>.png` nos seis idiomas
+     (`scripts/render-og.mjs`); tags description/OG/Twitter injetadas no
+     build (URL absoluta com `VITE_GTF_PUBLIC_URL`); 4 screenshots no
+     manifesto e `docs/sample/` recapturado via `npm run screenshots`.
+     Pendente fora do codigo: definir `VITE_GTF_PUBLIC_URL` no CI para OG
+     com URL absoluta.
+6. `[x]` **W14-06 - Smoke em navegador real**
+   - Playwright em `devDependencies` com 3 viewports e fluxo `?demo=game`
+     (iniciar turno, escolher card, revelar, proxima rodada) e screenshot de
+     referencia. Rodar local e opcionalmente no CI (gratis no GitHub Actions
+     para repo publico).
+   - Fecha o pendente "teste de navegador real" de W10-06.
+   - Solo: igual; incluir um fluxo solo.
+   - Entregue (2026-10-03): `e2e/smoke.spec.ts` (`npm run test:e2e`) contra
+     build + `vite preview`, projetos desktop 1440x900, retrato 402x874 e
+     paisagem 874x402; fluxos home, `?demo=game`, solo, overflow horizontal,
+     manifesto e reload offline; screenshots anexadas ao relatorio. CI
+     opcional em `.github/workflows/e2e.yml` (PR e manual, nao bloqueia
+     deploy). Comparacao pixel a pixel nao foi adotada: o demo sorteia
+     rodadas e as fontes vem da rede.
+
+### Onda 15 - Juice: FX e ritmo de party game
+
+Objetivo: cada palpite, revelacao e fim de partida ter um momento memoravel,
+sem atrasar o ritmo e respeitando `prefers-reduced-motion`.
+
+1. `[ ]` **W15-01 - Tabuleiro mobile compacto**
+   - Mover "Recalibrar", "Tela de exibicao" e "Modo apresentador" para um menu
+     `...` no cabecalho da rodada; placar vira faixa de chips rolavel.
+   - Cards com padding menor e numero inline; meta: 5 cards visiveis em
+     390x844 com frases medias.
+   - Solo: igual (solo ja nao tem atalho de apresentador).
+2. `[ ]` **W15-02 - Timer com urgencia**
+   - Anel/barra de progresso no lugar do texto; ultimos 10s mudam de cor,
+     pulsam e tocam tique sintetizado; ultimos 3s com batida mais forte.
+   - Vibracao curta (`navigator.vibrate`) opcional em settings.
+   - Solo: igual.
+3. `[ ]` **W15-03 - Revelacao com carimbo "FAKE"**
+   - Card falso recebe carimbo animado (SVG + CSS), verdadeiros viram "check"
+     em cascata; acerto dispara confete leve (canvas proprio, sem lib).
+   - Erro faz shake curto no card escolhido.
+   - Pontos sobem com contagem animada e "+bonus" flutuante.
+   - Solo: igual.
+4. `[ ]` **W15-04 - Passe o aparelho**
+   - Em "todos palpitam" e times, tela intermediaria "Passe para Bruno" com
+     avatar/cor do perfil, escondendo o palpite anterior e evitando espiar.
+   - Opcional em settings; testado na regra/hook sem depender de timer.
+   - Solo: some.
+5. `[ ]` **W15-05 - Final com podio**
+   - Podio animado 1o/2o/3o com avatares, destaques ("mais rapido", "maior
+     streak", "melhor blefe") derivados em `match-summary.ts`.
+   - Botao "Revanche" (mesmos jogadores e config, rodadas novas) em destaque.
+   - Solo: variante; mostra recorde batido/nao batido com comparacao.
+6. `[ ]` **W15-06 - Transicoes entre fases**
+   - Transicoes curtas (View Transitions API quando disponivel, fallback CSS)
+     entre intro, preparacao, jogo e revelacao; contagem 3-2-1 na preparacao.
+   - Solo: igual.
+
+### Onda 16 - Identidade visual e arte
+
+Objetivo: o jogo ter personagem e cara propria, nao so fundo bonito.
+
+1. `[ ]` **W16-01 - Mascote com expressoes**
+   - Evoluir o rosto do `icon.svg` em mascote SVG com 5 estados: pensando,
+     desconfiado, rindo, chocado, comemorando.
+   - Usar na intro, revelacao (acerto/erro), estados vazios e final.
+   - SVG inline, tematizavel por tokens; sem custo de geracao recorrente.
+   - Solo: igual.
+2. `[ ]` **W16-02 - Biblioteca de avatares**
+   - 16-24 avatares SVG (animais/personagens) com cor do perfil, escolhidos em
+     Familia e no setup; manter `player-default.svg` como fallback.
+   - Solo: igual (avatar do perfil solo).
+3. `[ ]` **W16-03 - Arte por categoria**
+   - Icone/ilustracao por categoria (historia, geografia, ciencia, animais,
+     cultura pop, esportes, bizarros) no banner da rodada, filtros e trilhas.
+   - Solo: igual.
+4. `[ ]` **W16-04 - Trilhas para todos os temas**
+   - Faixas para `dark`, `light`, `contrast` e `flowers` (ou mapeamento
+     intencional documentado), usando musica gerada ja licenciada ou CC0
+     (registrar licenca e origem em `docs/CONTENT_GUIDE.md` ou `CREDITS.md`).
+   - Respeitar a meta de peso de W14-01.
+   - Solo: igual.
+5. `[ ]` **W16-05 - Temas sazonais**
+   - Tema de festas de fim de ano e Halloween (fundo, paleta, trilha opcional)
+     ativados manualmente ou sugeridos pela data local.
+   - Solo: igual.
+6. `[ ]` **W16-06 - Selos e trofeus ilustrados**
+   - Substituir icones genericos de trofeus por medalhas SVG com raridade
+     (bronze/prata/ouro/lendario) e animacao de desbloqueio.
+   - Solo: igual.
+
+### Onda 17 - Conteudo e modos sociais
+
+Objetivo: mais partidas sem repeticao e modos que geram conteudo pela propria
+mesa, sem custo editorial.
+
+1. `[ ]` **W17-01 - Modo "Sobre nos" (conteudo da mesa)**
+   - Cada jogador escreve 4 verdades e 1 mentira sobre si (ou sobre a familia)
+     no proprio aparelho/turno; os outros adivinham.
+   - Rodadas montadas por regra pura a partir das entradas; nada sai do
+     aparelho; opcao de salvar como pack local.
+   - Conteudo infinito e personalizado sem custo editorial.
+   - Solo: some.
+2. `[ ]` **W17-02 - Modo "Mestre do blefe"**
+   - Um jogador ve qual e a falsa e defende todas as frases em voz alta; os
+     demais votam; o mestre pontua por quem enganou.
+   - Usa a fase `discussing` de W13-01 como base.
+   - Solo: some.
+3. `[ ]` **W17-03 - Pack Kids (6-9 anos)**
+   - 105 rodadas faceis (7 categorias x 15) com linguagem simples, usando
+     `ageRating`; filtro "Kids" no setup.
+   - Mesmo fluxo de W9-03 (IA redige, humano revisa, audit no CI).
+   - Solo: igual.
+4. `[ ]` **W17-04 - Novas categorias**
+   - Ex.: comida, corpo humano, tecnologia, espaco, Brasil/cultura local por
+     idioma. Comecar com 1 categoria x 3 dificuldades x 15 rodadas.
+   - Solo: igual.
+5. `[ ]` **W17-05 - Editor de packs na UI**
+   - Tela para criar/editar rodadas (5 frases, falsa, explicacao, categoria),
+     validar com `content-schema` e exportar JSON.
+   - Fecha o pendente "ferramenta de autoria com UI" de W9-04; base para
+     packs da comunidade.
+   - Solo: igual.
+6. `[ ]` **W17-06 - Packs sazonais**
+   - Packs pequenos (30 rodadas) de Natal, Halloween, Copa/Olimpiadas,
+     carregados sob demanda como chunk opcional.
+   - Solo: igual.
+
+### Onda 18 - Retencao e crescimento organico
+
+Objetivo: motivo para voltar todo dia e para compartilhar, sem servidor.
+
+1. `[ ]` **W18-01 - Desafio diario**
+   - Rodada(s) do dia escolhidas por seed deterministica (`data + idioma`)
+     sobre permutacao fixa do pack builtin: todos no mundo jogam o mesmo
+     desafio, sem backend; sem repetir por 315 dias.
+   - Historico local e sequencia de dias.
+   - Solo: e o caso principal; em grupo, opcional como "rodada do dia".
+2. `[ ]` **W18-02 - Resultado compartilhavel estilo grade**
+   - Texto com emojis (ex.: `Guess the Fake #142 🟩🟩🟥🟩🟩 ⚡12s`) e link,
+     via infraestrutura de share de W11.
+   - Opcional: imagem gerada em canvas para stories.
+   - Solo: igual.
+3. `[ ]` **W18-03 - Primeira partida guiada**
+   - Tutorial interativo de 1 rodada fixa no primeiro acesso, explicando
+     escolher, bonus e revelacao; pode ser pulado e revisto em settings.
+   - Solo: igual.
+4. `[ ]` **W18-04 - Temporadas familiares**
+   - Agrupar partidas em "temporada" (ex.: mes) com ranking e campeao da
+     temporada nos perfis; reinicio sem apagar historico.
+   - Solo: variante; temporada pessoal com melhor marca do mes.
+5. `[ ]` **W18-05 - Lancamento itch.io e devlog**
+   - Pagina itch.io com build web jogavel no navegador + zip, screenshots,
+     GIF curto e devlog por onda entregue (itch e gratis).
+   - Script `npm run package:itch` para gerar o zip com base relativa.
+   - Solo: igual.
+6. `[ ]` **W18-06 - Metricas sem rastreio (opcional)**
+   - Avaliar GoatCounter (gratis para uso hobby, sem cookies) ou ficar so com
+     estatisticas do itch/GitHub Pages; desligado por padrao e documentado.
+   - Solo: igual.
+
+### Onda 19 - Monetizacao local-first
+
+Objetivo: renda opcional e honesta sem backend, sem anuncios e sem bloquear o
+jogo base, que continua completo e gratis.
+
+1. `[ ]` **W19-01 - Assinatura Ed25519 de packs**
+   - Chave publica embutida no app; `verifyPackSignature` com WebCrypto sobre
+     `canonicalizePackForSigning` (W13-07). Script local de assinatura com a
+     chave privada fora do repositorio.
+   - Packs assinados mostram selo "oficial"; packs da comunidade continuam
+     importaveis sem selo. Fallback claro quando o navegador nao suporta
+     Ed25519.
+   - Solo: igual.
+2. `[ ]` **W19-02 - Packs premium vendidos fora do app**
+   - Vender packs tematicos (JSON assinado) no itch.io (pague o quanto quiser
+     com minimo) e/ou loja Ko-fi; o app so importa e verifica.
+   - Sem DRM forte: honra + assinatura; preco baixo (US$ 2-4).
+   - Solo: igual.
+3. `[ ]` **W19-03 - Codigo de apoiador**
+   - Token assinado (Ed25519) entregue a quem apoia no Ko-fi/BMC; desbloqueia
+     cosmeticos (tema extra, avatares, moldura de perfil) verificados offline.
+   - Conteudo de jogo nunca fica atras do codigo.
+   - Solo: igual.
+4. `[ ]` **W19-04 - Print-and-play**
+   - Gerar PDF de cartas imprimiveis a partir do conteudo (script local) para
+     venda/doacao no itch: produto fisico sem custo de producao.
+   - Solo: some (produto fora do app).
+5. `[ ]` **W19-05 - Loja Android via TWA (custo)**
+   - Empacotar com Bubblewrap/PWABuilder como Trusted Web Activity.
+   - Custo unico de US$ 25 da conta Google Play; so fazer se itch/web
+     mostrarem tracao. Cobranca em app fica fora de escopo.
+   - Solo: igual.
+
+Descartados de proposito: anuncios (ruins para publico familiar/infantil e
+exigem gestao de consentimento), contas/login, sinalizacao paga para
+multi-device, e geracao de conteudo por IA em tempo de execucao (custo por
+uso).
 
 ---
 

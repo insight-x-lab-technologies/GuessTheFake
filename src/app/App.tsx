@@ -14,6 +14,7 @@ import { useMatchSetup } from './hooks/useMatchSetup';
 import { useMultiDevice } from './hooks/useMultiDevice';
 import { usePacks } from './hooks/usePacks';
 import { useProfiles } from './hooks/useProfiles';
+import { usePwaStatus } from './hooks/usePwaStatus';
 import { useProgress } from './hooks/useProgress';
 import { useSettings } from './hooks/useSettings';
 import { readMatchBoot } from './match-boot';
@@ -29,6 +30,7 @@ import { MultiDeviceScreen } from './screens/MultiDeviceScreen';
 import { NewMatchChoiceScreen } from './screens/NewMatchChoiceScreen';
 import { PacksScreen } from './screens/PacksScreen';
 import { PresenterView } from './screens/PresenterView';
+import { PwaStatusNotices } from './screens/PwaStatusNotices';
 import { ProfilesScreen } from './screens/ProfilesScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SetupScreen } from './screens/SetupScreen';
@@ -44,6 +46,7 @@ export function App() {
   const [screen, setScreen] = useState<Screen>(boot.hasMatch ? 'play' : 'home');
 
   const audio = useAudio(settings);
+  const pwa = usePwaStatus();
   const progress = useProgress();
   const packs = usePacks({ t, language: settings.language });
   const profiles = useProfiles({ t, progress });
@@ -206,6 +209,7 @@ export function App() {
             </button>
           </aside>
         ) : null}
+        <PwaStatusNotices t={t} pwa={pwa} toastSlotBusy={Boolean(progress.achievementNotice)} />
 
         {screen === 'home' ? <HomeScreen t={t} onNewMatch={match.requestNewMatch} onPlaySolo={match.requestSoloMatch} /> : null}
 

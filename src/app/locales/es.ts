@@ -14,7 +14,14 @@ export const es: TranslationTree = {
     continue: 'Continuar',
     actions: 'Acciones',
     navLabel: 'Principal',
-    dismiss: 'Cerrar'
+    dismiss: 'Cerrar',
+    updateReady: 'Nueva versión disponible',
+    updateHint: 'Recarga cuando termine la ronda; la partida queda guardada.',
+    updateAction: 'Recargar',
+    offlineReady: 'Listo para jugar sin conexión',
+    offlineReadyHint: 'El juego funciona sin internet en este dispositivo.',
+    offline: 'Sin conexión',
+    offlineHint: 'Sin conexión. El juego sigue; la música nueva y compartir pueden fallar.'
   },
   home: {
     subtitle: 'Cinco afirmaciones por ronda y solo una es falsa. Descúbrela, suma puntos por rapidez y rachas, y guarda marcadores, trofeos y packs en tu dispositivo.',

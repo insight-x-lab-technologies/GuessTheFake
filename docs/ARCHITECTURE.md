@@ -26,13 +26,13 @@ Verified against the code on 2026-10-03.
 - React 19 for component structure.
 - TypeScript 5 for explicit contracts.
 - CSS Modules plus global design tokens.
-- Vitest 4 + jsdom + Testing Library (34 test files, 170 tests).
+- Vitest 4 + jsdom + Testing Library (37 test files, 179 tests).
 - vite-plugin-pwa for manifest and service worker generation.
+- Playwright (`@playwright/test`, Chromium) for the real-browser smoke in
+  `e2e/` (`npm run test:e2e`) and for the asset scripts in `scripts/`.
 - lucide-react for iconography, qrcode for local invite QR codes.
 
-Not adopted: no router, no state library, no CSS framework, no linter, and no
-real-browser test runner. A Playwright (or equivalent) browser smoke test is a
-future improvement; today the responsive smoke runs in jsdom.
+Not adopted: no router, no state library, no CSS framework, and no linter.
 
 Deployment runs from `.github/workflows/static.yml` on every push to `main`
 (`npm ci` -> `npm test` -> `npm run build` with `VITE_BASE_PATH`).
@@ -70,19 +70,20 @@ src/
       useMultiDevice.ts  # companion session, BroadcastChannel, manual WebRTC, QR
       useGrowth.ts       # share, donations, PWA install prompt
       useProfiles.ts     # local family profiles, stats, personal trophies
+      usePwaStatus.ts    # service worker update prompt, offline-ready, online state
     screens/             # presentational components, data + callbacks by props
       HomeScreen, NewMatchChoiceScreen, SetupScreen, GameBoardScreen,
       StatementGrid, RoundResultPanel, FinalResultPanel, LeaderboardScreen,
       AchievementsScreen, PacksScreen, MultiDeviceScreen, GrowthScreen,
       SettingsScreen, ScreenHeader (+ ResponsiveActions), ScoreResetFeedback,
       ProfilesScreen, PresenterView, SoloResultPanel, TableMomentPanel,
-      NextObjectiveCard, ProfileAvatar
+      NextObjectiveCard, ProfileAvatar, PwaStatusNotices
     *.test.ts(x)         # accessibility, new-match-flow, setup-filters,
                          # match-summary, match-persistence,
                          # gameplay-click-feedback, score-recalibration,
                          # responsive-smoke, hooks/useMatch,
                          # screens/AchievementsScreen
-  assets/                # background/, icons/, songs/, player-default.svg
+  assets/                # background/ (webp), songs/ (90s loops), player-default.svg
   core/                  # app-wide modules, independent of round logic
     achievements/
     audio/
@@ -276,7 +277,7 @@ Built-in content lives in `src/game/data/builtin/`: a language-neutral
 `catalog.ts` (round ids, category, difficulty, fake position, `ageRating`,
 `sources`, `review`) plus one `texts/<lang>.ts` per language. `loadBuiltinPack`
 loads only the active language through `import()`, so each language is its own
-chunk; the PWA precaches all of them. Round ids are shared across languages.
+chunk; the PWA precaches all of them (about 45 kB gzip each). Round ids are shared across languages.
 
 Today: 7 categories x 3 difficulties x 15 rounds = 315 factual rounds in all
 six languages, AI-drafted and accepted in a whole-pack human review on
@@ -355,14 +356,50 @@ five levels. Breakpoints are documented in `docs/FRONTEND_SYSTEM.md`.
 
 ## PWA Strategy
 
-`VitePWA({ registerType: 'autoUpdate' })` in `vite.config.ts` with an inline
-manifest and a workbox glob covering js, css, html, svg, png, jpg, webp, mp3,
-and ico. Icons are served from `public/assets/icons/`. The base path is
-env-driven via `VITE_BASE_PATH`.
+`VitePWA({ registerType: 'prompt' })` in `vite.config.ts` with an inline
+manifest (icons, `screenshots` for the rich install sheet) and a workbox glob
+over js, css, html, svg, png, jpg, webp, and ico. The base path is env-driven
+via `VITE_BASE_PATH`. Precache budget: under 3 MB (about 1.8 MB today).
 
-Registration relies on the plugin's auto-injection: the app does not import
-`virtual:pwa-register` and has no in-app update or offline-ready prompt. The
-install CTA is handled in `App.tsx` through `beforeinstallprompt`.
+- **Precache:** app code, all six language chunks, the default (cosmic)
+  backgrounds, and the icons. `includeManifestIcons` is off because the glob
+  already lists the icons; duplicated entries with different revisions make
+  Workbox throw `add-to-cache-list-conflicting-entries` and skip the whole
+  precache (the bug the offline e2e test guards).
+- **Runtime caches (CacheFirst):** `gtf-music` for the mp3 loops and
+  `gtf-backgrounds` for the other themes' art, filled the first time each is
+  used. `core/audio` downloads a track with a plain GET and plays it from a
+  blob URL, because `<audio>` streams with Range requests whose 206 responses
+  cannot be cached.
+- **Excluded:** `assets/og/` and `assets/screenshots/` (store and social
+  images, fetched by crawlers and the install sheet only).
+- **Updates:** `app/hooks/usePwaStatus.ts` registers through
+  `virtual:pwa-register`. A new version waits and `PwaStatusNotices` offers a
+  reload toast, so an update never interrupts a match. The same component
+  shows "ready offline" once and an offline pill. Vitest aliases the virtual
+  module to `src/test/pwa-register-stub.ts`.
+- **Install CTA:** `useGrowth` handles `beforeinstallprompt`.
+- **Social tags:** a small plugin in `vite.config.ts` injects description,
+  Open Graph and Twitter tags. Image URLs are absolute when
+  `VITE_GTF_PUBLIC_URL` is set at build time.
+
+## Assets
+
+Bundle assets live in `src/assets` and `public/assets`; editable masters live
+in `art-source/` (full-length songs, PNG backgrounds) and never ship. The
+derived files are regenerated by scripts:
+
+- `scripts/encode-music.sh [LOOP] [CROSSFADE]`: 90 s, 96 kbps MP3 loops with a
+  4 s crossfade seam, from `art-source/songs`.
+- `scripts/compose-mobile-bg.py`: portrait `*_mobile_bg_app.webp` that keep
+  the top and bottom bands of the desktop art (the middle is calm and hidden
+  behind panels).
+- `scripts/render-icons.mjs` + `scripts/optimize-png.py`: `icon-192/512`,
+  `maskable-512` (80% safe zone), `apple-touch-icon` (180 px) and
+  `monochrome-512` from `public/assets/icons/icon.svg`.
+- `scripts/render-og.mjs`: `public/assets/og/og-<lang>.png` (1200x630).
+- `npm run screenshots` (after `npm run build`): manifest screenshots in
+  `public/assets/screenshots/` and the reference captures in `docs/sample/`.
 
 ## Multiplayer Strategy
 
@@ -382,7 +419,7 @@ it breaks the static-hosting constraint.
 
 ## Testing Strategy
 
-Present today (34 files, 170 tests):
+Present today (37 files, 179 tests):
 
 - Round and scoring rule tests (`game/rules.test.ts`).
 - Content validation tests (`game/content-schema.test.ts`).
@@ -394,6 +431,10 @@ Present today (34 files, 170 tests):
   recording with fake timers (`app/hooks/useMatch.test.tsx`).
 - Isolated screen test for the trophy mode filter
   (`app/screens/AchievementsScreen.test.tsx`).
+- PWA status hook and notices with a mocked registration
+  (`app/hooks/usePwaStatus.test.tsx`, `app/screens/PwaStatusNotices.test.tsx`)
+  and the audio service's on-demand track loading
+  (`core/audio/audio-service.test.ts`).
 - Theme contrast audit test.
 - Interaction tests for card click/feedback, score recalibration, and match
   persistence.
@@ -401,9 +442,16 @@ Present today (34 files, 170 tests):
   (`src/app/responsive-smoke.test.tsx`). It runs in Vitest + jsdom, not a real
   browser, so it verifies structure and interaction, not computed layout.
 - `npm run build` also runs `tsc -b` as the typecheck gate.
+- Real-browser smoke (`e2e/smoke.spec.ts`, `npm run test:e2e`): Playwright
+  Chromium against `vite preview` of the production build, in desktop
+  1440x900, mobile portrait 402x874, and mobile landscape 874x402. It covers
+  home, the `?demo=game` turn (start, pick, reveal, next round), a solo
+  challenge, horizontal overflow, the manifest assets, and an offline reload
+  after the precache. Each flow attaches screenshots to the report. CI runs
+  it in `.github/workflows/e2e.yml` on pull requests and on demand; it does
+  not gate the deploy.
 
-Still missing: a real-browser smoke test, lint/format tooling, and coverage
-thresholds.
+Still missing: lint/format tooling and coverage thresholds.
 
 ## Design Direction
 

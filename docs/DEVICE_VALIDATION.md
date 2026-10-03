@@ -26,10 +26,19 @@ five viewports: 1440x900 (desktop), 820x1180 and 1180x820 (iPad 10), 402x874 and
 874x402 (iPhone 17). The iPhone Max and Galaxy Tab S9 rows above remain
 manual-only.
 
-Caveat: the smoke runs in jsdom, which does not compute CSS layout. It verifies
-structure, roles, and interaction — not overflow, wrapping, or breakpoints. Any
-visually relevant change still needs `npm run dev` plus a real browser or device
-check.
+Caveat: the jsdom smoke does not compute CSS layout. It verifies structure,
+roles, and interaction — not overflow, wrapping, or breakpoints.
+
+The real-browser smoke (W14-06) in `e2e/smoke.spec.ts` (`npm run test:e2e`)
+runs Playwright Chromium against the production build in three viewports:
+desktop 1440x900, iPhone 17 portrait 402x874 and landscape 874x402. It checks
+horizontal overflow on home, the `?demo=game` board and reveal, and the solo
+result, and attaches screenshots of each step to the report
+(`playwright-report/`). Tablet and the Max/Tab S9 rows stay manual. A visual
+change still deserves a look at those screenshots or a device.
+
+Reference captures of the current mobile UI live in `docs/sample/` (local
+only, ignored by git); regenerate them with `npm run build && npm run screenshots`.
 
 ## Findings Applied
 

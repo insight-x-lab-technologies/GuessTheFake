@@ -14,7 +14,14 @@ export const it: TranslationTree = {
     continue: 'Continua',
     actions: 'Azioni',
     navLabel: 'Principale',
-    dismiss: 'Chiudi'
+    dismiss: 'Chiudi',
+    updateReady: 'Nuova versione disponibile',
+    updateHint: 'Ricarica a fine round; la partita resta salvata.',
+    updateAction: 'Ricarica',
+    offlineReady: 'Pronto per giocare offline',
+    offlineReadyHint: 'Il gioco funziona senza internet su questo dispositivo.',
+    offline: 'Offline',
+    offlineHint: 'Nessuna connessione. Il gioco continua; nuova musica e condivisione potrebbero non funzionare.'
   },
   home: {
     subtitle: 'Cinque affermazioni per turno, una sola è falsa. Trovala, fai punti con velocità e serie, e conserva punteggi, trofei e pack sul tuo dispositivo.',

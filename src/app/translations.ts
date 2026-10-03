@@ -20,7 +20,14 @@ const shellTranslations: Record<'pt' | 'en', TranslationTree> = {
       continue: 'Continuar',
       actions: 'Ações',
       navLabel: 'Principal',
-      dismiss: 'Fechar'
+      dismiss: 'Fechar',
+      updateReady: 'Nova versão disponível',
+      updateHint: 'Recarregue quando a rodada acabar; a partida fica salva.',
+      updateAction: 'Recarregar',
+      offlineReady: 'Pronto para jogar offline',
+      offlineReadyHint: 'O jogo funciona sem internet neste aparelho.',
+      offline: 'Offline',
+      offlineHint: 'Sem conexão. O jogo continua; música nova e compartilhamento podem falhar.'
     },
     home: {
       subtitle: 'Cinco afirmações por rodada, só uma é falsa. Descubra qual, some pontos com velocidade e sequência, e acompanhe placar, troféus e packs local-first.',
@@ -345,7 +352,14 @@ const shellTranslations: Record<'pt' | 'en', TranslationTree> = {
       continue: 'Continue',
       actions: 'Actions',
       navLabel: 'Primary',
-      dismiss: 'Dismiss'
+      dismiss: 'Dismiss',
+      updateReady: 'New version available',
+      updateHint: 'Reload when the round ends; your match is saved.',
+      updateAction: 'Reload',
+      offlineReady: 'Ready to play offline',
+      offlineReadyHint: 'The game works without internet on this device.',
+      offline: 'Offline',
+      offlineHint: 'No connection. The game keeps working; new music and sharing may fail.'
     },
     home: {
       subtitle: 'Five statements per round, only one is fake. Spot it, score on speed and streaks, and keep scores, trophies, and packs local-first.',
