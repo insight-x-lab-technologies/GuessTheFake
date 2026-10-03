@@ -80,8 +80,9 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   entra nos seis (`src/app/translations.test.ts` checa paridade).
 - **Conteudo builtin e curado, carregado por idioma**: catalogo neutro em
   `src/game/data/builtin/catalog.ts` + `texts/<lang>.ts` via `import()`.
-  315 rodadas (7 x 3 x 15, meta de W9-01), redigidas por IA e `draft` ate
-  revisao humana (W9-03), registrada em `data/builtin/reviews.ts`. Checklist em `docs/CONTENT_GUIDE.md`;
+  315 rodadas (7 x 3 x 15, meta de W9-01), redigidas por IA e aceitas em
+  revisao humana do pack inteiro em 2026-10-03 (W9-03); re-revisoes por rodada
+  vao em `data/builtin/reviews.ts`. Checklist em `docs/CONTENT_GUIDE.md`;
   `npm run audit:content` mostra a cobertura; `npm run review:content` gera a
   folha de revisao em `content-review/<lang>.md`.
 - **Multiplayer e serverless**: `BroadcastChannel` entre abas do mesmo device,

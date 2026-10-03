@@ -180,7 +180,7 @@ export function App() {
               <SetupScreen t={t} text={text} setup={setup} contentStatus={packs.builtinStatus} onStart={() => match.startNewMatch()} />
             ) : null}
 
-            {!match.showNewMatchChoices && gameState.phase !== 'setup' && round ? (
+            {!match.showNewMatchChoices && gameState.phase !== 'setup' && (round || gameState.phase === 'finished') ? (
               <GameBoardScreen
                 t={t}
                 text={text}

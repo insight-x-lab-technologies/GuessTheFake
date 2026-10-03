@@ -37,9 +37,9 @@ export type BuiltinRoundEntry = {
   review: GuessTheFakeReview;
 };
 
-// Reference works used to check each category. AI-drafted content stays
-// `draft` until a human runs the checklist in docs/CONTENT_GUIDE.md and logs
-// the round in ./reviews.ts.
+// Reference works used to check each category. Rounds edited after the
+// whole-pack review should be re-checked against docs/CONTENT_GUIDE.md and
+// logged in ./reviews.ts.
 const categorySources: Record<BuiltinCategoryId, string[]> = {
   history: ['Encyclopaedia Britannica'],
   geography: ['Encyclopaedia Britannica', 'CIA World Factbook'],
@@ -64,8 +64,10 @@ const fakeIndexes: Record<BuiltinCategoryId, Record<GuessTheFakeDifficulty, numb
 // Rounds that need more advanced school context (checklist item 8).
 const tenPlusRounds = new Set(['science-hard-05', 'science-hard-07', 'science-hard-13']);
 
-// Every round was AI-drafted and AI self-checked; only BUILTIN_REVIEWS marks human review.
-const draftReview: GuessTheFakeReview = { status: 'draft', notes: 'AI-drafted; AI self-check 2026-09-22' };
+// Every round was AI-drafted, AI self-checked (2026-09-22) and accepted in a
+// human review of the whole pack (2026-10-03, W9-03). BUILTIN_REVIEWS records
+// later per-round re-reviews.
+const packReview: GuessTheFakeReview = { status: 'reviewed', reviewedAt: '2026-10-03', notes: 'AI-drafted; whole-pack human review 2026-10-03' };
 
 export const BUILTIN_ROUNDS: BuiltinRoundEntry[] = BUILTIN_CATEGORIES.flatMap(category => {
   const categoryId = category.id as BuiltinCategoryId;
@@ -79,7 +81,7 @@ export const BUILTIN_ROUNDS: BuiltinRoundEntry[] = BUILTIN_CATEGORIES.flatMap(ca
         fakeIndex,
         ageRating: tenPlusRounds.has(id) ? '10+' as const : 'all' as const,
         sources: categorySources[categoryId],
-        review: BUILTIN_REVIEWS[id] ?? draftReview
+        review: BUILTIN_REVIEWS[id] ?? packReview
       };
     })
   );

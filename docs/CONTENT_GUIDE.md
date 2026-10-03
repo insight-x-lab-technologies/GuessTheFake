@@ -64,8 +64,10 @@ npm run audit:content   # tabela de cobertura + problemas
 - ha id de rodada ou de frase duplicado, frase repetida (normalizada), texto
   faltando, explicacao vazia ou falsa invalida.
 
-## Estado (2026-09-22)
+## Estado (2026-10-03)
 
 315 rodadas (15 por categoria/dificuldade, meta de W9-01), redigidas e
-autoconferidas por IA, todas `draft`. Tres rodadas `10+`
+autoconferidas por IA e aceitas em revisao humana do pack inteiro em
+2026-10-03 (`review.status: 'reviewed'`, default em `catalog.ts`). Rodada
+editada depois disso deve ser reconferida e registrada em `reviews.ts`. Tres rodadas `10+`
 (`science-hard-05`, `-07`, `-13`).

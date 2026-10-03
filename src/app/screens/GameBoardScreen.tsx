@@ -22,7 +22,8 @@ export function GameBoardScreen({
   t: Translate;
   text: LocalizeText;
   match: MatchController;
-  round: GuessTheFakeRound;
+  // Null once the match is finished: the round index moves past the last round.
+  round: GuessTheFakeRound | null;
   growth: Pick<GrowthController, 'growthStatus' | 'shareResult'>;
   statementButtonRefs: MutableRefObject<Array<HTMLButtonElement | null>>;
 }) {
@@ -93,7 +94,7 @@ export function GameBoardScreen({
         </div>
       ) : null}
 
-      {gameState.phase === 'playing' || gameState.phase === 'revealed' ? (
+      {round && (gameState.phase === 'playing' || gameState.phase === 'revealed') ? (
         <>
           <div className={styles.roundToolbar}>
             <p className={styles.prompt}>
@@ -118,7 +119,7 @@ export function GameBoardScreen({
         </>
       ) : null}
 
-      {gameState.phase === 'revealed' ? (
+      {round && gameState.phase === 'revealed' ? (
         <RoundResultPanel
           t={t}
           text={text}

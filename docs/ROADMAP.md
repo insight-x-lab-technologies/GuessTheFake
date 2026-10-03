@@ -4,7 +4,7 @@ Documento de avaliacao do estado atual e plano de evolucao do Guess the Fake:
 um jogo unico, local-first, hobby-friendly, publicado como PWA estatico.
 
 Data da revisao: 2026-09-22
-Ultima atualizacao de implementacao: 2026-09-22 (Onda 9: W9-01 concluido, W9-03 com ferramenta de revisao)
+Ultima atualizacao de implementacao: 2026-10-03 (Onda 9 completa: W9-03 fechado com revisao humana do pack)
 
 > Nota de 2026-08-07: o projeto deixou de ser descrito como "plataforma de
 > varios jogos". Guess the Fake e um jogo isolado. A antiga Onda 6 (registry
@@ -21,19 +21,14 @@ A base em Vite, React, TypeScript e PWA esta madura. O jogo e completavel do
 inicio ao fim, as regras principais estao cobertas por testes unitarios, e
 `npm test` (27 arquivos, 103 testes) e `npm run build` passam.
 
-O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8, 10, 11 e 12 completas; Ondas 5
-e 7 entregues com um item parcial cada; Onda 9 entregue com um item parcial
-(revisao humana do conteudo); pendencia maior em mecanicas sociais
-novas (Onda 13).
+O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8, 9, 10, 11 e 12 completas; Ondas 5
+e 7 entregues com um item parcial cada (adiados); pendencia maior em
+mecanicas sociais novas (Onda 13).
 
 Itens parciais e a razao de cada um:
 
 - W5-03 e W7-01 - pareamento peer-to-peer automatico exigiria sinalizacao;
   optou-se por WebRTC manual para preservar o app estatico sem backend.
-- W9-03 - o conteudo builtin (315 rodadas, 75 frases por
-  categoria/dificuldade/idioma) foi redigido e autoconferido por IA: fica
-  `draft` ate revisao humana pelo checklist de `docs/CONTENT_GUIDE.md`, com a
-  folha gerada por `npm run review:content`.
 
 Resumo executivo:
 
@@ -43,8 +38,8 @@ Resumo executivo:
   velocidade, streaks e feedback de conteudo.
 - **Conteudo:** pack embutido com 315 rodadas factuais (7 categorias x 3
   dificuldades x 15 rodadas), localizadas em `pt`, `en`, `es`, `fr`, `de` e `it`,
-  um chunk carregado sob demanda por idioma. Redigido por IA e marcado `draft`
-  ate revisao humana.
+  um chunk carregado sob demanda por idioma. Redigido por IA e aceito em revisao
+  humana em 2026-10-03.
 - **Packs e dados locais:** import/export, validacao, ativacao granular e
   persistencia local foram conectados.
 - **Audio:** servico em `src/core/audio` com biblioteca de faixas por tema
@@ -60,8 +55,7 @@ Resumo executivo:
 - **Arquitetura de UI:** `src/app/App.tsx` e so o shell (~215 linhas). Estado,
   timers e efeitos vivem em hooks de `src/app/hooks/`; cada tela e um
   componente visual em `src/app/screens/`.
-- **Proxima prioridade:** revisao humana e expansao do conteudo builtin
-  (W9-01/W9-03) e Onda 13.
+- **Proxima prioridade:** validar o modo single player e Onda 13.
 
 ---
 
@@ -108,15 +102,13 @@ Resumo executivo:
   respeito a `prefers-reduced-motion`.
 - Fluxo explicito de nova partida com continuar/reiniciar/setup limpo e
   persistencia versionada da partida em andamento.
+- Conteudo builtin: 315 rodadas factuais em seis idiomas com metadados
+  editoriais, auditoria automatizada e revisao humana aceita (Onda 9).
 - CI de deploy para GitHub Pages em `.github/workflows/static.yml`, rodando
   `npm test` e `npm run build` a cada push em `main`.
 
 ### Parcial
 
-- **Conteudo:** 315 rodadas factuais em seis idiomas (meta de volume de W9-01
-  atingida), com metadados editoriais (`ageRating`, `sources`, `review`),
-  auditoria automatizada e folha de revisao, mas ainda sem revisao humana.
-  Ver W9-03.
 - **Packs:** ha validacao de schema, import/export JSON, ativacao granular,
   persistencia de packs instalados e mensagens de erro. Assinatura atual e um
   checksum local, nao validacao criptografica/licenciamento.
@@ -136,7 +128,7 @@ Resumo executivo:
 
 ### Nao feito
 
-- Revisao humana do conteudo builtin e ferramenta de autoria com UI.
+- Ferramenta de autoria de conteudo com UI.
 - Pareamento peer-to-peer automatico entre dispositivos fisicos.
 - Assinatura criptografica/licenciamento de packs.
 - Toda a Onda 13 (momentos de mesa, rodadas especiais, perfis familiares,
@@ -557,7 +549,7 @@ varias sessoes familiares sem repeticao rapida.
    - Packs externos continuam filtrados por `languages`. `?demo=game` inicia
      quando o pack do idioma carrega.
 
-3. `[/]` **W9-03 - Qualidade factual e revisao editorial**
+3. `[x]` **W9-03 - Qualidade factual e revisao editorial**
    - Checklist editorial em `docs/CONTENT_GUIDE.md`.
    - Rodadas com `ageRating`, `sources` e `review` (tipos em
      `src/game/types.ts`, validados em `content-schema.ts`), nunca exibidos na
@@ -571,8 +563,9 @@ varias sessoes familiares sem repeticao rapida.
      idioma de comparacao, linha pronta para o log). O log humano fica em
      `src/game/data/builtin/reviews.ts`, validado por teste; o audit mostra
      revisadas por celula.
-   - Pendente: todo o conteudo esta `review.status: 'draft'`. Marcar `[x]` so
-     depois de revisao humana pelo checklist.
+   - Revisao humana do pack inteiro aceita em 2026-10-03: o default de
+     `catalog.ts` passou a `review.status: 'reviewed'`. Rodadas editadas
+     depois disso sao reconferidas e registradas em `reviews.ts`.
 
 4. `[x]` **W9-04 - Ferramentas de autoria e validacao de conteudo**
    - `src/game/content-audit.ts` (puro): cobertura por idioma, categoria e

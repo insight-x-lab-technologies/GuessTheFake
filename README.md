@@ -18,8 +18,7 @@ It is a single, self-contained game: no backend, no accounts, no game launcher.
 - 27 test files / 103 tests in Vitest, including a responsive smoke across five
   viewports and a content coverage audit.
 
-Known limits: built-in content is AI-drafted and awaits human review
-(`npm run review:content` prints the review sheet); multi-device pairing is manual.
+Known limits: multi-device pairing is manual.
 See `docs/ROADMAP.md` for the full status.
 
 ## Scripts

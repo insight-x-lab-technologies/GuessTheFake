@@ -257,8 +257,9 @@ loads only the active language through `import()`, so each language is its own
 chunk; the PWA precaches all of them. Round ids are shared across languages.
 
 Today: 7 categories x 3 difficulties x 15 rounds = 315 factual rounds in all
-six languages, AI-drafted and marked `review.status: 'draft'` until a human
-review is logged in `builtin/reviews.ts`. `game/content-review.ts` builds the
+six languages, AI-drafted and accepted in a whole-pack human review on
+2026-10-03 (`review.status: 'reviewed'`, default in `builtin/catalog.ts`);
+later per-round re-reviews are logged in `builtin/reviews.ts`. `game/content-review.ts` builds the
 review sheet (`npm run review:content`). Editorial checklist
 and authoring flow: `docs/CONTENT_GUIDE.md`. `game/content-audit.ts` checks
 coverage and duplicates; its test fails below `RELEASE_MIN_ROUNDS_PER_CELL`.
