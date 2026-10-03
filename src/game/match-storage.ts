@@ -17,7 +17,7 @@ export const GUESS_THE_FAKE_QUICK_GAME_KEY = createStorageKey(
 );
 
 const activePhases: GuessTheFakePhase[] = ['intro', 'preparing', 'playing', 'discussing', 'revealed'];
-const modes: GuessTheFakeModeId[] = ['solo', 'classic', 'all-guess', 'teams'];
+const modes: GuessTheFakeModeId[] = ['solo', 'classic', 'all-guess', 'teams', 'about-us', 'bluff-master'];
 const specialKinds: SpecialRoundKind[] = ['double-or-nothing', 'sudden-death', 'gradual-clue', 'lightning', 'category-challenge'];
 const momentKinds: TableMomentKind[] = ['defend', 'vote', 'change-mind'];
 const languages: Language[] = ['pt', 'en', 'es', 'fr', 'de', 'it'];
@@ -77,7 +77,8 @@ function withOnda13Defaults(state: GuessTheFakeState): GuessTheFakeState {
     challenge: {
       categoryId: typeof challenge.categoryId === 'string' ? challenge.categoryId : DEFAULT_CHALLENGE.categoryId,
       difficulty: ['easy', 'medium', 'hard', 'all'].includes(challenge.difficulty) ? challenge.difficulty : 'all',
-      packIds: Array.isArray(challenge.packIds) ? challenge.packIds.filter(id => typeof id === 'string') : []
+      packIds: Array.isArray(challenge.packIds) ? challenge.packIds.filter(id => typeof id === 'string') : [],
+      ...(challenge.kids === true ? { kids: true } : {})
     },
     tableMoments: state.tableMoments === true,
     tableMoment: moment && typeof moment === 'object' && momentKinds.includes(moment.kind)
@@ -89,7 +90,15 @@ function withOnda13Defaults(state: GuessTheFakeState): GuessTheFakeState {
       : null,
     specialRoundsEnabled: state.specialRoundsEnabled === true,
     specialRounds,
-    revealedClues: Number.isInteger(state.revealedClues) && state.revealedClues >= 1 ? state.revealedClues : GRADUAL_CLUE_START
+    revealedClues: Number.isInteger(state.revealedClues) && state.revealedClues >= 1 ? state.revealedClues : GRADUAL_CLUE_START,
+    // Matches saved before Onda 15 have no guess history.
+    guessHistory: Array.isArray(state.guessHistory)
+      ? state.guessHistory.filter(entry => entry && typeof entry === 'object' && Number.isInteger(entry.roundIndex))
+      : [],
+    // Matches saved before Onda 17 have no bluffers.
+    bluffers: Array.isArray(state.bluffers) && state.bluffers.length === state.rounds.length
+      ? state.bluffers.map(id => (typeof id === 'string' ? id : null))
+      : Array(state.rounds.length).fill(null)
   };
 }
 

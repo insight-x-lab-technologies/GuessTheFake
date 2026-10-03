@@ -51,7 +51,15 @@ export const de: TranslationTree = {
     },
     classic: { title: 'Klassisch', description: 'Reihum versucht jeweils ein Spieler, die falsche Aussage zu finden.' },
     allGuess: { title: 'Alle tippen', description: 'Alle geben vor der Auflösung einen Tipp ab.' },
-    teams: { title: 'Teams', description: 'Teams wechseln sich ab und punkten auf einer eigenen Tafel.' }
+    teams: { title: 'Teams', description: 'Teams wechseln sich ab und punkten auf einer eigenen Tafel.' },
+    aboutUs: {
+      title: 'Über uns',
+      description: 'Alle schreiben 4 Wahrheiten und 1 Lüge über sich; der Tisch rät.'
+    },
+    bluffMaster: {
+      title: 'Bluffmeister',
+      description: 'Eine Person kennt die Fälschung und verteidigt alle fünf; jede getäuschte Person zählt.'
+    }
   },
   setup: {
     variationsTitle: 'Varianten',
@@ -313,5 +321,208 @@ export const de: TranslationTree = {
     version: 'v{version}',
     author: 'Von {author}',
     changelog: 'Versionsverlauf'
+  },
+  art: {
+    avatars: {
+      fox: 'Fuchs',
+      panda: 'Panda',
+      owl: 'Eule',
+      octopus: 'Krake',
+      lion: 'Löwe',
+      turtle: 'Schildkröte',
+      penguin: 'Pinguin',
+      unicorn: 'Einhorn',
+      bee: 'Biene',
+      whale: 'Wal',
+      cactus: 'Kaktus',
+      rocket: 'Rakete',
+      cat: 'Katze',
+      dog: 'Hund',
+      frog: 'Frosch',
+      bear: 'Bär',
+      rabbit: 'Hase',
+      koala: 'Koala',
+      monkey: 'Affe',
+      pig: 'Schweinchen',
+      chick: 'Küken',
+      robot: 'Roboter',
+      alien: 'Alien',
+      ghost: 'Gespenstchen'
+    },
+    defaultAvatar: 'Spieler ohne Profil',
+    medal: {
+      bronze: 'Bronze',
+      silver: 'Silber',
+      gold: 'Gold',
+      legendary: 'Legendär',
+      label: 'Medaille {rarity}',
+      locked: 'Gesperrt',
+      unlockedRarity: '{rarity} freigeschaltet'
+    },
+    seasonal: {
+      halloween: {
+        title: 'Halloween-Stimmung',
+        body: 'Fledermäuse, Kürbisse und die Herbstmusik für den Tisch.'
+      },
+      festive: {
+        title: 'Feststimmung',
+        body: 'Lichter, Schnee und Glanz zum Jahresende für den Tisch.'
+      },
+      apply: 'Theme verwenden',
+      dismiss: 'Nicht jetzt',
+      settingsHint: 'Saisonale Themes: jederzeit anwendbar; zur passenden Zeit schlägt die App sie auf der Startseite vor.'
+    },
+    tracks: {
+      heading: 'Musik',
+      mapping: 'Dieses Theme spielt den Titel {track}.',
+      cosmic: 'Kosmisch',
+      spring: 'Frühling',
+      autumn: 'Herbst'
+    }
+  },
+  juice: {
+    menu: {
+      label: 'Weitere Rundenaktionen'
+    },
+    scoreboard: 'Punktestand',
+    stamp: 'FAKE',
+    bonusFloat: '+{bonus} Bonus',
+    countdown: 'Start in {seconds}',
+    pass: {
+      title: 'Gib weiter an {name}',
+      hint: 'Nicht spicken: Der vorige Tipp bleibt verdeckt.',
+      ready: 'Ich bin {name}, zeigen'
+    },
+    podium: {
+      kicker: 'Podium',
+      label: 'Podium der Partie',
+      points: '{points} Pkt.',
+      place: 'Platz {place}',
+      restLine: '{place}. {name} · {points} Pkt.'
+    },
+    highlights: {
+      label: 'Highlights der Partie',
+      fastest: 'Am schnellsten',
+      'longest-streak': 'Längste Serie',
+      'best-bluff': 'Bester Bluff',
+      fastestLine: '{name} lag im Schnitt nach {seconds} s richtig',
+      streakLine: '{name} lag {streak}-mal in Folge richtig',
+      bluffLine: '„{text}“ hat {count} getäuscht'
+    },
+    rematch: 'Revanche',
+    solo: {
+      you: 'Du',
+      record: 'Rekord',
+      previousRecord: 'Bisheriger Rekord'
+    },
+    settings: {
+      passDevice: 'Gerät zwischen den Tipps weitergeben',
+      passDeviceHint: 'Bei „Alle raten“ und Teams erscheint ein Übergabebildschirm, der den vorigen Tipp verdeckt.',
+      vibration: 'In den letzten Sekunden vibrieren',
+      vibrationUnsupported: 'Dieses Gerät oder dieser Browser kann nicht vibrieren.'
+    }
+  },
+  aboutUs: {
+    category: 'Über uns',
+    subtitle: 'Alle schreiben nacheinander. Nichts verlässt dieses Gerät.',
+    progress: 'Spieler {current} von {total}',
+    startWriting: 'Meine Sätze schreiben',
+    writeTitle: '{name}, schreib über dich',
+    writeHint: 'Vier Wahrheiten und eine Lüge. Markiere die Lüge; die Sätze werden gemischt.',
+    statementLabel: 'Satz {number}',
+    lieLabel: 'Lüge',
+    issue: {
+      'empty-statement': 'Füll alle fünf Sätze aus.',
+      'too-long': 'Jeder Satz darf höchstens 140 Zeichen haben.',
+      'duplicate-statement': 'Die Sätze müssen verschieden sein.',
+      'no-lie': 'Markiere, welcher Satz die Lüge ist.'
+    },
+    cancel: 'Zurück zur Einrichtung',
+    confirm: 'Fertig, verbergen',
+    doneTitle: 'Alle haben geschrieben!',
+    doneHint: '{count} Runden bereit, eine pro Person. Wer eine Runde geschrieben hat, rät dort nicht mit.',
+    missingEntries: 'Alle müssen ihre fünf Sätze schreiben, bevor es losgeht.',
+    saveAsPack: 'Als lokales Pack speichern',
+    packTitle: 'Über uns ({date})',
+    packExplanation: 'Geschrieben von {name}.',
+    saved: 'Pack gespeichert. Unter Packs aktivieren oder bearbeiten.',
+    setupTitle: 'Inhalt vom Tisch',
+    setupNote: 'Keine Packs, keine Filter: Alle schreiben eine Runde über sich ({count} Runden). Wer schreibt, punktet für jede getäuschte Person.',
+    summaryLine: '{players} Spieler · eine Runde von jeder Person',
+    startWritingAll: 'Runden schreiben'
+  },
+  bluff: {
+    result: '{name} hat {count} getäuscht ({names}): +{points} Punkte.',
+    resultNone: '{name} hat diesmal niemanden getäuscht.',
+    masterBanner: 'Bluffmeister: {name}',
+    masterBannerHint: '{name} verteidigt alle fünf Sätze; stimmt ab, wenn ihr sie gehört habt.',
+    aboutUsBanner: 'Sätze von {name}',
+    aboutUsBannerHint: '{name} rät nicht mit und punktet für jede getäuschte Person.',
+    aboutUsIntro: 'Runde von {name}',
+    aboutUsIntroHint: '{name}, lies deine fünf Sätze laut vor. Die anderen raten nacheinander.',
+    briefingTitle: 'Nur {name} schaut',
+    briefingHint: 'Alle anderen schauen weg. Der Bluffmeister sieht die Fälschung.',
+    briefingReveal: 'Fälschung zeigen',
+    briefingDefend: 'Verteidige alle fünf, als wären sie alle wahr.',
+    briefingReady: 'Bereit, verbergen',
+    finalDefense: {
+      title: 'Schlussplädoyer',
+      description: 'Der Bluffmeister hält ein letztes Plädoyer. Alle dürfen ihre Stimme vor der Auflösung einmal ändern.'
+    }
+  },
+  kids: {
+    toggle: 'Kids (6-9 Jahre)',
+    toggleHint: 'Nur leichte Runden in einfacher Sprache, für Kinder geschrieben.',
+    short: 'Kids'
+  },
+  editor: {
+    title: 'Neues Pack',
+    editTitle: 'Pack bearbeiten',
+    subtitle: 'Schreib Runden mit 5 Sätzen und einer Fälschung. Der Entwurf bleibt auf diesem Gerät.',
+    back: 'Zurück zu den Packs',
+    packInfo: 'Pack',
+    packTitle: 'Titel',
+    emoji: 'Cover (Emoji)',
+    language: 'Sprache',
+    description: 'Beschreibung',
+    newCategory: 'Neue Kategorie',
+    addCategory: 'Kategorie hinzufügen',
+    categoryInvalid: 'Gib einen Kategorienamen ein, den es noch nicht gibt.',
+    roundTitle: 'Runde {number}',
+    removeRound: 'Entfernen',
+    statement: 'Satz {number}',
+    fake: 'Falsch',
+    explanation: 'Erklärung (bei der Auflösung)',
+    addRound: 'Runde hinzufügen',
+    summary: 'Übersicht',
+    summaryLine: '{rounds} Runden · {issues} offen',
+    validate: 'Prüfen',
+    save: 'Auf dem Gerät speichern',
+    export: 'JSON exportieren',
+    discard: 'Entwurf verwerfen',
+    invalid: '{count} Punkte zu korrigieren.',
+    valid: 'Alles gut: Das Pack ist fertig.',
+    saved: 'Pack gespeichert und aktiviert.',
+    exported: 'JSON exportiert.',
+    create: 'Pack erstellen',
+    continueDraft: 'Entwurf fortsetzen',
+    edit: 'Bearbeiten',
+    issue: {
+      title: 'Gib dem Pack einen Titel.',
+      noRounds: 'Füge mindestens eine Runde hinzu.',
+      category: 'Runde {round}: Wähle eine Kategorie.',
+      statement: 'Runde {round}: Füll Satz {statement} aus.',
+      statementLong: 'Runde {round}: Satz {statement} hat mehr als 200 Zeichen.',
+      duplicate: 'Runde {round}: Satz {statement} wiederholt einen anderen Satz im Pack.',
+      fake: 'Runde {round}: Markiere den falschen Satz.',
+      explanation: 'Runde {round}: Schreib die Erklärung.'
+    }
+  },
+  seasonalPacks: {
+    title: 'Saison-Packs',
+    subtitle: 'Kleine optionale Packs, die erst beim Aktivieren geladen werden.',
+    inSeason: 'Passt zur Saison',
+    loading: 'Lädt…',
+    rounds: '{rounds} Runden'
   }
 };

@@ -3150,6 +3150,457 @@ const en: BuiltinTexts = {
       'The human body has no muscles that work without our control.'
     ],
     explanation: 'The heart, stomach and intestines have muscles that work on their own, without voluntary control.'
+  },
+  // W17-04 food
+  'food-easy-01': {
+    statements: [
+      'Chocolate is made from coffee beans.',
+      'Bread is made with flour.',
+      'Cheese is made from milk.',
+      'Honey is produced by bees.',
+      'Popcorn comes from corn.'
+    ],
+    explanation: 'Chocolate is made from the seeds of the cacao tree.'
+  },
+  'food-easy-02': {
+    statements: [
+      'Sushi is a dish from Japanese cuisine.',
+      'Tacos are a typical dish from Mexico.',
+      'Pizza was born in Japan.',
+      'Paella is a dish from Spain.',
+      'The croissant is strongly linked to France.'
+    ],
+    explanation: 'Modern pizza was born in Italy, in Naples.'
+  },
+  'food-easy-03': {
+    statements: [
+      'Apples grow on trees.',
+      'Strawberries are red on the outside.',
+      'Watermelon is full of water.',
+      'A pineapple has a crown of leaves.',
+      'Carrots grow hanging from trees.'
+    ],
+    explanation: 'A carrot is a root that grows underground.'
+  },
+  'food-easy-04': {
+    statements: [
+      'Rice is often grown in flooded fields.',
+      'Beans are rich in protein.',
+      'Wheat is used to make flour.',
+      'Rice grows in bunches hanging from tall trees.',
+      'Oats are a cereal.'
+    ],
+    explanation: 'Rice is a short, grass-like plant; the grains grow in heads at the top of the stalk.'
+  },
+  'food-easy-05': {
+    statements: [
+      'Yogurt is made from milk.',
+      'Cow\'s milk is naturally blue.',
+      'Butter is made from the fat in milk.',
+      'Ice cream usually contains milk or cream.',
+      'A chicken egg has a white and a yolk.'
+    ],
+    explanation: 'Cow\'s milk is white.'
+  },
+  'food-easy-06': {
+    statements: [
+      'Oranges have plenty of vitamin C.',
+      'Bananas are rich in potassium.',
+      'Avocado is the main ingredient in guacamole.',
+      'The lemon is the sweetest fruit there is.',
+      'Grapes can become raisins when they dry.'
+    ],
+    explanation: 'Lemons are acidic and sour.'
+  },
+  'food-easy-07': {
+    statements: [
+      'Ketchup is made mainly from strawberries.',
+      'Mustard is made from seeds.',
+      'Mayonnaise is made with egg and oil.',
+      'Vinegar is acidic.',
+      'Salt can come from seawater.'
+    ],
+    explanation: 'Ketchup is made mainly from tomatoes.'
+  },
+  'food-easy-08': {
+    statements: [
+      'Egg yolks are yellow.',
+      'Eggs can be boiled, fried or scrambled.',
+      'An omelet is made with beaten eggs.',
+      'Quail eggs are smaller than chicken eggs.',
+      'Chicken eggs are always white.'
+    ],
+    explanation: 'Chicken eggs can be white, brown or even bluish, depending on the breed of hen.'
+  },
+  'food-easy-09': {
+    statements: [
+      'Tea is made from leaves.',
+      'Hot chocolate contains cocoa.',
+      'Coffee is made from the leaves of the coffee plant.',
+      'Orange juice is made by squeezing oranges.',
+      'Toast is bread that has been browned.'
+    ],
+    explanation: 'Coffee is made from the roasted, ground beans of the coffee plant.'
+  },
+  'food-easy-10': {
+    statements: [
+      'A banana turns yellow as it ripens.',
+      'Bananas grow with their tips pointing down.',
+      'A coconut has water inside.',
+      'A mango has a big pit.',
+      'A passion fruit has lots of seeds.'
+    ],
+    explanation: 'Each banana grows with its tip pointing up, toward the light.'
+  },
+  'food-easy-11': {
+    statements: [
+      'Ice cream was invented in the year 2000.',
+      'Peoples of the ancient Americas were already consuming cacao.',
+      'The sandwich is named after an English earl.',
+      'Bread is one of the oldest prepared foods.',
+      'The potato originally came from South America.'
+    ],
+    explanation: 'Frozen desserts have existed for centuries; ice cream was popular long before 2000.'
+  },
+  'food-easy-12': {
+    statements: [
+      'Lettuce is a leafy vegetable.',
+      'Garlic has a strong smell.',
+      'Cutting onions can make your eyes water.',
+      'Broccoli looks like a little tree.',
+      'Every mushroom found in the wild is safe to eat.'
+    ],
+    explanation: 'Many wild mushrooms are poisonous; never eat one without an expert\'s help.'
+  },
+  'food-easy-13': {
+    statements: [
+      'A lollipop is a candy on a stick.',
+      'Brigadeiro, a Brazilian sweet, is made with chocolate.',
+      'Gelatin is made from squeezed fruit.',
+      'Marshmallows are soft and fluffy.',
+      'Cotton candy is made from melted, spun sugar.'
+    ],
+    explanation: 'Gelatin is made from collagen, a protein that comes from animals; the fruit flavor is added.'
+  },
+  'food-easy-14': {
+    statements: [
+      'Our body contains a lot of water.',
+      'Water is the drink our body needs least.',
+      'Fruit and vegetables are good for your health.',
+      'Washing your hands before eating helps avoid germs.',
+      'Brushing your teeth after eating helps prevent cavities.'
+    ],
+    explanation: 'Water is essential: the body needs it every day.'
+  },
+  'food-easy-15': {
+    statements: [
+      'A hot dog is a bun with a sausage.',
+      'A margherita pizza has the colors of the Italian flag.',
+      'Nuggets are usually made of chicken meat.',
+      'The hamburger is named after a city in China.',
+      'French fries are made from potatoes.'
+    ],
+    explanation: 'The name hamburger comes from Hamburg, a city in Germany.'
+  },
+  'food-medium-01': {
+    statements: [
+      'Cinnamon is made from the bark of a tree.',
+      'Vanilla comes from a kind of rose.',
+      'Saffron is among the most expensive spices in the world.',
+      'Black pepper was once used as a form of payment.',
+      'Ginger is used as a spice and in teas.'
+    ],
+    explanation: 'Vanilla comes from the pod of an orchid.'
+  },
+  'food-medium-02': {
+    statements: [
+      'Tomatoes reached Italy from China.',
+      'Rice was domesticated in Asia.',
+      'The potato was domesticated in the Andes.',
+      'Cacao is native to the Americas.',
+      'The banana originally comes from Southeast Asia.'
+    ],
+    explanation: 'The tomato came from the Americas and reached Europe in the 16th century.'
+  },
+  'food-medium-03': {
+    statements: [
+      'Tofu is made from soybeans.',
+      'Kimchi is a fermented dish from Korea.',
+      'The wasabi served in most restaurants outside Japan is real wasabi.',
+      'Miso is a fermented soybean paste.',
+      'Ramen is a noodle dish served in broth.'
+    ],
+    explanation: 'Much of the wasabi served outside Japan is horseradish with green coloring.'
+  },
+  'food-medium-04': {
+    statements: [
+      'Roquefort cheese is made from sheep\'s milk.',
+      'Traditional mozzarella can be made from buffalo milk.',
+      'The holes in Swiss cheese come from gas made by bacteria.',
+      'Cheddar cheese is named after an English village.',
+      'Parmesan cheese is ready in just a few days.'
+    ],
+    explanation: 'Parmigiano Reggiano is aged for at least 12 months.'
+  },
+  'food-medium-05': {
+    statements: [
+      'Drinking milk helps soothe the burn of chili.',
+      'The Scoville scale measures how hot peppers are.',
+      'Bell peppers belong to the same family as hot chilies.',
+      'What makes chili peppers hot is vitamin C.',
+      'Birds do not feel the burn of chili the way we do.'
+    ],
+    explanation: 'The heat comes from capsaicin, a substance found in chili peppers.'
+  },
+  'food-medium-06': {
+    statements: [
+      'Baker\'s yeast is made of living things called yeasts.',
+      'Bread dough needs to rest so it can rise.',
+      'Bread rises in the oven because of the salt.',
+      'Sourdough bread uses a homemade starter.',
+      'Kneading the dough helps develop gluten.'
+    ],
+    explanation: 'Bread rises because of the yeast: it releases gas that puffs up the dough.'
+  },
+  'food-medium-07': {
+    statements: [
+      'Feijoada is a typical dish from Brazil.',
+      'Apple strudel is a famous pastry from Austria.',
+      'Ceviche is a dish of marinated raw fish typical of Peru.',
+      'The croissant was invented in Japan.',
+      'Moroccan couscous is made with wheat semolina.'
+    ],
+    explanation: 'The croissant became famous in France, inspired by an Austrian bread called kipferl.'
+  },
+  'food-medium-08': {
+    statements: [
+      'A cut apple turns brown because it instantly starts to rot.',
+      'A few drops of lemon on a cut apple help keep it from browning.',
+      'Pineapple contains an enzyme that tenderizes meat.',
+      'Cutting onions releases a gas that stings the eyes.',
+      'High up in the mountains, water boils at a lower temperature.'
+    ],
+    explanation: 'An apple browns because it reacts with oxygen in the air (oxidation), not because it is rotting.'
+  },
+  'food-medium-09': {
+    statements: [
+      'Oats are rich in fiber.',
+      'Brown rice has less fiber than white rice.',
+      'Rice and beans together make a good protein combination.',
+      'Nuts are rich in healthy fats.',
+      'Plain yogurt contains live bacteria.'
+    ],
+    explanation: 'Brown rice keeps the outer layers of the grain and has more fiber than white rice.'
+  },
+  'food-medium-10': {
+    statements: [
+      'The sweet potato is a close relative of the regular potato.',
+      'Tomatoes and potatoes belong to the same plant family.',
+      'To botanists, a pumpkin is a fruit.',
+      'The peanut is a legume, like beans.',
+      'Beets and spinach are relatives.'
+    ],
+    explanation: 'The sweet potato belongs to another family; it is related to morning glories.'
+  },
+  'food-medium-11': {
+    statements: [
+      'Pad thai is a dish from Thailand.',
+      'Pho is a typical Vietnamese soup.',
+      'Curry is strongly linked to Indian cuisine.',
+      'Hummus is made from chickpeas.',
+      'Sushi was born in the United States.'
+    ],
+    explanation: 'Sushi began in Asia as a way of preserving fish in rice and became a Japanese dish.'
+  },
+  'food-medium-12': {
+    statements: [
+      'A fresh egg usually sinks in water.',
+      'The greenish ring around a boiled egg yolk shows the egg has gone bad.',
+      'Egg white is made mostly of water and protein.',
+      'Ostrich eggs are the largest bird eggs in the world today.',
+      'The yolk contains fat and vitamins.'
+    ],
+    explanation: 'The green ring appears when the egg is overcooked; it does not mean it has gone bad.'
+  },
+  'food-medium-13': {
+    statements: [
+      'Green tea and black tea come from the same plant.',
+      'Chimarrão is made with yerba mate.',
+      'Chocolate contains a little caffeine.',
+      'Decaf coffee contains no caffeine at all.',
+      'Ethiopia is considered the birthplace of coffee.'
+    ],
+    explanation: 'Decaf still has a little caffeine, just much less.'
+  },
+  'food-medium-14': {
+    statements: [
+      'The ice cream cone became popular at a world\'s fair in the United States in 1904.',
+      'French fries are strongly linked to Belgium.',
+      'Pão de queijo is typical of Minas Gerais, in Brazil.',
+      'The Cuban sandwich is linked to the Cuban community in Florida.',
+      'Hawaiian pizza was invented in Hawaii.'
+    ],
+    explanation: 'Hawaiian pizza was created in Canada in 1962 by a cook of Greek origin.'
+  },
+  'food-medium-15': {
+    statements: [
+      'A pressure cooker cooks food faster.',
+      'A microwave heats food by making water molecules jiggle.',
+      'Adding salt to water makes it boil much faster.',
+      'Putting a lid on the pot helps water boil faster.',
+      'Steaming vegetables helps keep their nutrients.'
+    ],
+    explanation: 'Salt actually raises the boiling point a tiny bit; in practice, the difference is minimal.'
+  },
+  'food-hard-01': {
+    statements: [
+      'Nutmeg and mace come from the same fruit.',
+      'True saffron is extracted from the roots of a tree.',
+      'Cardamom is a relative of ginger.',
+      'Allspice is a dried berry, not a blend of spices.',
+      'Ceylon cinnamon comes from Sri Lanka.'
+    ],
+    explanation: 'Saffron comes from the stigmas of a crocus flower, picked by hand.'
+  },
+  'food-hard-02': {
+    statements: [
+      'Emmental is a Swiss cheese with big holes.',
+      'Parmigiano Reggiano has a protected designation of origin.',
+      'Halloumi can be grilled without melting.',
+      'Traditional feta is a Greek cheese.',
+      'The blue veins in gorgonzola come from a dye.'
+    ],
+    explanation: 'The blue veins come from Penicillium molds.'
+  },
+  'food-hard-03': {
+    statements: [
+      'Monosodium glutamate was created in Italy.',
+      'Umami is considered the fifth basic taste.',
+      'Tomatoes and parmesan are rich in glutamate.',
+      'Fish sauce is widely used in Southeast Asian cooking.',
+      'Soy sauce is made from fermented soybeans.'
+    ],
+    explanation: 'Monosodium glutamate was developed in Japan in 1908 by the chemist Kikunae Ikeda.'
+  },
+  'food-hard-04': {
+    statements: [
+      'Truffles are fungi that grow underground.',
+      'True caviar comes from salmon roe.',
+      'Pigs and dogs are used to find truffles.',
+      'Wagyu is a type of Japanese cattle.',
+      'Jamón ibérico comes from Iberian breed pigs.'
+    ],
+    explanation: 'True caviar comes from sturgeon roe.'
+  },
+  'food-hard-05': {
+    statements: [
+      'Most of a chili\'s heat sits in the white inner part.',
+      'Paprika is made from dried, ground peppers.',
+      'Chipotle is a smoked jalapeño.',
+      'Bell peppers have almost no capsaicin.',
+      'Green and red bell peppers are different species.'
+    ],
+    explanation: 'A green bell pepper is the same fruit picked before it ripens; ripe, it turns red, yellow or orange.'
+  },
+  'food-hard-06': {
+    statements: [
+      'Cacao seeds are fermented before they become chocolate.',
+      'Milk chocolate was invented in Belgium.',
+      'The Aztecs made a bitter cacao drink.',
+      'Cocoa butter is the fat from the cacao seed.',
+      'Tempering makes chocolate shiny and snappy.'
+    ],
+    explanation: 'Milk chocolate was created in Switzerland in 1875 by Daniel Peter.'
+  },
+  'food-hard-07': {
+    statements: [
+      'Traditional carbonara contains no cream.',
+      'Gnocchi can be made with potatoes.',
+      'Genoese pesto is made with basil and pine nuts.',
+      'Risotto is made with rice.',
+      'Tiramisu is a traditional dessert from ancient Rome.'
+    ],
+    explanation: 'Tiramisu is a recent recipe, created in the 20th century in the Veneto region.'
+  },
+  'food-hard-08': {
+    statements: [
+      'Italian gelato has more air whipped in than regular ice cream.',
+      'Gelato is usually served less cold than regular ice cream.',
+      'Traditional sorbet is made without milk.',
+      'The ice pop was invented by an 11-year-old boy in the United States.',
+      'Fried ice cream exists: it is coated and fried very quickly.'
+    ],
+    explanation: 'Gelato has less air whipped in, which makes it denser.'
+  },
+  'food-hard-09': {
+    statements: [
+      'Fresh olives are too bitter to eat straight off the tree.',
+      'Extra virgin olive oil is obtained by mechanical processes only.',
+      'Green and black olives come from different species of tree.',
+      'Spain is the world\'s largest producer of olive oil.',
+      'Capers are flower buds.'
+    ],
+    explanation: 'Green or black, olives come from the same olive tree; only the ripeness or processing changes.'
+  },
+  'food-hard-10': {
+    statements: [
+      'The pecan is native to Italy.',
+      'The macadamia is native to Australia.',
+      'The Brazil nut comes from an Amazon rainforest tree.',
+      'The pistachio is native to Central Asia and the Middle East.',
+      'Hazelnuts are widely used in chocolate spreads.'
+    ],
+    explanation: 'The pecan is native to North America.'
+  },
+  'food-hard-11': {
+    statements: [
+      'Outside Mexico, vanilla flowers are usually pollinated by hand.',
+      'Madagascar is a major vanilla producer.',
+      'Most of the vanilla flavor used in industry is synthetic.',
+      'Vanilla is the most expensive spice in the world.',
+      'The vanilla orchid is a climbing plant.'
+    ],
+    explanation: 'The most expensive spice in the world is saffron; vanilla comes right after it.'
+  },
+  'food-hard-12': {
+    statements: [
+      'Meringue is made by whipping egg whites with sugar.',
+      'A soufflé rises because of the air in the whipped egg whites.',
+      'The classic croissant is made without butter.',
+      'Crème brûlée has a crust of burnt sugar.',
+      'French macarons are made with almond flour.'
+    ],
+    explanation: 'The classic croissant uses lots of butter, folded into the dough in layers.'
+  },
+  'food-hard-13': {
+    statements: [
+      'Bitter cassava must be processed to remove toxic substances.',
+      'Rhubarb leaves are toxic.',
+      'In Japan, pufferfish (fugu) may only be prepared by licensed chefs.',
+      'Cashews can be eaten raw straight off the tree, still in their shell.',
+      'Raw red kidney beans contain a toxin that cooking destroys.'
+    ],
+    explanation: 'The cashew shell holds an irritating resin; the nut must be roasted or processed first.'
+  },
+  'food-hard-14': {
+    statements: [
+      'Tempura came to Japan through Portuguese influence.',
+      'Natto is made from fermented soybeans.',
+      'What defines sushi is raw fish.',
+      'Matcha is powdered green tea.',
+      'Umeboshi is a salted, pickled Japanese plum.'
+    ],
+    explanation: 'What defines sushi is rice seasoned with vinegar; raw fish is optional.'
+  },
+  'food-hard-15': {
+    statements: [
+      'The Maillard reaction is what browns meat and bread crust.',
+      'How done meat is can be checked with a thermometer.',
+      'Acidic marinades tenderize the surface of meat.',
+      'The red juice from a rare steak is blood.',
+      'Slow cooking at low heat helps tough cuts become tender.'
+    ],
+    explanation: 'The red juice is mostly water with myoglobin, a muscle protein, not blood.'
   }
 };
 

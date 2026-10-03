@@ -64,6 +64,14 @@ const pt: TranslationTree = {
     teams: {
       title: 'Times',
       description: 'Times alternam turnos e pontuam em um placar separado.'
+    },
+    aboutUs: {
+      title: 'Sobre nós',
+      description: 'Cada um escreve 4 verdades e 1 mentira sobre si; a mesa adivinha.'
+    },
+    bluffMaster: {
+      title: 'Mestre do blefe',
+      description: 'Um jogador sabe a falsa e defende as cinco; quem ele enganar vale ponto.'
     }
   },
   setup: {
@@ -326,6 +334,209 @@ const pt: TranslationTree = {
     version: 'v{version}',
     author: 'Por {author}',
     changelog: 'Histórico de versões'
+  },
+  art: {
+    avatars: {
+      fox: 'Raposa',
+      panda: 'Panda',
+      owl: 'Coruja',
+      octopus: 'Polvo',
+      lion: 'Leão',
+      turtle: 'Tartaruga',
+      penguin: 'Pinguim',
+      unicorn: 'Unicórnio',
+      bee: 'Abelha',
+      whale: 'Baleia',
+      cactus: 'Cacto',
+      rocket: 'Foguete',
+      cat: 'Gato',
+      dog: 'Cachorro',
+      frog: 'Sapo',
+      bear: 'Urso',
+      rabbit: 'Coelho',
+      koala: 'Coala',
+      monkey: 'Macaco',
+      pig: 'Porquinho',
+      chick: 'Pintinho',
+      robot: 'Robô',
+      alien: 'Alienígena',
+      ghost: 'Fantasminha'
+    },
+    defaultAvatar: 'Jogador sem perfil',
+    medal: {
+      bronze: 'Bronze',
+      silver: 'Prata',
+      gold: 'Ouro',
+      legendary: 'Lendária',
+      label: 'Medalha {rarity}',
+      locked: 'Bloqueada',
+      unlockedRarity: '{rarity} desbloqueada'
+    },
+    seasonal: {
+      halloween: {
+        title: 'Clima de Halloween',
+        body: 'Morcegos, abóboras e trilha de outono para a mesa.'
+      },
+      festive: {
+        title: 'Clima de festas',
+        body: 'Luzes, neve e brilho de fim de ano para a mesa.'
+      },
+      apply: 'Usar tema',
+      dismiss: 'Agora não',
+      settingsHint: 'Temas sazonais: aplique quando quiser; na época certa o app sugere na home.'
+    },
+    tracks: {
+      heading: 'Trilha de música',
+      mapping: 'Este tema toca a trilha {track}.',
+      cosmic: 'Cósmica',
+      spring: 'Primavera',
+      autumn: 'Outono'
+    }
+  },
+  juice: {
+    menu: {
+      label: 'Mais ações da rodada'
+    },
+    scoreboard: 'Placar',
+    stamp: 'FAKE',
+    bonusFloat: '+{bonus} bônus',
+    countdown: '{seconds} para começar',
+    pass: {
+      title: 'Passe para {name}',
+      hint: 'Sem espiar: o palpite anterior fica escondido.',
+      ready: 'Sou {name}, mostrar'
+    },
+    podium: {
+      kicker: 'Pódio',
+      label: 'Pódio da partida',
+      points: '{points} pts',
+      place: '{place}º lugar',
+      restLine: '{place}º {name} · {points} pts'
+    },
+    highlights: {
+      label: 'Destaques da partida',
+      fastest: 'Mais rápido',
+      'longest-streak': 'Maior sequência',
+      'best-bluff': 'Melhor blefe',
+      fastestLine: '{name} acertou em {seconds}s, em média',
+      streakLine: '{name} acertou {streak} seguidas',
+      bluffLine: '"{text}" enganou {count}'
+    },
+    rematch: 'Revanche',
+    solo: {
+      you: 'Você',
+      record: 'Recorde',
+      previousRecord: 'Recorde anterior'
+    },
+    settings: {
+      passDevice: 'Passe o aparelho entre palpites',
+      passDeviceHint: 'Em "todos palpitam" e times, mostra uma tela de troca que esconde o palpite anterior.',
+      vibration: 'Vibrar nos últimos segundos',
+      vibrationUnsupported: 'Este aparelho ou navegador não vibra.'
+    }
+  },
+  aboutUs: {
+    category: 'Sobre nós',
+    subtitle: 'Cada jogador escreve no seu turno. Nada sai deste aparelho.',
+    progress: 'Jogador {current} de {total}',
+    startWriting: 'Escrever minhas frases',
+    writeTitle: '{name}, escreva sobre você',
+    writeHint: 'Quatro verdades e uma mentira. Marque a mentira; as frases aparecem embaralhadas.',
+    statementLabel: 'Frase {number}',
+    lieLabel: 'Mentira',
+    issue: {
+      'empty-statement': 'Preencha as cinco frases.',
+      'too-long': 'Cada frase pode ter até 140 caracteres.',
+      'duplicate-statement': 'As frases precisam ser diferentes.',
+      'no-lie': 'Marque qual frase é a mentira.'
+    },
+    cancel: 'Voltar ao setup',
+    confirm: 'Pronto, esconder',
+    doneTitle: 'Todos escreveram!',
+    doneHint: '{count} rodadas prontas, uma de cada jogador. Quem escreveu a rodada não palpita nela.',
+    missingEntries: 'Cada jogador precisa escrever suas cinco frases antes de começar.',
+    saveAsPack: 'Salvar como pack local',
+    packTitle: 'Sobre nós ({date})',
+    packExplanation: 'Frase escrita por {name}.',
+    saved: 'Pack salvo. Ative ou edite na tela Packs.',
+    setupTitle: 'Conteúdo da mesa',
+    setupNote: 'Sem packs nem filtros: cada jogador escreve uma rodada sobre si ({count} rodadas). O autor pontua por quem enganar.',
+    summaryLine: '{players} jogadores · uma rodada escrita por cada um',
+    startWritingAll: 'Escrever as rodadas'
+  },
+  bluff: {
+    result: '{name} enganou {count} ({names}): +{points} pontos.',
+    resultNone: '{name} não enganou ninguém desta vez.',
+    masterBanner: 'Mestre do blefe: {name}',
+    masterBannerHint: '{name} defende as cinco frases; vote quando ouvir.',
+    aboutUsBanner: 'Frases de {name}',
+    aboutUsBannerHint: '{name} não palpita; ganha pontos por quem enganar.',
+    aboutUsIntro: 'Rodada de {name}',
+    aboutUsIntroHint: '{name}, leia suas cinco frases em voz alta. Os outros palpitam um de cada vez.',
+    briefingTitle: 'Só {name} olha',
+    briefingHint: 'Os outros desviam o olhar. O mestre vê qual é a falsa.',
+    briefingReveal: 'Ver a frase falsa',
+    briefingDefend: 'Defenda as cinco como se fossem todas verdadeiras.',
+    briefingReady: 'Pronto, esconder',
+    finalDefense: {
+      title: 'Defesa final',
+      description: 'O mestre faz o último apelo. Cada um pode trocar o voto uma vez antes da revelação.'
+    }
+  },
+  kids: {
+    toggle: 'Kids (6-9 anos)',
+    toggleHint: 'Só rodadas fáceis com linguagem simples, escritas para crianças.',
+    short: 'Kids'
+  },
+  editor: {
+    title: 'Novo pack',
+    editTitle: 'Editar pack',
+    subtitle: 'Escreva rodadas com 5 frases e uma falsa. O rascunho fica salvo neste aparelho.',
+    back: 'Voltar aos packs',
+    packInfo: 'Pack',
+    packTitle: 'Título',
+    emoji: 'Capa (emoji)',
+    language: 'Idioma',
+    description: 'Descrição',
+    newCategory: 'Nova categoria',
+    addCategory: 'Adicionar categoria',
+    categoryInvalid: 'Digite um nome de categoria que ainda não exista.',
+    roundTitle: 'Rodada {number}',
+    removeRound: 'Remover',
+    statement: 'Frase {number}',
+    fake: 'Falsa',
+    explanation: 'Explicação (aparece na revelação)',
+    addRound: 'Adicionar rodada',
+    summary: 'Resumo',
+    summaryLine: '{rounds} rodadas · {issues} pendências',
+    validate: 'Validar',
+    save: 'Salvar no aparelho',
+    export: 'Exportar JSON',
+    discard: 'Descartar rascunho',
+    invalid: '{count} pendências para corrigir.',
+    valid: 'Tudo certo: o pack está pronto.',
+    saved: 'Pack salvo e ativado.',
+    exported: 'JSON exportado.',
+    create: 'Criar pack',
+    continueDraft: 'Continuar rascunho',
+    edit: 'Editar',
+    issue: {
+      title: 'Dê um título ao pack.',
+      noRounds: 'Adicione pelo menos uma rodada.',
+      category: 'Rodada {round}: escolha uma categoria.',
+      statement: 'Rodada {round}: preencha a frase {statement}.',
+      statementLong: 'Rodada {round}: a frase {statement} passou de 200 caracteres.',
+      duplicate: 'Rodada {round}: a frase {statement} repete outra do pack.',
+      fake: 'Rodada {round}: marque qual frase é a falsa.',
+      explanation: 'Rodada {round}: escreva a explicação.'
+    }
+  },
+  seasonalPacks: {
+    title: 'Packs sazonais',
+    subtitle: 'Packs pequenos e opcionais, baixados só quando ativados.',
+    inSeason: 'Da temporada',
+    loading: 'Carregando…',
+    rounds: '{rounds} rodadas'
   }
 };
 
@@ -389,6 +600,14 @@ const en: TranslationTree = {
     teams: {
       title: 'Teams',
       description: 'Teams alternate turns and score on a separate board.'
+    },
+    aboutUs: {
+      title: 'About us',
+      description: 'Everyone writes 4 truths and 1 lie about themselves; the table guesses.'
+    },
+    bluffMaster: {
+      title: 'Bluff master',
+      description: 'One player knows the fake and defends all five; everyone fooled is a point.'
     }
   },
   setup: {
@@ -651,6 +870,209 @@ const en: TranslationTree = {
     version: 'v{version}',
     author: 'By {author}',
     changelog: 'Changelog'
+  },
+  art: {
+    avatars: {
+      fox: 'Fox',
+      panda: 'Panda',
+      owl: 'Owl',
+      octopus: 'Octopus',
+      lion: 'Lion',
+      turtle: 'Turtle',
+      penguin: 'Penguin',
+      unicorn: 'Unicorn',
+      bee: 'Bee',
+      whale: 'Whale',
+      cactus: 'Cactus',
+      rocket: 'Rocket',
+      cat: 'Cat',
+      dog: 'Dog',
+      frog: 'Frog',
+      bear: 'Bear',
+      rabbit: 'Rabbit',
+      koala: 'Koala',
+      monkey: 'Monkey',
+      pig: 'Piggy',
+      chick: 'Chick',
+      robot: 'Robot',
+      alien: 'Alien',
+      ghost: 'Little ghost'
+    },
+    defaultAvatar: 'Player without profile',
+    medal: {
+      bronze: 'Bronze',
+      silver: 'Silver',
+      gold: 'Gold',
+      legendary: 'Legendary',
+      label: '{rarity} medal',
+      locked: 'Locked',
+      unlockedRarity: '{rarity} unlocked'
+    },
+    seasonal: {
+      halloween: {
+        title: 'Halloween vibes',
+        body: 'Bats, pumpkins, and the autumn soundtrack for the table.'
+      },
+      festive: {
+        title: 'Holiday vibes',
+        body: 'Lights, snow, and end-of-year sparkle for the table.'
+      },
+      apply: 'Use theme',
+      dismiss: 'Not now',
+      settingsHint: 'Seasonal themes: apply them anytime; in season the app suggests them on the home screen.'
+    },
+    tracks: {
+      heading: 'Music track',
+      mapping: 'This theme plays the {track} track.',
+      cosmic: 'Cosmic',
+      spring: 'Spring',
+      autumn: 'Autumn'
+    }
+  },
+  juice: {
+    menu: {
+      label: 'More round actions'
+    },
+    scoreboard: 'Scoreboard',
+    stamp: 'FAKE',
+    bonusFloat: '+{bonus} bonus',
+    countdown: '{seconds} to go',
+    pass: {
+      title: 'Pass to {name}',
+      hint: 'No peeking: the previous guess stays hidden.',
+      ready: 'I\'m {name}, show me'
+    },
+    podium: {
+      kicker: 'Podium',
+      label: 'Match podium',
+      points: '{points} pts',
+      place: 'Place {place}',
+      restLine: '#{place} {name} · {points} pts'
+    },
+    highlights: {
+      label: 'Match highlights',
+      fastest: 'Fastest',
+      'longest-streak': 'Longest streak',
+      'best-bluff': 'Best bluff',
+      fastestLine: '{name} got it in {seconds}s on average',
+      streakLine: '{name} got {streak} in a row',
+      bluffLine: '"{text}" fooled {count}'
+    },
+    rematch: 'Rematch',
+    solo: {
+      you: 'You',
+      record: 'Record',
+      previousRecord: 'Previous record'
+    },
+    settings: {
+      passDevice: 'Pass the device between guesses',
+      passDeviceHint: 'In "everyone guesses" and teams, shows a hand-off screen that hides the previous guess.',
+      vibration: 'Vibrate on the last seconds',
+      vibrationUnsupported: 'This device or browser cannot vibrate.'
+    }
+  },
+  aboutUs: {
+    category: 'About us',
+    subtitle: 'Each player writes on their own turn. Nothing leaves this device.',
+    progress: 'Player {current} of {total}',
+    startWriting: 'Write my statements',
+    writeTitle: '{name}, write about yourself',
+    writeHint: 'Four truths and one lie. Mark the lie; the statements are shuffled.',
+    statementLabel: 'Statement {number}',
+    lieLabel: 'Lie',
+    issue: {
+      'empty-statement': 'Fill in all five statements.',
+      'too-long': 'Each statement can have up to 140 characters.',
+      'duplicate-statement': 'The statements must be different.',
+      'no-lie': 'Mark which statement is the lie.'
+    },
+    cancel: 'Back to setup',
+    confirm: 'Done, hide it',
+    doneTitle: 'Everyone has written!',
+    doneHint: '{count} rounds ready, one per player. The author of a round does not guess on it.',
+    missingEntries: 'Every player must write their five statements before starting.',
+    saveAsPack: 'Save as local pack',
+    packTitle: 'About us ({date})',
+    packExplanation: 'Written by {name}.',
+    saved: 'Pack saved. Turn it on or edit it in Packs.',
+    setupTitle: 'Table content',
+    setupNote: 'No packs or filters: each player writes one round about themselves ({count} rounds). The author scores for everyone fooled.',
+    summaryLine: '{players} players · one round written by each',
+    startWritingAll: 'Write the rounds'
+  },
+  bluff: {
+    result: '{name} fooled {count} ({names}): +{points} points.',
+    resultNone: '{name} fooled nobody this time.',
+    masterBanner: 'Bluff master: {name}',
+    masterBannerHint: '{name} defends all five statements; vote once you have heard them.',
+    aboutUsBanner: '{name}\'s statements',
+    aboutUsBannerHint: '{name} does not guess; they score for everyone fooled.',
+    aboutUsIntro: '{name}\'s round',
+    aboutUsIntroHint: '{name}, read your five statements out loud. The others guess one at a time.',
+    briefingTitle: 'Only {name} looks',
+    briefingHint: 'Everyone else looks away. The master sees which one is fake.',
+    briefingReveal: 'Show the fake',
+    briefingDefend: 'Defend all five as if they were all true.',
+    briefingReady: 'Ready, hide it',
+    finalDefense: {
+      title: 'Final defense',
+      description: 'The master makes a last plea. Everyone may change their vote once before the reveal.'
+    }
+  },
+  kids: {
+    toggle: 'Kids (ages 6-9)',
+    toggleHint: 'Only easy rounds in simple language, written for children.',
+    short: 'Kids'
+  },
+  editor: {
+    title: 'New pack',
+    editTitle: 'Edit pack',
+    subtitle: 'Write rounds with 5 statements and one fake. The draft is saved on this device.',
+    back: 'Back to packs',
+    packInfo: 'Pack',
+    packTitle: 'Title',
+    emoji: 'Cover (emoji)',
+    language: 'Language',
+    description: 'Description',
+    newCategory: 'New category',
+    addCategory: 'Add category',
+    categoryInvalid: 'Type a category name that does not exist yet.',
+    roundTitle: 'Round {number}',
+    removeRound: 'Remove',
+    statement: 'Statement {number}',
+    fake: 'Fake',
+    explanation: 'Explanation (shown on reveal)',
+    addRound: 'Add round',
+    summary: 'Summary',
+    summaryLine: '{rounds} rounds · {issues} to fix',
+    validate: 'Validate',
+    save: 'Save on this device',
+    export: 'Export JSON',
+    discard: 'Discard draft',
+    invalid: '{count} things to fix.',
+    valid: 'All good: the pack is ready.',
+    saved: 'Pack saved and turned on.',
+    exported: 'JSON exported.',
+    create: 'Create pack',
+    continueDraft: 'Continue draft',
+    edit: 'Edit',
+    issue: {
+      title: 'Give the pack a title.',
+      noRounds: 'Add at least one round.',
+      category: 'Round {round}: pick a category.',
+      statement: 'Round {round}: fill in statement {statement}.',
+      statementLong: 'Round {round}: statement {statement} is over 200 characters.',
+      duplicate: 'Round {round}: statement {statement} repeats another one in the pack.',
+      fake: 'Round {round}: mark which statement is fake.',
+      explanation: 'Round {round}: write the explanation.'
+    }
+  },
+  seasonalPacks: {
+    title: 'Seasonal packs',
+    subtitle: 'Small optional packs, downloaded only when turned on.',
+    inSeason: 'In season',
+    loading: 'Loading…',
+    rounds: '{rounds} rounds'
   }
 };
 

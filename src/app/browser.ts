@@ -77,3 +77,36 @@ const LANGUAGE_LABELS: Record<Language, string> = {
 export function getLanguageLabel(language: Language) {
   return LANGUAGE_LABELS[language];
 }
+
+export function prefersReducedMotion() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+// W15-02: short haptic cue; silently ignored where unsupported (iOS Safari).
+export function vibrate(pattern: number | number[]) {
+  if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return;
+  try {
+    navigator.vibrate(pattern);
+  } catch {
+    undefined;
+  }
+}
+
+// W15-06: run a state update inside a View Transition when the browser has
+// one. `commit` makes the update synchronous inside the transition (React's
+// flushSync); without the API the update runs as a plain state change.
+export function runViewTransition(update: () => void, commit: (update: () => void) => void = run => run()) {
+  const doc = typeof document === 'undefined'
+    ? null
+    : document as Document & { startViewTransition?: (callback: () => void) => unknown };
+  if (!doc?.startViewTransition || prefersReducedMotion()) {
+    update();
+    return;
+  }
+  try {
+    doc.startViewTransition(() => commit(update));
+  } catch {
+    update();
+  }
+}

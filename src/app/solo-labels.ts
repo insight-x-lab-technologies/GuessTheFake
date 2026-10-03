@@ -10,6 +10,7 @@ export function formatSoloChallenge(challengeKey: string, t: Translate, category
     categoryLabel(challenge.categoryId),
     challenge.difficulty === 'all' ? t('setup.allDifficulties') : t(`setup.${challenge.difficulty}`),
     ...(challenge.specialRounds ? [t('specials.short')] : []),
+    ...(challenge.kids ? [t('kids.short')] : []),
     ...(challenge.packIds?.length ? [t('solo.challengePacks', { count: challenge.packIds.length })] : [])
   ].join(' · ');
 }

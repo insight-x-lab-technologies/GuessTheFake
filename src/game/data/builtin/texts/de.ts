@@ -3150,6 +3150,457 @@ const de: BuiltinTexts = {
       'Im menschlichen Körper gibt es keinen Muskel, der ohne unseren Willen arbeitet.'
     ],
     explanation: 'Herz, Magen und Darm haben Muskeln, die von selbst arbeiten, ohne willentliche Steuerung.'
+  },
+  // W17-04 food
+  'food-easy-01': {
+    statements: [
+      'Schokolade wird aus Kaffeebohnen gemacht.',
+      'Brot wird aus Mehl gebacken.',
+      'Käse wird aus Milch gemacht.',
+      'Honig wird von Bienen hergestellt.',
+      'Popcorn wird aus Mais gemacht.'
+    ],
+    explanation: 'Schokolade wird aus den Samen des Kakaobaums gemacht.'
+  },
+  'food-easy-02': {
+    statements: [
+      'Sushi ist ein Gericht der japanischen Küche.',
+      'Tacos sind ein typisches Gericht aus Mexiko.',
+      'Die Pizza stammt aus Japan.',
+      'Paella ist ein Gericht aus Spanien.',
+      'Das Croissant wird stark mit Frankreich verbunden.'
+    ],
+    explanation: 'Die moderne Pizza stammt aus Italien, aus Neapel.'
+  },
+  'food-easy-03': {
+    statements: [
+      'Äpfel wachsen an Bäumen.',
+      'Erdbeeren sind außen rot.',
+      'Wassermelonen enthalten sehr viel Wasser.',
+      'Eine Ananas hat eine Krone aus Blättern.',
+      'Karotten wachsen hängend an Bäumen.'
+    ],
+    explanation: 'Die Karotte ist eine Wurzel, die unter der Erde wächst.'
+  },
+  'food-easy-04': {
+    statements: [
+      'Reis wird oft auf überfluteten Feldern angebaut.',
+      'Bohnen sind reich an Eiweiß.',
+      'Aus Weizen macht man Mehl.',
+      'Reis wächst in Trauben an hohen Bäumen.',
+      'Hafer ist ein Getreide.'
+    ],
+    explanation: 'Reis ist eine niedrige, grasähnliche Pflanze; die Körner wachsen in Rispen oben am Halm.'
+  },
+  'food-easy-05': {
+    statements: [
+      'Joghurt wird aus Milch gemacht.',
+      'Kuhmilch ist von Natur aus blau.',
+      'Butter wird aus dem Fett der Milch gemacht.',
+      'Speiseeis enthält meist Milch oder Sahne.',
+      'Ein Hühnerei hat Eiweiß und Eigelb.'
+    ],
+    explanation: 'Kuhmilch ist weiß.'
+  },
+  'food-easy-06': {
+    statements: [
+      'Orangen enthalten viel Vitamin C.',
+      'Bananen sind reich an Kalium.',
+      'Avocado ist die Hauptzutat von Guacamole.',
+      'Die Zitrone ist die süßeste Frucht, die es gibt.',
+      'Weintrauben werden getrocknet zu Rosinen.'
+    ],
+    explanation: 'Zitronen sind sauer.'
+  },
+  'food-easy-07': {
+    statements: [
+      'Ketchup wird hauptsächlich aus Erdbeeren gemacht.',
+      'Senf wird aus Samen gemacht.',
+      'Mayonnaise besteht aus Ei und Öl.',
+      'Essig ist sauer.',
+      'Salz kann aus Meerwasser gewonnen werden.'
+    ],
+    explanation: 'Ketchup wird hauptsächlich aus Tomaten gemacht.'
+  },
+  'food-easy-08': {
+    statements: [
+      'Eigelb ist gelb.',
+      'Eier kann man kochen, braten oder als Rührei machen.',
+      'Ein Omelett macht man aus verquirlten Eiern.',
+      'Wachteleier sind kleiner als Hühnereier.',
+      'Hühnereier sind immer weiß.'
+    ],
+    explanation: 'Hühnereier können weiß, braun oder sogar bläulich sein, je nach Rasse.'
+  },
+  'food-easy-09': {
+    statements: [
+      'Tee wird aus Blättern gemacht.',
+      'Heiße Schokolade enthält Kakao.',
+      'Kaffee wird aus den Blättern der Kaffeepflanze gemacht.',
+      'Orangensaft entsteht, wenn man Orangen auspresst.',
+      'Toast ist geröstetes Brot.'
+    ],
+    explanation: 'Kaffee wird aus den gerösteten und gemahlenen Bohnen der Kaffeepflanze gemacht.'
+  },
+  'food-easy-10': {
+    statements: [
+      'Eine Banane wird beim Reifen gelb.',
+      'Bananen wachsen mit der Spitze nach unten.',
+      'In einer Kokosnuss ist Wasser.',
+      'Eine Mango hat einen großen Kern.',
+      'Eine Maracuja hat viele Samen.'
+    ],
+    explanation: 'Jede Banane wächst mit der Spitze nach oben, zum Licht hin.'
+  },
+  'food-easy-11': {
+    statements: [
+      'Speiseeis wurde im Jahr 2000 erfunden.',
+      'Völker im alten Amerika aßen und tranken schon Kakao.',
+      'Das Sandwich ist nach einem englischen Grafen benannt.',
+      'Brot gehört zu den ältesten zubereiteten Lebensmitteln.',
+      'Die Kartoffel kam ursprünglich aus Südamerika zu uns.'
+    ],
+    explanation: 'Gefrorene Desserts gibt es seit Jahrhunderten; Eis war lange vor 2000 beliebt.'
+  },
+  'food-easy-12': {
+    statements: [
+      'Kopfsalat ist ein Blattgemüse.',
+      'Knoblauch riecht stark.',
+      'Beim Zwiebelschneiden können die Augen tränen.',
+      'Brokkoli sieht aus wie ein kleiner Baum.',
+      'Jeder Pilz, den man in der Natur findet, ist essbar.'
+    ],
+    explanation: 'Viele wilde Pilze sind giftig; iss nie einen ohne Rat von einer Fachperson.'
+  },
+  'food-easy-13': {
+    statements: [
+      'Ein Lutscher ist eine Süßigkeit am Stiel.',
+      'Brigadeiro, eine brasilianische Süßigkeit, wird mit Schokolade gemacht.',
+      'Gelatine wird aus ausgepresstem Obst gemacht.',
+      'Marshmallows sind weich und fluffig.',
+      'Zuckerwatte besteht aus geschmolzenem, geschleudertem Zucker.'
+    ],
+    explanation: 'Gelatine wird aus Kollagen gemacht, einem Eiweiß von Tieren; der Fruchtgeschmack wird zugesetzt.'
+  },
+  'food-easy-14': {
+    statements: [
+      'Unser Körper besteht zu einem großen Teil aus Wasser.',
+      'Wasser ist das Getränk, das der Körper am wenigsten braucht.',
+      'Obst und Gemüse sind gesund.',
+      'Händewaschen vor dem Essen hilft gegen Keime.',
+      'Zähneputzen nach dem Essen hilft gegen Karies.'
+    ],
+    explanation: 'Wasser ist lebenswichtig: Der Körper braucht es jeden Tag.'
+  },
+  'food-easy-15': {
+    statements: [
+      'Ein Hotdog ist ein Brötchen mit Würstchen.',
+      'Die Pizza Margherita hat die Farben der italienischen Flagge.',
+      'Nuggets werden meist aus Hühnerfleisch gemacht.',
+      'Der Hamburger ist nach einer Stadt in China benannt.',
+      'Pommes frites werden aus Kartoffeln gemacht.'
+    ],
+    explanation: 'Der Name Hamburger kommt von Hamburg, einer Stadt in Deutschland.'
+  },
+  'food-medium-01': {
+    statements: [
+      'Zimt wird aus der Rinde eines Baumes gewonnen.',
+      'Vanille stammt von einer Rosenart.',
+      'Safran gehört zu den teuersten Gewürzen der Welt.',
+      'Schwarzer Pfeffer wurde früher als Zahlungsmittel benutzt.',
+      'Ingwer wird als Gewürz und für Tee verwendet.'
+    ],
+    explanation: 'Vanille stammt aus der Schote einer Orchidee.'
+  },
+  'food-medium-02': {
+    statements: [
+      'Die Tomate kam aus China nach Italien.',
+      'Reis wurde in Asien zur Kulturpflanze.',
+      'Die Kartoffel wurde in den Anden zur Kulturpflanze.',
+      'Kakao stammt aus Amerika.',
+      'Die Banane stammt ursprünglich aus Südostasien.'
+    ],
+    explanation: 'Die Tomate kam aus Amerika und erreichte Europa im 16. Jahrhundert.'
+  },
+  'food-medium-03': {
+    statements: [
+      'Tofu wird aus Sojabohnen hergestellt.',
+      'Kimchi ist ein fermentiertes Gericht aus Korea.',
+      'Der Wasabi in den meisten Restaurants außerhalb Japans ist echter Wasabi.',
+      'Miso ist eine fermentierte Sojapaste.',
+      'Ramen sind Nudeln, die in Brühe serviert werden.'
+    ],
+    explanation: 'Ein Großteil des Wasabis außerhalb Japans ist grün gefärbter Meerrettich.'
+  },
+  'food-medium-04': {
+    statements: [
+      'Roquefort wird aus Schafsmilch hergestellt.',
+      'Traditioneller Mozzarella kann aus Büffelmilch gemacht werden.',
+      'Die Löcher im Schweizer Käse entstehen durch Gase von Bakterien.',
+      'Cheddar ist nach einem englischen Dorf benannt.',
+      'Parmesan ist schon nach wenigen Tagen fertig.'
+    ],
+    explanation: 'Parmigiano Reggiano reift mindestens 12 Monate.'
+  },
+  'food-medium-05': {
+    statements: [
+      'Milch trinken hilft gegen das Brennen von Chili.',
+      'Die Scoville-Skala misst die Schärfe von Chilis.',
+      'Paprika gehört zur selben Familie wie scharfe Chilis.',
+      'Chilis sind scharf wegen ihres Vitamin C.',
+      'Vögel spüren die Schärfe von Chili nicht so wie wir.'
+    ],
+    explanation: 'Die Schärfe kommt vom Capsaicin, einem Stoff in Chilis.'
+  },
+  'food-medium-06': {
+    statements: [
+      'Backhefe besteht aus Lebewesen, den Hefepilzen.',
+      'Brotteig muss ruhen, damit er aufgeht.',
+      'Brot geht im Ofen wegen des Salzes auf.',
+      'Sauerteigbrot wird mit einem selbst angesetzten Teig gebacken.',
+      'Kneten hilft, das Gluten zu entwickeln.'
+    ],
+    explanation: 'Brot geht durch die Hefe auf: Sie gibt Gas ab, das den Teig aufbläht.'
+  },
+  'food-medium-07': {
+    statements: [
+      'Feijoada ist ein typisches Gericht aus Brasilien.',
+      'Apfelstrudel ist eine berühmte Süßspeise aus Österreich.',
+      'Ceviche ist ein typisch peruanisches Gericht aus mariniertem rohem Fisch.',
+      'Das Croissant wurde in Japan erfunden.',
+      'Marokkanischer Couscous wird aus Weizengrieß gemacht.'
+    ],
+    explanation: 'Das Croissant wurde in Frankreich berühmt, nach dem Vorbild des österreichischen Kipferls.'
+  },
+  'food-medium-08': {
+    statements: [
+      'Ein aufgeschnittener Apfel wird braun, weil er sofort verfault.',
+      'Ein paar Tropfen Zitrone verhindern, dass ein aufgeschnittener Apfel braun wird.',
+      'Ananas enthält ein Enzym, das Fleisch zart macht.',
+      'Beim Zwiebelschneiden wird ein Gas frei, das in den Augen brennt.',
+      'Hoch in den Bergen kocht Wasser bei niedrigerer Temperatur.'
+    ],
+    explanation: 'Der Apfel wird braun, weil er mit dem Sauerstoff der Luft reagiert (Oxidation), nicht weil er fault.'
+  },
+  'food-medium-09': {
+    statements: [
+      'Hafer ist reich an Ballaststoffen.',
+      'Vollkornreis hat weniger Ballaststoffe als weißer Reis.',
+      'Reis und Bohnen ergänzen sich gut als Eiweißquelle.',
+      'Nüsse sind reich an gesunden Fetten.',
+      'Naturjoghurt enthält lebende Bakterien.'
+    ],
+    explanation: 'Vollkornreis behält die äußeren Schichten des Korns und hat mehr Ballaststoffe als weißer Reis.'
+  },
+  'food-medium-10': {
+    statements: [
+      'Die Süßkartoffel ist eng mit der Kartoffel verwandt.',
+      'Tomate und Kartoffel gehören zur selben Pflanzenfamilie.',
+      'Für Botaniker ist ein Kürbis eine Frucht.',
+      'Die Erdnuss ist eine Hülsenfrucht wie die Bohne.',
+      'Rote Bete und Spinat sind miteinander verwandt.'
+    ],
+    explanation: 'Die Süßkartoffel gehört zu einer anderen Familie; sie ist mit den Winden verwandt.'
+  },
+  'food-medium-11': {
+    statements: [
+      'Pad Thai ist ein Gericht aus Thailand.',
+      'Pho ist eine typische vietnamesische Suppe.',
+      'Curry wird stark mit der indischen Küche verbunden.',
+      'Hummus wird aus Kichererbsen gemacht.',
+      'Sushi wurde in den USA erfunden.'
+    ],
+    explanation: 'Sushi entstand in Asien, um Fisch in Reis haltbar zu machen, und wurde zu einem japanischen Gericht.'
+  },
+  'food-medium-12': {
+    statements: [
+      'Ein frisches Ei sinkt im Wasser meist nach unten.',
+      'Der grünliche Ring um das Eigelb eines gekochten Eis zeigt, dass das Ei verdorben ist.',
+      'Eiweiß besteht hauptsächlich aus Wasser und Protein.',
+      'Straußeneier sind die größten Vogeleier, die es heute gibt.',
+      'Das Eigelb enthält Fett und Vitamine.'
+    ],
+    explanation: 'Der grüne Ring entsteht, wenn das Ei zu lange gekocht wurde; verdorben ist es deshalb nicht.'
+  },
+  'food-medium-13': {
+    statements: [
+      'Grüner und schwarzer Tee stammen von derselben Pflanze.',
+      'Mate-Tee wird aus den Blättern des Mate-Strauchs zubereitet.',
+      'Schokolade enthält ein wenig Koffein.',
+      'Entkoffeinierter Kaffee enthält überhaupt kein Koffein.',
+      'Äthiopien gilt als Heimat des Kaffees.'
+    ],
+    explanation: 'Entkoffeinierter Kaffee enthält noch ein bisschen Koffein, nur viel weniger.'
+  },
+  'food-medium-14': {
+    statements: [
+      'Die Eiswaffel wurde 1904 auf einer Weltausstellung in den USA populär.',
+      'Pommes frites werden stark mit Belgien verbunden.',
+      'Pão de queijo ist typisch für Minas Gerais in Brasilien.',
+      'Das Cuban Sandwich wird mit der kubanischen Gemeinschaft in Florida verbunden.',
+      'Die Pizza Hawaii wurde auf Hawaii erfunden.'
+    ],
+    explanation: 'Die Pizza Hawaii wurde 1962 in Kanada von einem Koch griechischer Herkunft erfunden.'
+  },
+  'food-medium-15': {
+    statements: [
+      'Ein Schnellkochtopf gart Essen schneller.',
+      'Die Mikrowelle erhitzt Essen, indem sie Wassermoleküle in Bewegung versetzt.',
+      'Salz im Wasser lässt es viel schneller kochen.',
+      'Ein Deckel auf dem Topf lässt Wasser schneller kochen.',
+      'Dämpfen erhält die Nährstoffe im Gemüse gut.'
+    ],
+    explanation: 'Salz erhöht den Siedepunkt sogar ein winziges bisschen; in der Praxis ist der Unterschied minimal.'
+  },
+  'food-hard-01': {
+    statements: [
+      'Muskatnuss und Macis stammen aus derselben Frucht.',
+      'Echter Safran wird aus den Wurzeln eines Baumes gewonnen.',
+      'Kardamom ist mit dem Ingwer verwandt.',
+      'Piment ist eine getrocknete Beere und keine Gewürzmischung.',
+      'Ceylon-Zimt stammt aus Sri Lanka.'
+    ],
+    explanation: 'Safran besteht aus den Narben einer Krokusblüte, die von Hand gepflückt werden.'
+  },
+  'food-hard-02': {
+    statements: [
+      'Emmentaler ist ein Schweizer Käse mit großen Löchern.',
+      'Parmigiano Reggiano hat eine geschützte Ursprungsbezeichnung.',
+      'Halloumi kann man grillen, ohne dass er schmilzt.',
+      'Traditioneller Feta ist ein griechischer Käse.',
+      'Die blauen Adern im Gorgonzola stammen von einem Farbstoff.'
+    ],
+    explanation: 'Die blauen Adern stammen von Schimmelpilzen der Gattung Penicillium.'
+  },
+  'food-hard-03': {
+    statements: [
+      'Mononatriumglutamat wurde in Italien erfunden.',
+      'Umami gilt als fünfte Grundgeschmacksrichtung.',
+      'Tomaten und Parmesan sind reich an Glutamat.',
+      'Fischsauce wird in der südostasiatischen Küche viel verwendet.',
+      'Sojasauce wird aus fermentierten Sojabohnen hergestellt.'
+    ],
+    explanation: 'Mononatriumglutamat wurde 1908 in Japan vom Chemiker Kikunae Ikeda entwickelt.'
+  },
+  'food-hard-04': {
+    statements: [
+      'Trüffel sind Pilze, die unter der Erde wachsen.',
+      'Echter Kaviar stammt aus Lachsrogen.',
+      'Schweine und Hunde werden zur Trüffelsuche eingesetzt.',
+      'Wagyu ist eine japanische Rinderrasse.',
+      'Jamón ibérico stammt von Schweinen der iberischen Rasse.'
+    ],
+    explanation: 'Echter Kaviar stammt aus dem Rogen von Stören.'
+  },
+  'food-hard-05': {
+    statements: [
+      'Die Schärfe einer Chili sitzt vor allem im weißen Inneren.',
+      'Paprikapulver wird aus getrockneten, gemahlenen Paprikaschoten gemacht.',
+      'Chipotle ist ein geräucherter Jalapeño.',
+      'Gemüsepaprika enthält fast kein Capsaicin.',
+      'Grüne und rote Paprika sind verschiedene Arten.'
+    ],
+    explanation: 'Grüne Paprika ist dieselbe Frucht, nur unreif geerntet; reif wird sie rot, gelb oder orange.'
+  },
+  'food-hard-06': {
+    statements: [
+      'Kakaobohnen werden fermentiert, bevor daraus Schokolade wird.',
+      'Milchschokolade wurde in Belgien erfunden.',
+      'Die Azteken bereiteten ein bitteres Kakaogetränk zu.',
+      'Kakaobutter ist das Fett aus der Kakaobohne.',
+      'Durch Temperieren wird Schokolade glänzend und knackig.'
+    ],
+    explanation: 'Milchschokolade wurde 1875 in der Schweiz von Daniel Peter erfunden.'
+  },
+  'food-hard-07': {
+    statements: [
+      'Traditionelle Carbonara enthält keine Sahne.',
+      'Gnocchi kann man aus Kartoffeln machen.',
+      'Genueser Pesto wird mit Basilikum und Pinienkernen gemacht.',
+      'Risotto wird aus Reis gekocht.',
+      'Tiramisu ist ein traditionelles Dessert aus dem alten Rom.'
+    ],
+    explanation: 'Tiramisu ist ein junges Rezept, entstanden im 20. Jahrhundert in Venetien.'
+  },
+  'food-hard-08': {
+    statements: [
+      'Italienisches Gelato enthält mehr untergeschlagene Luft als normales Eis.',
+      'Gelato wird meist weniger kalt serviert als normales Eis.',
+      'Traditionelles Sorbet wird ohne Milch gemacht.',
+      'Das Wassereis am Stiel wurde von einem elfjährigen Jungen in den USA erfunden.',
+      'Frittiertes Eis gibt es wirklich: Es wird paniert und ganz kurz frittiert.'
+    ],
+    explanation: 'Gelato enthält weniger Luft und ist deshalb dichter.'
+  },
+  'food-hard-09': {
+    statements: [
+      'Frische Oliven sind zu bitter, um sie direkt vom Baum zu essen.',
+      'Natives Olivenöl extra wird nur mechanisch gewonnen.',
+      'Grüne und schwarze Oliven stammen von verschiedenen Baumarten.',
+      'Spanien ist der größte Olivenölproduzent der Welt.',
+      'Kapern sind Blütenknospen.'
+    ],
+    explanation: 'Ob grün oder schwarz: Oliven stammen vom selben Baum; es ändern sich nur Reife oder Verarbeitung.'
+  },
+  'food-hard-10': {
+    statements: [
+      'Die Pekannuss stammt ursprünglich aus Italien.',
+      'Die Macadamia stammt aus Australien.',
+      'Die Paranuss wächst an einem Baum im Amazonas-Regenwald.',
+      'Die Pistazie stammt aus Zentralasien und dem Nahen Osten.',
+      'Haselnüsse werden viel für Schokoaufstriche verwendet.'
+    ],
+    explanation: 'Die Pekannuss stammt aus Nordamerika.'
+  },
+  'food-hard-11': {
+    statements: [
+      'Außerhalb Mexikos wird die Vanilleblüte meist von Hand bestäubt.',
+      'Madagaskar ist ein wichtiger Vanilleproduzent.',
+      'Der Großteil des Vanillearomas in der Industrie ist synthetisch.',
+      'Vanille ist das teuerste Gewürz der Welt.',
+      'Die Vanille-Orchidee ist eine Kletterpflanze.'
+    ],
+    explanation: 'Das teuerste Gewürz der Welt ist Safran; Vanille folgt direkt danach.'
+  },
+  'food-hard-12': {
+    statements: [
+      'Baiser macht man, indem man Eiweiß mit Zucker aufschlägt.',
+      'Ein Soufflé geht durch die Luft im geschlagenen Eiweiß auf.',
+      'Das klassische Croissant wird ohne Butter gebacken.',
+      'Crème brûlée hat eine Kruste aus karamellisiertem Zucker.',
+      'Französische Macarons werden mit gemahlenen Mandeln gemacht.'
+    ],
+    explanation: 'Das klassische Croissant enthält viel Butter, die schichtweise in den Teig eingefaltet wird.'
+  },
+  'food-hard-13': {
+    statements: [
+      'Bittermaniok muss verarbeitet werden, um giftige Stoffe zu entfernen.',
+      'Rhabarberblätter sind giftig.',
+      'In Japan darf Kugelfisch (Fugu) nur von Köchen mit Lizenz zubereitet werden.',
+      'Cashewkerne kann man roh direkt vom Baum essen, mitsamt Schale.',
+      'Rohe Kidneybohnen enthalten ein Gift, das beim Kochen zerstört wird.'
+    ],
+    explanation: 'Die Schale der Cashew enthält ein reizendes Harz; der Kern muss vorher geröstet oder verarbeitet werden.'
+  },
+  'food-hard-14': {
+    statements: [
+      'Tempura kam durch portugiesischen Einfluss nach Japan.',
+      'Natto wird aus fermentierten Sojabohnen gemacht.',
+      'Sushi wird durch rohen Fisch definiert.',
+      'Matcha ist grüner Tee in Pulverform.',
+      'Umeboshi ist eine salzig eingelegte japanische Pflaume.'
+    ],
+    explanation: 'Sushi wird durch den mit Essig gewürzten Reis definiert; roher Fisch ist optional.'
+  },
+  'food-hard-15': {
+    statements: [
+      'Die Maillard-Reaktion bräunt Fleisch und Brotkruste.',
+      'Den Garpunkt von Fleisch kann man mit einem Thermometer prüfen.',
+      'Saure Marinaden machen die Oberfläche von Fleisch zarter.',
+      'Der rote Saft eines blutigen Steaks ist Blut.',
+      'Langsames Garen bei niedriger Temperatur macht zähe Stücke zart.'
+    ],
+    explanation: 'Der rote Saft ist hauptsächlich Wasser mit Myoglobin, einem Muskeleiweiß, und kein Blut.'
   }
 };
 

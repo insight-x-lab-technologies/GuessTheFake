@@ -1,17 +1,20 @@
-import { Sparkles, XCircle } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { getMusicZone } from '../core/audio/audio';
+import { ABOUT_US_CATEGORY_ID } from '../game/about-us';
 import { getLocalizedText } from '../game/content-schema';
 import '../styles/reset.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import type { LocalizeText, Screen } from './app-types';
+import { useAboutUsAuthoring } from './hooks/useAboutUsAuthoring';
 import { useAudio } from './hooks/useAudio';
 import { useGrowth } from './hooks/useGrowth';
 import { useLocalData } from './hooks/useLocalData';
 import { useMatch } from './hooks/useMatch';
 import { useMatchSetup } from './hooks/useMatchSetup';
 import { useMultiDevice } from './hooks/useMultiDevice';
+import { usePackEditor } from './hooks/usePackEditor';
 import { usePacks } from './hooks/usePacks';
 import { useProfiles } from './hooks/useProfiles';
 import { usePwaStatus } from './hooks/usePwaStatus';
@@ -21,13 +24,16 @@ import { readMatchBoot } from './match-boot';
 import { buildMultiplayerSnapshot, buildPresenterBoard } from './match-summary';
 import { hasMatchInProgress } from './new-match-flow';
 import { getScreenIcon, getScreenLabelKey, SCREENS } from './navigation';
+import { AboutUsAuthoringPanel } from './screens/AboutUsAuthoringPanel';
 import { AchievementsScreen } from './screens/AchievementsScreen';
 import { GameBoardScreen } from './screens/GameBoardScreen';
 import { GrowthScreen } from './screens/GrowthScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { LeaderboardScreen } from './screens/LeaderboardScreen';
+import { Medal } from './screens/Medal';
 import { MultiDeviceScreen } from './screens/MultiDeviceScreen';
 import { NewMatchChoiceScreen } from './screens/NewMatchChoiceScreen';
+import { PackEditorPanel } from './screens/PackEditorPanel';
 import { PacksScreen } from './screens/PacksScreen';
 import { PresenterView } from './screens/PresenterView';
 import { PwaStatusNotices } from './screens/PwaStatusNotices';
@@ -41,7 +47,7 @@ import styles from './App.module.css';
 export function App() {
   const mainRef = useRef<HTMLElement | null>(null);
   const statementButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const { settings, setSettings, updateSettings, t } = useSettings();
+  const { settings, setSettings, updateSettings, t, ...seasonal } = useSettings();
   const [boot] = useState(() => readMatchBoot(settings.language));
   const [screen, setScreen] = useState<Screen>(boot.hasMatch ? 'play' : 'home');
 
@@ -61,6 +67,8 @@ export function App() {
     soloRecords: progress.soloRecords,
     getSoloKeyForName: profiles.getSoloKeyForName
   });
+  const packEditor = usePackEditor({ t, language: settings.language, packs });
+  const authoring = useAboutUsAuthoring({ t, setup });
   const categoryIds = useMemo(() => setup.availableCategories.map(category => category.id), [setup.availableCategories]);
   const match = useMatch({
     boot,
@@ -74,14 +82,16 @@ export function App() {
     enabledPackIds: packs.enabledPacks.map(pack => pack.id),
     categoryIds,
     screen,
-    setScreen
+    setScreen,
+    onAboutUsRematch: () => authoring.begin()
   });
   const { gameState, round, timerSeconds } = match;
 
   const text: LocalizeText = (value, fallback = '') => getLocalizedText(value, settings.language, fallback);
   const categoryLabel = (categoryId: string) => {
     if (categoryId === 'all') return t('setup.allCategories');
-    const category = setup.availableCategories.find(candidate => candidate.id === categoryId);
+    if (categoryId === ABOUT_US_CATEGORY_ID) return t('aboutUs.category');
+    const category = setup.allCategories.find(candidate => candidate.id === categoryId);
     return category ? text(category.title, categoryId) : categoryId;
   };
   const challengeLabel = (challengeKey: string) => formatSoloChallenge(challengeKey, t, categoryLabel);
@@ -93,12 +103,14 @@ export function App() {
     buildPresenterBoard(gameState, {
       t,
       text,
-      categoryTitle: setup.availableCategories.find(category => category.id === round?.categoryId)?.title
+      categoryTitle: round?.categoryId === ABOUT_US_CATEGORY_ID
+        ? t('aboutUs.category')
+        : setup.allCategories.find(category => category.id === round?.categoryId)?.title
     })
   ), [
     match.activeSubjectName,
     gameState,
-    setup.availableCategories,
+    setup.allCategories,
     settings.language,
     timerSeconds
   ]);
@@ -138,14 +150,14 @@ export function App() {
 
   useEffect(() => {
     const animationFrame = window.requestAnimationFrame(() => {
-      if (!match.showNewMatchChoices && gameState.phase === 'playing') {
+      if (!match.showNewMatchChoices && gameState.phase === 'playing' && !match.handoffSubject) {
         statementButtonRefs.current[0]?.focus({ preventScroll: true });
         return;
       }
       mainRef.current?.focus({ preventScroll: true });
     });
     return () => window.cancelAnimationFrame(animationFrame);
-  }, [screen, gameState.phase, gameState.currentRoundIndex, match.showNewMatchChoices]);
+  }, [screen, gameState.phase, gameState.currentRoundIndex, match.showNewMatchChoices, match.handoffSubject]);
 
   function handleShellClick(event: MouseEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement | null;
@@ -199,10 +211,13 @@ export function App() {
       <main ref={mainRef} className={styles.main} tabIndex={-1} aria-label={t(getScreenLabelKey(screen))}>
         {progress.achievementNotice ? (
           <aside className={styles.toast} role="status" aria-live="polite">
-            <Sparkles size={20} />
+            <Medal key={progress.achievementNotice.id} rarity={progress.achievementNotice.rarity} unlocking />
             <div>
               <strong>{t('achievements.newUnlock')}</strong>
               <span>{t(progress.achievementNotice.titleKey)}</span>
+              {progress.achievementNotice.rarity ? (
+                <span>{t('art.medal.unlockedRarity', { rarity: t(`art.medal.${progress.achievementNotice.rarity}`) })}</span>
+              ) : null}
             </div>
             <button type="button" onClick={progress.dismissAchievementNotice} aria-label={t('app.dismiss')}>
               <XCircle size={16} />
@@ -211,7 +226,16 @@ export function App() {
         ) : null}
         <PwaStatusNotices t={t} pwa={pwa} toastSlotBusy={Boolean(progress.achievementNotice)} />
 
-        {screen === 'home' ? <HomeScreen t={t} onNewMatch={match.requestNewMatch} onPlaySolo={match.requestSoloMatch} /> : null}
+        {screen === 'home' ? (
+          <HomeScreen
+            t={t}
+            seasonalSuggestion={seasonal.seasonalSuggestion}
+            onNewMatch={match.requestNewMatch}
+            onPlaySolo={match.requestSoloMatch}
+            onApplySeasonal={seasonal.applySeasonalTheme}
+            onDismissSeasonal={seasonal.dismissSeasonalSuggestion}
+          />
+        ) : null}
 
         {screen === 'play' ? (
           <section className={styles.screenStack}>
@@ -226,14 +250,26 @@ export function App() {
               />
             ) : null}
 
-            {!match.showNewMatchChoices && gameState.phase === 'setup' ? (
+            {!match.showNewMatchChoices && gameState.phase === 'setup' && authoring.active ? (
+              <AboutUsAuthoringPanel
+                t={t}
+                authoring={authoring}
+                getProfileForName={profiles.getProfileForName}
+                setupError={setup.setupError}
+                onStart={() => {
+                  if (match.startNewMatch({ aboutUsEntries: authoring.entries })) authoring.cancel();
+                }}
+              />
+            ) : null}
+
+            {!match.showNewMatchChoices && gameState.phase === 'setup' && !authoring.active ? (
               <SetupScreen
                 t={t}
                 text={text}
                 setup={setup}
                 profiles={profiles.profiles.profiles}
                 contentStatus={packs.builtinStatus}
-                onStart={() => match.startNewMatch()}
+                onStart={() => (setup.selectedModeId === 'about-us' ? authoring.begin() : match.startNewMatch())}
               />
             ) : null}
 
@@ -248,6 +284,10 @@ export function App() {
                 categoryLabel={categoryLabel}
                 getProfileForName={profiles.getProfileForName}
                 statementButtonRefs={statementButtonRefs}
+                saveAsPack={{
+                  status: authoring.savedStatus,
+                  onSave: () => authoring.saveAsPack(gameState, match.activeMatchLanguage ?? settings.language, packs.savePack)
+                }}
               />
             ) : null}
           </section>
@@ -271,7 +311,21 @@ export function App() {
           />
         ) : null}
         {screen === 'profiles' ? <ProfilesScreen t={t} profiles={profiles} challengeLabel={challengeLabel} /> : null}
-        {screen === 'packs' ? <PacksScreen t={t} text={text} language={settings.language} packs={packs} /> : null}
+        {screen === 'packs' && packEditor.open ? <PackEditorPanel t={t} editor={packEditor} /> : null}
+        {screen === 'packs' && !packEditor.open ? (
+          <PacksScreen
+            t={t}
+            text={text}
+            language={settings.language}
+            packs={packs}
+            hasDraft={Boolean(packEditor.draft)}
+            onCreatePack={packEditor.start}
+            onEditPack={packId => {
+              const pack = packs.installedPacks.packs.find(candidate => candidate.id === packId);
+              if (pack) packEditor.editPack(pack);
+            }}
+          />
+        ) : null}
         {screen === 'multiDevice' ? <MultiDeviceScreen t={t} multiDevice={multiDevice} /> : null}
         {screen === 'growth' ? <GrowthScreen t={t} growth={growth} /> : null}
         {screen === 'settings' ? (

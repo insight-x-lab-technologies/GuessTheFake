@@ -99,3 +99,68 @@ export function buildMultiplayerSnapshot(
     updatedAt
   };
 }
+
+export type PodiumEntry = { id: string; name: string; score: number; rank: number };
+
+// W15-05: players (or teams) by score. Ties share a rank (1, 1, 3).
+export function getPodium(state: GuessTheFakeState): { podium: PodiumEntry[]; rest: PodiumEntry[] } {
+  const rows = state.modeId === 'teams' && state.teams.length
+    ? state.teams.map(team => ({ id: team.id, name: team.name, score: team.score }))
+    : state.players.map(player => ({ id: player.id, name: player.name, score: player.score }));
+  const ranked = [...rows]
+    .sort((left, right) => right.score - left.score)
+    .map((row, _, sorted) => ({ ...row, rank: sorted.findIndex(candidate => candidate.score === row.score) + 1 }));
+  return { podium: ranked.slice(0, 3), rest: ranked.slice(3) };
+}
+
+export type MatchHighlight =
+  | { kind: 'fastest'; name: string; seconds: number }
+  | { kind: 'longest-streak'; name: string; streak: number }
+  | { kind: 'best-bluff'; fooled: number; text: LocalizedText };
+
+// W15-05: table highlights of a finished match, from its guess history.
+export function getMatchHighlights(state: GuessTheFakeState): MatchHighlight[] {
+  const history = state.guessHistory ?? [];
+  const nameOf = (guess: GuessResult) => guess.teamName ?? guess.playerName ?? '';
+  const highlights: MatchHighlight[] = [];
+
+  const timings = new Map<string, number[]>();
+  history.forEach(guess => {
+    if (!guess.correct || guess.elapsedSeconds === undefined || !nameOf(guess)) return;
+    timings.set(nameOf(guess), [...(timings.get(nameOf(guess)) ?? []), guess.elapsedSeconds]);
+  });
+  const fastest = [...timings.entries()]
+    .map(([name, seconds]) => ({ name, seconds: seconds.reduce((sum, value) => sum + value, 0) / seconds.length }))
+    .reduce<{ name: string; seconds: number } | null>((best, entry) => (!best || entry.seconds < best.seconds ? entry : best), null);
+  if (fastest) highlights.push({ kind: 'fastest', name: fastest.name, seconds: Math.max(1, Math.round(fastest.seconds)) });
+
+  const runs = new Map<string, { current: number; best: number }>();
+  history.forEach(guess => {
+    const name = nameOf(guess);
+    if (!name) return;
+    const run = runs.get(name) ?? { current: 0, best: 0 };
+    run.current = guess.correct ? run.current + 1 : 0;
+    run.best = Math.max(run.best, run.current);
+    runs.set(name, run);
+  });
+  const streak = [...runs.entries()].reduce<{ name: string; streak: number } | null>(
+    (best, [name, run]) => (run.best >= 2 && (!best || run.best > best.streak) ? { name, streak: run.best } : best),
+    null
+  );
+  if (streak) highlights.push({ kind: 'longest-streak', ...streak });
+
+  const fooledByRound = new Map<number, number>();
+  history.forEach(guess => {
+    if (guess.correct || !guess.selectedStatementId) return;
+    fooledByRound.set(guess.roundIndex, (fooledByRound.get(guess.roundIndex) ?? 0) + 1);
+  });
+  const bluff = [...fooledByRound.entries()].reduce<{ roundIndex: number; fooled: number } | null>(
+    (best, [roundIndex, fooled]) => (!best || fooled > best.fooled ? { roundIndex, fooled } : best),
+    null
+  );
+  const bluffRound = bluff ? state.rounds[bluff.roundIndex] : undefined;
+  const fakeStatement = bluffRound?.statements.find(statement => statement.id === bluffRound.fakeStatementId);
+  if (bluff && fakeStatement) highlights.push({ kind: 'best-bluff', fooled: bluff.fooled, text: fakeStatement.text });
+
+  return highlights;
+}

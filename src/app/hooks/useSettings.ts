@@ -7,11 +7,14 @@ import {
   saveSettings,
   type PlatformSettings
 } from '../../core/settings/settings';
+import { getSeasonalSuggestion, shouldOfferSeasonalTheme } from '../../core/themes/seasonal';
 import { applyTheme } from '../../core/themes/themes';
 import type { Translate } from '../app-types';
 import { translations } from '../translations';
 
-export function useSettings() {
+export type SettingsController = ReturnType<typeof useSettings>;
+
+export function useSettings(today: Date = new Date()) {
   const [settings, setSettings] = useState<PlatformSettings>(() => {
     if (typeof localStorage === 'undefined') return DEFAULT_SETTINGS;
     return loadSettings();
@@ -34,5 +37,18 @@ export function useSettings() {
     setSettings(current => ({ ...current, ...next }));
   }
 
-  return { settings, setSettings, updateSettings, t };
+  // W16-05: read the local date once per session; a season does not change
+  // under an open tab often enough to justify a timer.
+  const [season] = useState(() => getSeasonalSuggestion(today));
+  const seasonalSuggestion = shouldOfferSeasonalTheme(season, settings.theme, settings.seasonalDismissed) ? season : null;
+
+  function applySeasonalTheme() {
+    if (season) updateSettings({ theme: season.season.themeId, seasonalDismissed: season.key });
+  }
+
+  function dismissSeasonalSuggestion() {
+    if (season) updateSettings({ seasonalDismissed: season.key });
+  }
+
+  return { settings, setSettings, updateSettings, t, seasonalSuggestion, applySeasonalTheme, dismissSeasonalSuggestion };
 }

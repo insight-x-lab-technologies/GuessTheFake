@@ -79,6 +79,28 @@ describe('platform settings', () => {
     });
   });
 
+  it('keeps the Onda 15 toggles off unless they are real booleans', () => {
+    expect(normalizeSettings({})).toMatchObject({ vibrationEnabled: false, passDeviceEnabled: false });
+    expect(normalizeSettings({ vibrationEnabled: 'on', passDeviceEnabled: 1 })).toMatchObject({
+      vibrationEnabled: false,
+      passDeviceEnabled: false
+    });
+    expect(normalizeSettings({ vibrationEnabled: true, passDeviceEnabled: true })).toMatchObject({
+      vibrationEnabled: true,
+      passDeviceEnabled: true
+    });
+  });
+
+  it('keeps seasonal themes and the dismissed season key (W16-05)', () => {
+    expect(normalizeSettings({}).seasonalDismissed).toBe('');
+    expect(normalizeSettings({ seasonalDismissed: 7 }).seasonalDismissed).toBe('');
+    expect(normalizeSettings({ seasonalDismissed: 'halloween-2026', theme: 'halloween' })).toMatchObject({
+      seasonalDismissed: 'halloween-2026',
+      theme: 'halloween'
+    });
+    expect(normalizeSettings({ theme: 'festive' }).theme).toBe('festive');
+  });
+
   it('normalizes font scale to one of the five supported levels', () => {
     expect(normalizeFontScale('xs')).toBe('xs');
     expect(normalizeFontScale('sm')).toBe('sm');

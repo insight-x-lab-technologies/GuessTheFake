@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { SUPPORTED_LANGUAGES, type Language } from '../core/i18n/i18n';
 import { buildReviewSheet, findInvalidReviews } from './content-review';
 import { loadBuiltinPack } from './data/builtin';
-import { BUILTIN_ROUNDS } from './data/builtin/catalog';
+import { ALL_BUILTIN_ROUNDS } from './data/builtin/catalog';
 import { BUILTIN_REVIEWS } from './data/builtin/reviews';
 import type { GuessTheFakePackContent, GuessTheFakeRound } from './types';
 
@@ -54,7 +54,7 @@ describe('content review sheet', () => {
   });
 
   it('keeps the builtin review log consistent with the catalog', () => {
-    expect(findInvalidReviews(BUILTIN_REVIEWS, BUILTIN_ROUNDS.map(entry => entry.id))).toEqual([]);
+    expect(findInvalidReviews(BUILTIN_REVIEWS, ALL_BUILTIN_ROUNDS.map(entry => entry.id))).toEqual([]);
   });
 
   // `npm run review:content` writes content-review/<lang>.md (REVIEW_LANG, REVIEW_COMPARE, REVIEW_ALL).

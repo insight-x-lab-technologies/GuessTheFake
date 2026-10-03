@@ -2,7 +2,7 @@ import type { ContentPack } from '../../../core/content-packs/content-packs';
 import type { Language } from '../../../core/i18n/i18n';
 import { GAME_ID } from '../../modes';
 import type { GuessTheFakePackContent, GuessTheFakeRound } from '../../types';
-import { BUILTIN_CATEGORIES, BUILTIN_PACK_ID, BUILTIN_PACK_META, BUILTIN_PACK_TITLE, BUILTIN_ROUNDS } from './catalog';
+import { ALL_BUILTIN_ROUNDS, BUILTIN_CATEGORIES, BUILTIN_PACK_ID, BUILTIN_PACK_META, BUILTIN_PACK_TITLE } from './catalog';
 
 export { BUILTIN_PACK_ID } from './catalog';
 
@@ -22,12 +22,22 @@ const textLoaders: Record<Language, () => Promise<{ default: BuiltinTexts }>> = 
   it: () => import('./texts/it')
 };
 
+// W17-03: kids rounds live in their own files, loaded with the main texts.
+const kidsTextLoaders: Record<Language, () => Promise<{ default: BuiltinTexts }>> = {
+  pt: () => import('./texts/kids-pt'),
+  en: () => import('./texts/kids-en'),
+  es: () => import('./texts/kids-es'),
+  fr: () => import('./texts/kids-fr'),
+  de: () => import('./texts/kids-de'),
+  it: () => import('./texts/kids-it')
+};
+
 const letters = ['a', 'b', 'c', 'd', 'e'];
 
 // Joins the neutral catalog with one language's texts. Rounds without text in
 // that language are left out, so a partial translation degrades to fewer rounds.
 export function createBuiltinPack(language: Language, texts: BuiltinTexts): ContentPack<GuessTheFakePackContent> {
-  const rounds = BUILTIN_ROUNDS.flatMap<GuessTheFakeRound>(entry => {
+  const rounds = ALL_BUILTIN_ROUNDS.flatMap<GuessTheFakeRound>(entry => {
     const roundText = texts[entry.id];
     if (!roundText) return [];
     return [{
@@ -60,6 +70,6 @@ export function createBuiltinPack(language: Language, texts: BuiltinTexts): Cont
 }
 
 export async function loadBuiltinPack(language: Language) {
-  const { default: texts } = await textLoaders[language]();
-  return createBuiltinPack(language, texts);
+  const [{ default: texts }, { default: kidsTexts }] = await Promise.all([textLoaders[language](), kidsTextLoaders[language]()]);
+  return createBuiltinPack(language, { ...texts, ...kidsTexts });
 }

@@ -91,7 +91,8 @@ describe('responsive app smoke', () => {
     fireEvent.click(within(feedbackGroup).getByRole('button', { name: /boa|good/i }));
     expect(within(feedbackGroup).getByRole('button', { name: /boa|good/i })).toHaveAttribute('aria-pressed', 'true');
 
-    fireEvent.click(screen.getByRole('button', { name: /recalibrar pontuação|recalibrate scores/i }));
+    fireEvent.click(screen.getByRole('button', { name: /mais ações da rodada|more round actions/i }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /recalibrar pontuação|recalibrate scores/i }));
     fireEvent.click(screen.getByRole('button', { name: /zerar agora|reset now/i }));
     expect(screen.getByText(/pontuação zerada|scores reset/i)).toBeInTheDocument();
 

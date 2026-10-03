@@ -6,6 +6,7 @@ import { GAME_MODES } from '../../game/modes';
 import type { Translate } from '../app-types';
 import type { LocalDataController } from '../hooks/useLocalData';
 import type { ProgressController } from '../hooks/useProgress';
+import { Mascot } from './Mascot';
 import { ResponsiveActions, ScreenHeader } from './ScreenHeader';
 import styles from '../App.module.css';
 
@@ -135,7 +136,10 @@ export function LeaderboardScreen({
           ))}
         </div>
       ) : (
-        <p>{t('leaderboard.empty')}</p>
+        <div className={styles.emptyState}>
+          <Mascot mood="suspicious" />
+          <p>{t('leaderboard.empty')}</p>
+        </div>
       )}
       <section className={styles.soloRecords} aria-label={t('solo.recordsTitle')}>
         <div className={styles.sectionHeading}>

@@ -22,6 +22,15 @@ export type PlatformSettings = {
   tableMomentsEnabled: boolean;
   specialRoundsEnabled: boolean;
   suggestionMinutes: number;
+  // W15-02: short vibration on the last seconds of the round timer.
+  vibrationEnabled: boolean;
+  // W15-04: hand-off screen between guesses in shared-device modes.
+  passDeviceEnabled: boolean;
+  // W16-05: season key (e.g. 'halloween-2026') whose theme suggestion the
+  // player dismissed.
+  seasonalDismissed: string;
+  // W17-03: setup draws only kids rounds.
+  kidsModeEnabled: boolean;
 };
 
 export type FontScale = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -54,7 +63,11 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   lastSoloPlayerName: '',
   tableMomentsEnabled: false,
   specialRoundsEnabled: false,
-  suggestionMinutes: 15
+  suggestionMinutes: 15,
+  vibrationEnabled: false,
+  passDeviceEnabled: false,
+  seasonalDismissed: '',
+  kidsModeEnabled: false
 };
 
 export function createDefaultSettings(language: Language = DEFAULT_LANGUAGE): PlatformSettings {
@@ -103,6 +116,10 @@ export function normalizeSettings(value: unknown, fallback: PlatformSettings = D
     lastSoloPlayerName: typeof candidate.lastSoloPlayerName === 'string' ? candidate.lastSoloPlayerName.slice(0, 40) : fallback.lastSoloPlayerName,
     tableMomentsEnabled: typeof candidate.tableMomentsEnabled === 'boolean' ? candidate.tableMomentsEnabled : fallback.tableMomentsEnabled,
     specialRoundsEnabled: typeof candidate.specialRoundsEnabled === 'boolean' ? candidate.specialRoundsEnabled : fallback.specialRoundsEnabled,
+    vibrationEnabled: typeof candidate.vibrationEnabled === 'boolean' ? candidate.vibrationEnabled : fallback.vibrationEnabled,
+    passDeviceEnabled: typeof candidate.passDeviceEnabled === 'boolean' ? candidate.passDeviceEnabled : fallback.passDeviceEnabled,
+    seasonalDismissed: typeof candidate.seasonalDismissed === 'string' ? candidate.seasonalDismissed.slice(0, 40) : fallback.seasonalDismissed,
+    kidsModeEnabled: typeof candidate.kidsModeEnabled === 'boolean' ? candidate.kidsModeEnabled : fallback.kidsModeEnabled,
     suggestionMinutes: typeof candidate.suggestionMinutes === 'number' && Number.isFinite(candidate.suggestionMinutes)
       ? Math.min(120, Math.max(5, Math.round(candidate.suggestionMinutes)))
       : fallback.suggestionMinutes

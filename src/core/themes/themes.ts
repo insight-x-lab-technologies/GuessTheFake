@@ -1,8 +1,18 @@
-export type ThemeId = 'cosmic' | 'liquid-glass' | 'material3' | 'light-mode' | 'dark-mode' | 'high-contrast';
+export type ThemeId =
+  | 'cosmic'
+  | 'liquid-glass'
+  | 'material3'
+  | 'light-mode'
+  | 'dark-mode'
+  | 'high-contrast'
+  // W16-05: seasonal themes, applied by hand or suggested by the local date.
+  | 'halloween'
+  | 'festive';
 
 export type ThemeDefinition = {
   id: ThemeId;
   labelKey: string;
+  seasonal?: boolean;
 };
 
 export const THEMES: ThemeDefinition[] = [
@@ -11,7 +21,9 @@ export const THEMES: ThemeDefinition[] = [
   { id: 'material3', labelKey: 'settings.themeMaterial3' },
   { id: 'light-mode', labelKey: 'settings.themeLightMode' },
   { id: 'dark-mode', labelKey: 'settings.themeDarkMode' },
-  { id: 'high-contrast', labelKey: 'settings.themeHighContrast' }
+  { id: 'high-contrast', labelKey: 'settings.themeHighContrast' },
+  { id: 'halloween', labelKey: 'settings.themeHalloween', seasonal: true },
+  { id: 'festive', labelKey: 'settings.themeFestive', seasonal: true }
 ];
 
 export const DEFAULT_THEME: ThemeId = 'cosmic';

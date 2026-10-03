@@ -1,10 +1,16 @@
 import { createStorageKey, readVersioned, writeVersioned } from '../storage/storage';
 
+// W16-06: illustrated medal tier. Purely visual; unlock rules are the same.
+export type AchievementRarity = 'bronze' | 'silver' | 'gold' | 'legendary';
+
+export const ACHIEVEMENT_RARITIES: AchievementRarity[] = ['bronze', 'silver', 'gold', 'legendary'];
+
 export type AchievementDefinition = {
   id: string;
   titleKey: string;
   descriptionKey: string;
   target: number;
+  rarity?: AchievementRarity;
   getProgress: (counters: AchievementCounters) => number;
 };
 

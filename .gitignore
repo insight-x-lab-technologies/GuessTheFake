@@ -14,3 +14,5 @@ sample/
 content-review/
 test-results/
 playwright-report/
+.playwright-mcp/
+*.zip

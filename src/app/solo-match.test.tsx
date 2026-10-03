@@ -52,7 +52,7 @@ describe('solo match flow', () => {
     await playOneSoloRound('Ana');
 
     expect(await screen.findByText(/novo recorde|new record/i)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /recalibrar pontuação|recalibrate scores/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /mais ações da rodada|more round actions/i })).not.toBeInTheDocument();
     expect(screen.getByText(/próximo objetivo|next objective/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /jogar de novo|play again/i }));
@@ -70,11 +70,11 @@ describe('solo match flow', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /família|family/i }));
     fireEvent.change(screen.getByLabelText(/^nome$|^name$/i), { target: { value: 'Duda' } });
-    fireEvent.click(screen.getByRole('button', { name: /avatar 🦉/i }));
+    fireEvent.click(screen.getByRole('button', { name: /avatar (coruja|owl)/i }));
     fireEvent.click(screen.getByRole('button', { name: /criar perfil|create profile/i }));
 
     expect(await screen.findByRole('heading', { name: 'Duda' })).toBeInTheDocument();
-    expect(screen.getByText(/troféus pessoais: 0\/7|personal trophies: 0\/7/i)).toBeInTheDocument();
+    expect(screen.getByText(/troféus pessoais: 0\/8|personal trophies: 0\/8/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getAllByRole('button', { name: /nova partida|new match/i })[0]);
     const chips = await screen.findByLabelText(/perfis da família|family profiles/i);
@@ -90,7 +90,8 @@ describe('solo match flow', () => {
     fireEvent.click(screen.getByRole('button', { name: /iniciar turno|start turn/i }));
     fireEvent.click(screen.getByRole('button', { name: /mostrar frases|show statements/i }));
 
-    fireEvent.click(screen.getByRole('button', { name: /^modo apresentador$|^presenter mode$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /mais ações da rodada|more round actions/i }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /^modo apresentador$|^presenter mode$/i }));
     const presenter = screen.getByRole('dialog', { name: /modo apresentador|presenter mode/i });
     expect(within(presenter).getAllByRole('listitem').length).toBeGreaterThanOrEqual(5);
 

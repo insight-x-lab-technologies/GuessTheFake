@@ -110,7 +110,9 @@ export default defineConfig(({ mode }) => {
           globIgnores: [
             '**/assets/og/**',
             '**/assets/screenshots/**',
-            '**/assets/{autumn,spring,light,dark,contrast}_*_bg_*'
+            '**/assets/{autumn,spring,light,dark,contrast}_*_bg_*',
+            // W17-06: seasonal pack texts download only when a pack is turned on.
+            '**/assets/seasonal-*.js'
           ],
           maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
           runtimeCaching: [
@@ -122,6 +124,15 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: { statuses: [0, 200] },
                 expiration: { maxEntries: 8 },
                 rangeRequests: true
+              }
+            },
+            {
+              urlPattern: ({ url }) => /\/seasonal-[a-z]{2}-[\w-]+\.js$/.test(url.pathname),
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'gtf-seasonal-packs',
+                cacheableResponse: { statuses: [0, 200] },
+                expiration: { maxEntries: 12 }
               }
             },
             {

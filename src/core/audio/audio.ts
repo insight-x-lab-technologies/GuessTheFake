@@ -1,3 +1,5 @@
+import { isThemeId, type ThemeId } from '../themes/themes';
+
 export type AudioEvent =
   | 'correct'
   | 'wrong'
@@ -6,7 +8,10 @@ export type AudioEvent =
   | 'ui-click'
   | 'navigation'
   | 'card-select'
-  | 'preview';
+  | 'preview'
+  // W15-02: countdown and last-seconds ticks.
+  | 'tick'
+  | 'tick-strong';
 
 export type MusicZone = 'menu' | 'gameplay' | 'silent';
 
@@ -50,10 +55,24 @@ export function getMusicZone(screen: string, phase: string): MusicZone {
   return 'silent';
 }
 
+// W16-04: every theme plays one of the three loops on purpose. Light and
+// pastel themes share the bright spring loop, warm themes the autumn loop,
+// and dark or high-contrast themes the calm cosmic loop. Licenses and origin
+// are recorded in CREDITS.md.
+export const THEME_TRACK_MAP: Record<ThemeId, ThemeAudioTrackId> = {
+  cosmic: 'cosmic',
+  'liquid-glass': 'autumn',
+  material3: 'spring',
+  'light-mode': 'spring',
+  'dark-mode': 'cosmic',
+  'high-contrast': 'cosmic',
+  halloween: 'autumn',
+  festive: 'cosmic'
+};
+
 export function getTrackThemeId(themeId: string): ThemeAudioTrackId {
-  if (themeId === 'spring' || themeId === 'material3' || themeId === 'light-mode') return 'spring';
-  if (themeId === 'autumn' || themeId === 'liquid-glass') return 'autumn';
-  return 'cosmic';
+  if (themeId === 'spring' || themeId === 'autumn') return themeId;
+  return isThemeId(themeId) ? THEME_TRACK_MAP[themeId] : 'cosmic';
 }
 
 export function clampAudioVolume(value: number | undefined, fallback: number) {
@@ -68,6 +87,8 @@ export function getToneForEvent(event: AudioEvent) {
   if (event === 'navigation') return { frequency: 480, durationMs: 55 };
   if (event === 'card-select') return { frequency: 560, durationMs: 70 };
   if (event === 'preview') return { frequency: 620, durationMs: 120 };
+  if (event === 'tick') return { frequency: 980, durationMs: 45 };
+  if (event === 'tick-strong') return { frequency: 1240, durationMs: 95 };
   return { frequency: 420, durationMs: 80 };
 }
 
@@ -236,8 +257,8 @@ export function createPlatformAudioService(options: {
         const oscillator = context.createOscillator();
         const gain = context.createGain();
         oscillator.frequency.value = tone.frequency;
-        oscillator.type = event === 'wrong' ? 'sawtooth' : 'sine';
-        gain.gain.value = 0.12 * clampAudioVolume(settings.soundVolume, 0.65);
+        oscillator.type = event === 'wrong' ? 'sawtooth' : event === 'tick-strong' ? 'square' : 'sine';
+        gain.gain.value = (event === 'tick' ? 0.08 : 0.12) * clampAudioVolume(settings.soundVolume, 0.65);
         oscillator.connect(gain);
         gain.connect(context.destination);
         oscillator.start();

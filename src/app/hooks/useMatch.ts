@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import type { Language } from '../../core/i18n/i18n';
 import type { PlatformSettings } from '../../core/settings/settings';
 import { clearPersistedGuessTheFakeMatch, savePersistedGuessTheFakeMatch } from '../../game/match-storage';
-import { isSoloMode } from '../../game/modes';
+import { buildAboutUsRounds, type AboutUsEntry } from '../../game/about-us';
+import { isEveryoneGuessesMode, isSoloMode } from '../../game/modes';
 import { getDeprioritizedRoundIds } from '../../game/round-history';
 import {
   advanceRound,
@@ -13,6 +15,8 @@ import {
   getActiveGuessSubject,
   getCurrentRound,
   getCurrentSpecialRound,
+  getHandoffSubject,
+  getRoundBluffer,
   getRoundTimeSeconds,
   getWinners,
   recalibrateScores,
@@ -27,6 +31,8 @@ import type { SoloResult } from '../../game/solo-records';
 import type { GuessTheFakeState } from '../../game/types';
 import type { ContentRating } from '../../core/content-feedback/content-feedback';
 import type { Screen, Translate } from '../app-types';
+import { runViewTransition, vibrate } from '../browser';
+import { getTimerCue, type TimerSample } from '../fx';
 import type { MatchBoot } from '../match-boot';
 import { getNewMatchNavigationDecision, hasMatchInProgress } from '../new-match-flow';
 import { buildProgressTracks, getNextObjective } from '../progress-tracks';
@@ -65,6 +71,8 @@ type MatchOptions = {
   categoryIds: string[];
   screen: Screen;
   setScreen: (screen: Screen) => void;
+  // W17-01: "Rematch" of an "about us" match starts a new writing turn.
+  onAboutUsRematch?: () => void;
 };
 
 // Match state, the preparation/round countdown, and every match action.
@@ -81,7 +89,8 @@ export function useMatch({
   enabledPackIds,
   categoryIds,
   screen,
-  setScreen
+  setScreen,
+  onAboutUsRematch
 }: MatchOptions) {
   const [gameState, setGameState] = useState<GuessTheFakeState>(boot.state);
   const [timerSeconds, setTimerSeconds] = useState(boot.timerSeconds);
@@ -91,6 +100,8 @@ export function useMatch({
   const [soloOutcome, setSoloOutcome] = useState<SoloOutcome | null>(null);
   // `change-mind` moment: whose guess the next statement click replaces.
   const [changingSubjectId, setChangingSubjectId] = useState<string | null>(null);
+  // W15-04: who the device goes to next; the round timer waits meanwhile.
+  const [handoffSubject, setHandoffSubject] = useState<{ kind: 'player' | 'team'; id: string; name: string } | null>(null);
   const restoredTimerRef = useRef(boot.restored);
   const demoPendingRef = useRef(boot.demo);
   // Timer callbacks run later than the render that scheduled them.
@@ -104,6 +115,7 @@ export function useMatch({
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const activeSubject = getActiveGuessSubject(gameState);
   const activeSubjectName = activeSubject?.name ?? activePlayer?.name ?? '-';
+  const bluffer = getRoundBluffer(gameState);
   const winners = gameState.phase === 'finished' ? getWinners(gameState) : [];
   const currentRoundFeedbackRating = round
     ? progress.contentFeedback.entries.find(entry => entry.roundId === round.id)?.rating ?? null
@@ -125,6 +137,26 @@ export function useMatch({
     setScoreResetStatus(null);
     setChangingSubjectId(null);
   }, [screen, gameState.phase, gameState.currentRoundIndex]);
+
+  useEffect(() => {
+    if (gameState.phase !== 'playing') setHandoffSubject(null);
+  }, [gameState.phase, gameState.currentRoundIndex]);
+
+  // W15-02: ticks on the last seconds (and the 3-2-1 preparation).
+  const timerSampleRef = useRef<TimerSample>({
+    phase: gameState.phase,
+    roundIndex: gameState.currentRoundIndex,
+    seconds: timerSeconds
+  });
+  useEffect(() => {
+    const next = { phase: gameState.phase, roundIndex: gameState.currentRoundIndex, seconds: timerSeconds };
+    const cue = getTimerCue(timerSampleRef.current, next);
+    timerSampleRef.current = next;
+    if (!cue || showNewMatchChoices) return;
+    const latest = latestRef.current;
+    latest.audio.play(cue);
+    if (cue === 'tick-strong' && latest.settings.vibrationEnabled) vibrate(40);
+  }, [gameState.phase, gameState.currentRoundIndex, showNewMatchChoices, timerSeconds]);
 
   // `?demo=game` waits for the lazily loaded rounds of the active language.
   useEffect(() => {
@@ -175,7 +207,7 @@ export function useMatch({
   }, [gameState.phase, gameState.currentRoundIndex, settings.preparationTimeSeconds, roundTimeSeconds]);
 
   useEffect(() => {
-    if (showNewMatchChoices) return undefined;
+    if (showNewMatchChoices || handoffSubject) return undefined;
     if (gameState.phase !== 'preparing' && gameState.phase !== 'playing') return undefined;
     if (timerSeconds <= 0) return undefined;
 
@@ -186,7 +218,7 @@ export function useMatch({
       }
 
       if (gameState.phase === 'preparing') {
-        setGameState(current => beginPlaying(current));
+        withTransition(() => setGameState(current => beginPlaying(current)));
         return;
       }
 
@@ -195,12 +227,13 @@ export function useMatch({
         const currentRound = getCurrentRound(current);
         const timedOut = timeOutRound(current, getScoring(latest.settings)).state;
         latest.audio.play('wrong');
+        if (latest.settings.vibrationEnabled) vibrate([90, 60, 90]);
         latest.progress.recordRound(timedOut, Object.values(timedOut.roundGuesses), currentRound);
         return timedOut;
       });
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [gameState.phase, showNewMatchChoices, timerSeconds]);
+  }, [gameState.phase, handoffSubject, showNewMatchChoices, timerSeconds]);
 
   useEffect(() => {
     const wakeLock = (navigator as Navigator & {
@@ -257,7 +290,7 @@ export function useMatch({
     setScreen('play');
   }
 
-  function startNewMatch(options: { onValidationError?: 'stay' | 'show-setup' } = {}) {
+  function startNewMatch(options: { onValidationError?: 'stay' | 'show-setup'; aboutUsEntries?: AboutUsEntry[] } = {}) {
     audio.unlock();
     setup.setSetupError('');
     const effectiveNames = setup.players.length ? setup.players : ['Jogador 1'];
@@ -269,8 +302,12 @@ export function useMatch({
     if (effectiveNames.length < setup.selectedMode.minPlayers) {
       return fail(t('setup.notEnoughPlayers', { count: setup.selectedMode.minPlayers }));
     }
-    if (!setup.playableRounds.length) return fail(t('setup.noRounds'));
-    const parsedRounds = Number(setup.roundCountInput);
+    // W17-01: the table writes the rounds; packs, filters and count do not apply.
+    const aboutUs = setup.selectedModeId === 'about-us';
+    const tableRounds = aboutUs ? buildAboutUsRounds(options.aboutUsEntries ?? []) : [];
+    if (aboutUs && tableRounds.length < effectiveNames.length) return fail(t('aboutUs.missingEntries'));
+    if (!aboutUs && !setup.playableRounds.length) return fail(t('setup.noRounds'));
+    const parsedRounds = aboutUs ? tableRounds.length : Number(setup.roundCountInput);
     if (!Number.isFinite(parsedRounds) || parsedRounds < 1) return fail(t('setup.invalidRounds'));
 
     const soloMatch = isSoloMode(setup.selectedModeId);
@@ -278,12 +315,13 @@ export function useMatch({
       modeId: setup.selectedModeId,
       playerNames: effectiveNames,
       totalRounds: parsedRounds,
-      rounds: setup.playableRounds,
+      rounds: aboutUs ? tableRounds : setup.playableRounds,
       shuffleRounds: settings.shuffleRounds,
       challenge: {
         categoryId: setup.selectedCategoryId,
         difficulty: setup.selectedDifficulty,
-        packIds: setup.installedPackIds
+        packIds: setup.installedPackIds,
+        ...(setup.kidsModeEnabled ? { kids: true } : {})
       },
       tableMoments: setup.tableMomentsEnabled,
       specialRounds: setup.specialRoundsEnabled,
@@ -325,6 +363,8 @@ export function useMatch({
       }
       const anyCorrect = Object.values(next.roundGuesses).some(guess => guess.correct);
       latest.audio.play(next.phase === 'revealed' ? (anyCorrect ? 'correct' : 'wrong') : 'card-select');
+      // Updaters may run twice in StrictMode; setting the same subject is idempotent.
+      if (latest.settings.passDeviceEnabled) setHandoffSubject(getHandoffSubject(current, next));
       if (next.phase === 'revealed') {
         latest.progress.recordRound(next, Object.values(next.roundGuesses), getCurrentRound(current));
       }
@@ -361,13 +401,18 @@ export function useMatch({
 
   function beginTurn() {
     audio.unlock();
-    setGameState(current => beginPreparation(current));
+    withTransition(() => setGameState(current => beginPreparation(current)));
   }
 
   function showStatementsNow() {
     audio.unlock();
     audio.play('round-start');
-    setGameState(current => beginPlaying(current));
+    withTransition(() => setGameState(current => beginPlaying(current)));
+  }
+
+  function confirmHandoff() {
+    audio.unlock();
+    withTransition(() => setHandoffSubject(null));
   }
 
   function resetScores() {
@@ -387,21 +432,27 @@ export function useMatch({
       } else {
         audio.play('match-finished');
       }
-      setGameState(next);
+      withTransition(() => setGameState(next));
       return;
     }
 
     if (isSoloMode(next.modeId)) {
       audio.play('round-start');
-      setGameState(beginPlaying(next));
+      withTransition(() => setGameState(beginPlaying(next)));
       return;
     }
 
-    setGameState(next);
+    withTransition(() => setGameState(next));
   }
 
-  // Solo "Play again": same challenge, fresh rounds.
-  function replaySoloChallenge() {
+  // "Rematch" / solo "Play again": same players and options, fresh rounds
+  // (the round history pushes the ones just played to the back).
+  function rematch() {
+    if (gameState.modeId === 'about-us') {
+      openCleanSetup();
+      onAboutUsRematch?.();
+      return;
+    }
     startNewMatch({ onValidationError: 'show-setup' });
   }
 
@@ -418,6 +469,7 @@ export function useMatch({
     specialRound,
     roundTimeSeconds,
     activeSubjectName,
+    bluffer,
     winners,
     currentRoundFeedbackRating,
     soloOutcome,
@@ -439,7 +491,11 @@ export function useMatch({
     continueCurrentMatch,
     restartCurrentMatch: () => startNewMatch({ onValidationError: 'show-setup' }),
     startNewMatch,
-    replaySoloChallenge,
+    rematch,
+    // W15-04: hand-off screens only where players share the device.
+    passDevice: settings.passDeviceEnabled && (isEveryoneGuessesMode(gameState.modeId) || gameState.modeId === 'teams'),
+    handoffSubject,
+    confirmHandoff,
     chooseStatement,
     showNextClue,
     voteInMoment,
@@ -450,6 +506,10 @@ export function useMatch({
     continueRound,
     rateCurrentRound
   };
+}
+
+function withTransition(update: () => void) {
+  runViewTransition(update, flushSync);
 }
 
 function getScoring(settings: PlatformSettings) {

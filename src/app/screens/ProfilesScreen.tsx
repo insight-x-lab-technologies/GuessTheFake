@@ -3,6 +3,9 @@ import { PROFILE_AVATARS, PROFILE_COLORS, PROFILE_NAME_MAX, PROFILE_NICKNAME_MAX
 import { Button } from '../../core/ui/Button';
 import type { Translate } from '../app-types';
 import type { ProfilesController } from '../hooks/useProfiles';
+import { AvatarArt } from './AvatarArt';
+import { Mascot } from './Mascot';
+import { Medal } from './Medal';
 import { ProfileAvatar } from './ProfileAvatar';
 import { ScreenHeader } from './ScreenHeader';
 import styles from '../App.module.css';
@@ -54,16 +57,17 @@ export function ProfilesScreen({
           </label>
           <fieldset className={styles.pickerField}>
             <legend>{t('profiles.avatar')}</legend>
-            <div className={styles.avatarPicker}>
+            <div className={styles.avatarPicker} data-color={draft.color || PROFILE_COLORS[0]}>
               {PROFILE_AVATARS.map(avatar => (
                 <button
                   key={avatar}
                   type="button"
                   aria-pressed={draft.avatar === avatar}
-                  aria-label={t('profiles.avatarOption', { avatar })}
+                  aria-label={t('profiles.avatarOption', { avatar: t(`art.avatars.${avatar}`) })}
+                  title={t(`art.avatars.${avatar}`)}
                   onClick={() => profiles.updateDraft({ avatar })}
                 >
-                  {avatar}
+                  <AvatarArt avatar={avatar} />
                 </button>
               ))}
             </div>
@@ -120,7 +124,10 @@ export function ProfilesScreen({
                   </p>
                   <div className={styles.tagList}>
                     {trophies.items.filter(item => item.unlocked).map(item => (
-                      <span key={item.definition.id}>{t(item.definition.titleKey)}</span>
+                      <span key={item.definition.id} className={styles.medalTag}>
+                        <Medal rarity={item.definition.rarity} size="sm" />
+                        {t(item.definition.titleKey)}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -136,7 +143,10 @@ export function ProfilesScreen({
             ))}
           </div>
         ) : (
-          <p className={styles.helperText}>{t('profiles.empty')}</p>
+          <div className={styles.emptyState}>
+            <Mascot mood="thinking" />
+            <p className={styles.helperText}>{t('profiles.empty')}</p>
+          </div>
         )}
       </div>
     </section>

@@ -33,7 +33,9 @@ describe('score recalibration flow', () => {
 
     expect(await screen.findByText(/Time 1: 10 pts/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /recalibrar pontuação|recalibrate scores/i }));
+    fireEvent.click(screen.getByRole('button', { name: /mais ações da rodada|more round actions/i }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /recalibrar pontuação|recalibrate scores/i }));
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
 
     expect(screen.getByRole('group', { name: /zerar pontuação|reset scores/i })).toBeInTheDocument();
     expect(screen.getByText(/Time 1: 10 pts/i)).toBeInTheDocument();

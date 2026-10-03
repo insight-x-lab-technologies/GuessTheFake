@@ -1,8 +1,11 @@
-import { BadgeCheck, ListChecks, Route, ThumbsUp } from 'lucide-react';
+import { ListChecks, Route, ThumbsUp } from 'lucide-react';
 import { GAME_MODES } from '../../game/modes';
 import type { Translate } from '../app-types';
 import type { ProgressController } from '../hooks/useProgress';
 import type { ProgressTrackView } from '../progress-tracks';
+import { CategoryArt } from './CategoryArt';
+import { Mascot } from './Mascot';
+import { Medal } from './Medal';
 import { ScreenHeader } from './ScreenHeader';
 import styles from '../App.module.css';
 
@@ -80,9 +83,12 @@ export function AchievementsScreen({
           </article>
         </div>
       ) : (
-        <p className={styles.helperText} role="status">
-          {t('achievements.modeEmpty', { mode: selectedMode ? t(selectedMode.titleKey) : '' })}
-        </p>
+        <div className={styles.emptyState}>
+          <Mascot mood="suspicious" />
+          <p className={styles.helperText} role="status">
+            {t('achievements.modeEmpty', { mode: selectedMode ? t(selectedMode.titleKey) : '' })}
+          </p>
+        </div>
       )}
       <div className={styles.insightGrid}>
         <article className={styles.smallCard}>
@@ -126,7 +132,10 @@ export function AchievementsScreen({
           <div className={styles.trackGrid}>
             {trackViews.map(({ track, progress: value, completedSteps, totalSteps, nextTarget }) => (
               <article key={track.id} className={styles.trackCard} data-group={track.group}>
-                <span className={styles.trackGroup}>{t(`tracks.group.${track.group}`)}</span>
+                <header>
+                  {track.categoryId ? <CategoryArt categoryId={track.categoryId} size="sm" /> : null}
+                  <span className={styles.trackGroup}>{t(`tracks.group.${track.group}`)}</span>
+                </header>
                 <b>{t(track.titleKey, {
                   category: track.categoryId ? categoryLabel(track.categoryId) : '',
                   difficulty: track.difficulty ? t(`setup.${track.difficulty}`) : ''
@@ -146,9 +155,16 @@ export function AchievementsScreen({
       {view.hasData ? (
         <div className={styles.cardGrid}>
           {view.items.map(({ definition, progress: value, unlocked }) => (
-            <article key={definition.id} className={`${styles.smallCard} ${unlocked ? styles.unlockedCard : ''}`}>
-              <BadgeCheck size={22} />
+            <article
+              key={definition.id}
+              className={`${styles.smallCard} ${unlocked ? styles.unlockedCard : ''}`}
+              data-rarity={definition.rarity ?? 'bronze'}
+            >
+              <Medal rarity={definition.rarity} locked={!unlocked} />
               <h3 className={styles.cardTitle}>{t(definition.titleKey)}</h3>
+              <span className={styles.rarityLabel} data-rarity={definition.rarity ?? 'bronze'}>
+                {t('art.medal.label', { rarity: t(`art.medal.${definition.rarity ?? 'bronze'}`) })}
+              </span>
               <p>{t(definition.descriptionKey)}</p>
               <progress value={value} max={definition.target} />
               <span>{unlocked ? t('achievements.unlocked') : `${value} / ${definition.target}`}</span>

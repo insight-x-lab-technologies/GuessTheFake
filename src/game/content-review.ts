@@ -70,7 +70,7 @@ function formatRound(
   compareLanguage: Language | undefined,
   today: string
 ) {
-  const tags = [round.ageRating === '10+' ? '10+' : '', round.review?.status === 'reviewed' ? 'revisada' : ''].filter(Boolean);
+  const tags = [round.ageRating === '10+' || round.ageRating === 'kids' ? round.ageRating : '', round.review?.status === 'reviewed' ? 'revisada' : ''].filter(Boolean);
   const lines = [`### ${round.id}${tags.length ? ` (${tags.join(', ')})` : ''}`, ''];
 
   round.statements.forEach((statement, index) => {

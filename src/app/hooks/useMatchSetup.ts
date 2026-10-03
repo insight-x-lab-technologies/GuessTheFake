@@ -4,6 +4,7 @@ import type { ContentPack } from '../../core/content-packs/content-packs';
 import { shouldSkipRound, type ContentFeedbackModel, type ContentFeedbackStats } from '../../core/content-feedback/content-feedback';
 import type { PlatformSettings } from '../../core/settings/settings';
 import type { GuessTheFakePackContent } from '../../game/types';
+import { BUILTIN_PACK_ID } from '../../game/data/builtin';
 import { GAME_MODES, isSoloMode } from '../../game/modes';
 import { suggestMatchSetup, type MatchSuggestion } from '../../game/match-suggestion';
 import { sanitizeRoundCount } from '../../game/rules';
@@ -50,18 +51,27 @@ export function useMatchSetup({
   const [setupError, setSetupError] = useState('');
   const [suggestionApplied, setSuggestionApplied] = useState(false);
 
-  const availableCategories = useMemo(() => {
+  const allCategories = useMemo(() => {
     const categories = new Map<string, Record<string, string>>();
     enabledPacks.forEach(pack => {
       pack.content.categories.forEach(category => categories.set(category.id, category.title));
     });
     return [...categories.entries()].map(([id, title]) => ({ id, title }));
   }, [enabledPacks]);
+  const kids = settings.kidsModeEnabled;
+  // W17-03: kids mode draws only kids rounds; otherwise they stay out.
   const languageAvailableRounds = useMemo(() => {
     return enabledPacks.flatMap(pack =>
-      pack.content.rounds.filter(round => !shouldSkipRound(contentFeedback, round.id))
+      pack.content.rounds
+        .filter(round => !shouldSkipRound(contentFeedback, round.id))
+        .filter(round => (kids ? round.ageRating === 'kids' || pack.meta?.audience === 'kids' : round.ageRating !== 'kids'))
     );
-  }, [contentFeedback, enabledPacks]);
+  }, [contentFeedback, enabledPacks, kids]);
+  // Categories with rounds under the current audience (kids or not).
+  const availableCategories = useMemo(() => {
+    const used = new Set(languageAvailableRounds.map(round => round.categoryId));
+    return allCategories.filter(category => used.has(category.id));
+  }, [allCategories, languageAvailableRounds]);
   const playableRounds = useMemo(() => {
     return languageAvailableRounds
       .filter(round => selectedCategoryId === 'all' || round.categoryId === selectedCategoryId)
@@ -85,9 +95,9 @@ export function useMatchSetup({
   const solo = isSoloMode(selectedModeId);
   const tablePlayers = playerNames.split(',').map(name => name.trim()).filter(Boolean);
   const players = solo ? [soloPlayerName.trim()].filter(Boolean) : tablePlayers;
-  // Installed packs (not the builtin one) are part of a solo challenge.
+  // Installed and seasonal packs (not the core builtin one) are part of a solo challenge.
   const installedPackIds = useMemo(
-    () => enabledPacks.filter(pack => !pack.builtin).map(pack => pack.id).sort(),
+    () => enabledPacks.filter(pack => pack.id !== BUILTIN_PACK_ID).map(pack => pack.id).sort(),
     [enabledPacks]
   );
   const challenge: SoloChallenge = {
@@ -95,7 +105,8 @@ export function useMatchSetup({
     categoryId: selectedCategoryId,
     difficulty: selectedDifficulty,
     specialRounds: settings.specialRoundsEnabled,
-    packIds: installedPackIds
+    packIds: installedPackIds,
+    kids
   };
   const soloPlayerKey = solo && soloPlayerName.trim() ? getSoloKeyForName(soloPlayerName) : '';
   const soloRecord = soloPlayerKey ? getSoloRecord(soloRecords, soloPlayerKey, getSoloChallengeKey(challenge)) : null;
@@ -221,6 +232,12 @@ export function useMatchSetup({
     setTableMomentsEnabled: (enabled: boolean) => updateSettings({ tableMomentsEnabled: enabled }),
     specialRoundsEnabled: settings.specialRoundsEnabled,
     setSpecialRoundsEnabled: (enabled: boolean) => updateSettings({ specialRoundsEnabled: enabled }),
+    kidsModeEnabled: kids,
+    setKidsModeEnabled: (enabled: boolean) => {
+      updateSettings({ kidsModeEnabled: enabled });
+      touch();
+    },
+    allCategories,
     suggestionMinutes: settings.suggestionMinutes,
     setSuggestionMinutes: (minutes: number) => updateSettings({ suggestionMinutes: minutes }),
     suggestion,

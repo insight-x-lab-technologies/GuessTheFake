@@ -51,7 +51,15 @@ export const fr: TranslationTree = {
     },
     classic: { title: 'Classique', description: 'Un joueur à la fois essaie de trouver l\'affirmation fausse.' },
     allGuess: { title: 'Tout le monde répond', description: 'Chaque joueur valide sa réponse avant la révélation.' },
-    teams: { title: 'Équipes', description: 'Les équipes jouent à tour de rôle et marquent sur un tableau séparé.' }
+    teams: { title: 'Équipes', description: 'Les équipes jouent à tour de rôle et marquent sur un tableau séparé.' },
+    aboutUs: {
+      title: 'À propos de nous',
+      description: 'Chacun écrit 4 vérités et 1 mensonge sur soi ; la table devine.'
+    },
+    bluffMaster: {
+      title: 'Maître du bluff',
+      description: 'Un joueur connaît la fausse et défend les cinq ; chaque joueur trompé rapporte.'
+    }
   },
   setup: {
     variationsTitle: 'Variantes',
@@ -313,5 +321,208 @@ export const fr: TranslationTree = {
     version: 'v{version}',
     author: 'Par {author}',
     changelog: 'Historique des versions'
+  },
+  art: {
+    avatars: {
+      fox: 'Renard',
+      panda: 'Panda',
+      owl: 'Hibou',
+      octopus: 'Pieuvre',
+      lion: 'Lion',
+      turtle: 'Tortue',
+      penguin: 'Manchot',
+      unicorn: 'Licorne',
+      bee: 'Abeille',
+      whale: 'Baleine',
+      cactus: 'Cactus',
+      rocket: 'Fusée',
+      cat: 'Chat',
+      dog: 'Chien',
+      frog: 'Grenouille',
+      bear: 'Ours',
+      rabbit: 'Lapin',
+      koala: 'Koala',
+      monkey: 'Singe',
+      pig: 'Cochon',
+      chick: 'Poussin',
+      robot: 'Robot',
+      alien: 'Extraterrestre',
+      ghost: 'Petit fantôme'
+    },
+    defaultAvatar: 'Joueur sans profil',
+    medal: {
+      bronze: 'Bronze',
+      silver: 'Argent',
+      gold: 'Or',
+      legendary: 'Légendaire',
+      label: 'Médaille {rarity}',
+      locked: 'Verrouillée',
+      unlockedRarity: '{rarity} débloquée'
+    },
+    seasonal: {
+      halloween: {
+        title: 'Ambiance Halloween',
+        body: 'Chauves-souris, citrouilles et la musique d\'automne pour la table.'
+      },
+      festive: {
+        title: 'Ambiance des fêtes',
+        body: 'Lumières, neige et paillettes de fin d\'année pour la table.'
+      },
+      apply: 'Utiliser le thème',
+      dismiss: 'Pas maintenant',
+      settingsHint: 'Thèmes saisonniers : appliquez-les quand vous voulez ; à la bonne saison, l\'app les propose sur l\'accueil.'
+    },
+    tracks: {
+      heading: 'Musique',
+      mapping: 'Ce thème joue la piste {track}.',
+      cosmic: 'Cosmique',
+      spring: 'Printemps',
+      autumn: 'Automne'
+    }
+  },
+  juice: {
+    menu: {
+      label: 'Autres actions de la manche'
+    },
+    scoreboard: 'Scores',
+    stamp: 'FAUX',
+    bonusFloat: '+{bonus} bonus',
+    countdown: 'Début dans {seconds}',
+    pass: {
+      title: 'Passe à {name}',
+      hint: 'Pas de triche : la réponse précédente reste cachée.',
+      ready: 'Je suis {name}, afficher'
+    },
+    podium: {
+      kicker: 'Podium',
+      label: 'Podium de la partie',
+      points: '{points} pts',
+      place: '{place}e place',
+      restLine: '{place}e {name} · {points} pts'
+    },
+    highlights: {
+      label: 'Temps forts de la partie',
+      fastest: 'Le plus rapide',
+      'longest-streak': 'Meilleure série',
+      'best-bluff': 'Meilleur bluff',
+      fastestLine: '{name} a trouvé en {seconds} s en moyenne',
+      streakLine: '{name} a trouvé {streak} d’affilée',
+      bluffLine: '« {text} » a piégé {count}'
+    },
+    rematch: 'Revanche',
+    solo: {
+      you: 'Vous',
+      record: 'Record',
+      previousRecord: 'Ancien record'
+    },
+    settings: {
+      passDevice: 'Passer l\'appareil entre les réponses',
+      passDeviceHint: 'En « tout le monde répond » et en équipes, affiche un écran de passage qui cache la réponse précédente.',
+      vibration: 'Vibrer pendant les dernières secondes',
+      vibrationUnsupported: 'Cet appareil ou ce navigateur ne peut pas vibrer.'
+    }
+  },
+  aboutUs: {
+    category: 'À propos de nous',
+    subtitle: 'Chaque joueur écrit à son tour. Rien ne quitte cet appareil.',
+    progress: 'Joueur {current} sur {total}',
+    startWriting: 'Écrire mes phrases',
+    writeTitle: '{name}, écris sur toi',
+    writeHint: 'Quatre vérités et un mensonge. Coche le mensonge ; les phrases sont mélangées.',
+    statementLabel: 'Phrase {number}',
+    lieLabel: 'Mensonge',
+    issue: {
+      'empty-statement': 'Remplis les cinq phrases.',
+      'too-long': 'Chaque phrase peut avoir jusqu’à 140 caractères.',
+      'duplicate-statement': 'Les phrases doivent être différentes.',
+      'no-lie': 'Coche la phrase qui est un mensonge.'
+    },
+    cancel: 'Retour à la configuration',
+    confirm: 'C’est fait, cacher',
+    doneTitle: 'Tout le monde a écrit !',
+    doneHint: '{count} manches prêtes, une par joueur. L’auteur d’une manche ne devine pas dessus.',
+    missingEntries: 'Chaque joueur doit écrire ses cinq phrases avant de commencer.',
+    saveAsPack: 'Enregistrer comme pack local',
+    packTitle: 'À propos de nous ({date})',
+    packExplanation: 'Phrase écrite par {name}.',
+    saved: 'Pack enregistré. Active-le ou modifie-le dans Packs.',
+    setupTitle: 'Contenu de la table',
+    setupNote: 'Ni packs ni filtres : chaque joueur écrit une manche sur lui ({count} manches). L’auteur marque pour chaque joueur trompé.',
+    summaryLine: '{players} joueurs · une manche écrite par chacun',
+    startWritingAll: 'Écrire les manches'
+  },
+  bluff: {
+    result: '{name} a trompé {count} ({names}) : +{points} points.',
+    resultNone: '{name} n’a trompé personne cette fois.',
+    masterBanner: 'Maître du bluff : {name}',
+    masterBannerHint: '{name} défend les cinq phrases ; votez après les avoir entendues.',
+    aboutUsBanner: 'Phrases de {name}',
+    aboutUsBannerHint: '{name} ne devine pas ; marque pour chaque joueur trompé.',
+    aboutUsIntro: 'Manche de {name}',
+    aboutUsIntroHint: '{name}, lis tes cinq phrases à voix haute. Les autres devinent un par un.',
+    briefingTitle: 'Écran réservé à {name}',
+    briefingHint: 'Les autres détournent les yeux. Le maître voit laquelle est fausse.',
+    briefingReveal: 'Voir la fausse',
+    briefingDefend: 'Défends les cinq comme si elles étaient toutes vraies.',
+    briefingReady: 'Prêt, cacher',
+    finalDefense: {
+      title: 'Plaidoirie finale',
+      description: 'Le maître fait un dernier appel. Chacun peut changer son vote une fois avant la révélation.'
+    }
+  },
+  kids: {
+    toggle: 'Kids (6-9 ans)',
+    toggleHint: 'Seulement des manches faciles au langage simple, écrites pour les enfants.',
+    short: 'Kids'
+  },
+  editor: {
+    title: 'Nouveau pack',
+    editTitle: 'Modifier le pack',
+    subtitle: 'Écris des manches de 5 phrases dont une fausse. Le brouillon reste sur cet appareil.',
+    back: 'Retour aux packs',
+    packInfo: 'Pack',
+    packTitle: 'Titre',
+    emoji: 'Couverture (emoji)',
+    language: 'Langue',
+    description: 'Description',
+    newCategory: 'Nouvelle catégorie',
+    addCategory: 'Ajouter la catégorie',
+    categoryInvalid: 'Saisis un nom de catégorie qui n’existe pas encore.',
+    roundTitle: 'Manche {number}',
+    removeRound: 'Retirer',
+    statement: 'Phrase {number}',
+    fake: 'Fausse',
+    explanation: 'Explication (affichée à la révélation)',
+    addRound: 'Ajouter une manche',
+    summary: 'Résumé',
+    summaryLine: '{rounds} manches · {issues} à corriger',
+    validate: 'Valider',
+    save: 'Enregistrer sur l’appareil',
+    export: 'Exporter le JSON',
+    discard: 'Supprimer le brouillon',
+    invalid: '{count} points à corriger.',
+    valid: 'Tout est bon : le pack est prêt.',
+    saved: 'Pack enregistré et activé.',
+    exported: 'JSON exporté.',
+    create: 'Créer un pack',
+    continueDraft: 'Reprendre le brouillon',
+    edit: 'Modifier',
+    issue: {
+      title: 'Donne un titre au pack.',
+      noRounds: 'Ajoute au moins une manche.',
+      category: 'Manche {round} : choisis une catégorie.',
+      statement: 'Manche {round} : remplis la phrase {statement}.',
+      statementLong: 'Manche {round} : la phrase {statement} dépasse 200 caractères.',
+      duplicate: 'Manche {round} : la phrase {statement} répète une autre phrase du pack.',
+      fake: 'Manche {round} : coche la phrase fausse.',
+      explanation: 'Manche {round} : écris l’explication.'
+    }
+  },
+  seasonalPacks: {
+    title: 'Packs de saison',
+    subtitle: 'Petits packs optionnels, téléchargés seulement une fois activés.',
+    inSeason: 'De saison',
+    loading: 'Chargement…',
+    rounds: '{rounds} manches'
   }
 };

@@ -26,7 +26,7 @@ Verified against the code on 2026-10-03.
 - React 19 for component structure.
 - TypeScript 5 for explicit contracts.
 - CSS Modules plus global design tokens.
-- Vitest 4 + jsdom + Testing Library (37 test files, 179 tests).
+- Vitest 4 + jsdom + Testing Library (47 test files, 248 tests).
 - vite-plugin-pwa for manifest and service worker generation.
 - Playwright (`@playwright/test`, Chromium) for the real-browser smoke in
   `e2e/` (`npm run test:e2e`) and for the asset scripts in `scripts/`.
@@ -51,6 +51,7 @@ src/
     match-boot.ts        # ?demo=game / persisted match / clean boot
     match-summary.ts     # pure: score rows, leaderboard rows, companion snapshot, presenter board
     progress-tracks.ts   # pure: progress tracks and the next objective (W13-04)
+    mascot.ts            # pure: mascot mood per match moment (W16-01)
     solo-labels.ts       # solo challenge / player labels
     browser.ts           # download, file read, clipboard, external links
     peer-connection.ts   # BroadcastChannel/WebRTC support, ICE, QR fallback
@@ -71,19 +72,23 @@ src/
       useGrowth.ts       # share, donations, PWA install prompt
       useProfiles.ts     # local family profiles, stats, personal trophies
       usePwaStatus.ts    # service worker update prompt, offline-ready, online state
+      useAboutUsAuthoring.ts # "about us" writing turn, save rounds as pack (W17-01)
+      usePackEditor.ts   # pack editor draft, validate, save, export (W17-05)
     screens/             # presentational components, data + callbacks by props
       HomeScreen, NewMatchChoiceScreen, SetupScreen, GameBoardScreen,
       StatementGrid, RoundResultPanel, FinalResultPanel, LeaderboardScreen,
       AchievementsScreen, PacksScreen, MultiDeviceScreen, GrowthScreen,
       SettingsScreen, ScreenHeader (+ ResponsiveActions), ScoreResetFeedback,
       ProfilesScreen, PresenterView, SoloResultPanel, TableMomentPanel,
-      NextObjectiveCard, ProfileAvatar, PwaStatusNotices
+      NextObjectiveCard, ProfileAvatar (+ PlayerAvatar), PwaStatusNotices,
+      Mascot, AvatarArt, CategoryArt, Medal (Onda 16 art, SVG inline),
+      AboutUsAuthoringPanel, BluffBriefingPanel, PackEditorPanel (Onda 17)
     *.test.ts(x)         # accessibility, new-match-flow, setup-filters,
                          # match-summary, match-persistence,
                          # gameplay-click-feedback, score-recalibration,
                          # responsive-smoke, hooks/useMatch,
                          # screens/AchievementsScreen
-  assets/                # background/ (webp), songs/ (90s loops), player-default.svg
+  assets/                # background/ (webp + seasonal svg), songs/ (90s loops), player-default.svg
   core/                  # app-wide modules, independent of round logic
     achievements/
     audio/
@@ -100,8 +105,10 @@ src/
     ui/                  # Button.tsx + Button.module.css
     user-data/
   game/                  # Guess the Fake domain
-    modes.ts             # GAME_ID + GAME_MODES + isSoloMode
-    rules.ts             # pure round/score logic, table moments, special rounds
+    modes.ts             # GAME_ID + GAME_MODES + isSoloMode/isEveryoneGuessesMode/isBluffMode
+    rules.ts             # pure round/score logic, table moments, special rounds, bluffers
+    about-us.ts          # pure: table-written rounds and "save as pack" (W17-01)
+    pack-editor.ts       # pure: pack draft, localized issues, draft <-> pack (W17-05)
     solo-records.ts      # solo challenge keys and personal records
     match-suggestion.ts  # pure suggested setup (W13-05)
     round-history.ts     # recently played rounds, drawn last
@@ -116,6 +123,9 @@ src/
       catalog.ts         # language-neutral rounds + editorial metadata
       index.ts           # createBuiltinPack / loadBuiltinPack (lazy import)
       texts/<lang>.ts    # one text file (and chunk) per language
+      texts/kids-<lang>.ts # kids rounds (W17-03), loaded with the main texts
+    data/seasonal/       # optional packs (W17-06): catalog, loader, enabled ids
+      texts/seasonal-<lang>.ts # one chunk per language, not precached
   styles/
     reset.css
     tokens.css
@@ -160,7 +170,9 @@ completely.
 
 - `core/storage`: typed localStorage wrappers, migrations, and namespacing.
 - `core/i18n`: language selection, translation lookup, interpolation.
-- `core/themes`: theme registry, CSS token application, WCAG contrast audit.
+- `core/themes`: theme registry (incl. seasonal `halloween`/`festive`), CSS
+  token application, WCAG contrast audit, date-based seasonal suggestion
+  (`seasonal.ts`).
 - `core/settings`: language, theme, font scale, audio, timers, scoring.
 - `core/leaderboard`: score history keyed by `gameId` and `modeId`.
 - `core/achievements`: declarative achievement definitions and progress,
@@ -168,10 +180,12 @@ completely.
   and per local player (`playerCounters`, personal trophies).
 - `core/content-packs`: installable pack validation and activation.
 - `core/content-feedback`: per-round rating, "do not repeat", and aggregates.
-- `core/audio`: track library, fades, unlock-on-interaction, synthesized SFX.
+- `core/audio`: track library, fades, unlock-on-interaction, synthesized SFX,
+  and the intentional theme -> track map (`THEME_TRACK_MAP`, see `CREDITS.md`).
 - `core/multiplayer`: companion-device session primitives and transports;
   snapshots may carry a localized `board` for the presenter view.
-- `core/profiles`: local family profiles (name, nickname, avatar, color).
+- `core/profiles`: local family profiles (name, nickname, avatar id, color);
+  pre-W16 emoji avatars map to ids on load.
 - `core/share`: Web Share API, clipboard fallback, and web intents.
 - `core/user-data`: local user id plus import/export of all local data.
 - `core/ui`: the shared `Button` component.
@@ -198,7 +212,7 @@ export type GameMode = {
   maxPlayers: number;
 };
 
-export const GAME_MODES: GameMode[] = [/* solo, classic, all-guess, teams */];
+export const GAME_MODES: GameMode[] = [/* solo, classic, all-guess, teams, about-us, bluff-master */];
 export function isSoloMode(modeId: string): boolean;
 ```
 
@@ -250,6 +264,9 @@ export type GuessTheFakeRound = {
   statements: GuessTheFakeStatement[];
   fakeStatementId: string;
   explanation?: string;
+  ageRating?: 'all' | '10+' | 'kids';
+  // W17-01: author of a table round; never saved in packs.
+  authorPlayerId?: string;
 };
 
 export type GuessTheFakeStatement = {
@@ -261,8 +278,15 @@ export type GuessTheFakeStatement = {
 Match flow: `setup -> intro -> preparing -> playing -> [discussing] -> revealed -> finished`.
 
 Solo skips `intro`/`preparing` in the hook (straight to `playing`).
-`discussing` only exists with table moments on (W13-01). Optional special
+`discussing` only exists with table moments on (W13-01) or in `bluff-master`,
+where it is always the "final defense" (`change-mind`). Optional special
 rounds (W13-02) are assigned per match in `state.specialRounds`.
+
+Onda 17 bluff modes: `state.bluffers` holds the player who bluffs each round
+(the author in `about-us`, the rotating master in `bluff-master`). In the
+"everyone guesses" modes (`all-guess`, `about-us`, `bluff-master`) every player
+guesses in turn except the round's bluffer, who gets `BLUFF_POINTS_PER_FOOLED`
+per fooled guess when the round is revealed (`getBluffOutcome`).
 
 1. Configure players, teams, rounds, categories, difficulty, and packs.
 2. Draw one round containing five statements.
@@ -275,13 +299,22 @@ rounds (W13-02) are assigned per match in `state.specialRounds`.
 
 Built-in content lives in `src/game/data/builtin/`: a language-neutral
 `catalog.ts` (round ids, category, difficulty, fake position, `ageRating`,
-`sources`, `review`) plus one `texts/<lang>.ts` per language. `loadBuiltinPack`
-loads only the active language through `import()`, so each language is its own
-chunk; the PWA precaches all of them (about 45 kB gzip each). Round ids are shared across languages.
+`sources`, `review`) plus `texts/<lang>.ts` and `texts/kids-<lang>.ts` per
+language. `loadBuiltinPack` loads only the active language through `import()`,
+so each language is its own pair of chunks; the PWA precaches all of them.
+Round ids are shared across languages.
 
-Today: 7 categories x 3 difficulties x 15 rounds = 315 factual rounds in all
-six languages, AI-drafted and accepted in a whole-pack human review on
-2026-10-03 (`review.status: 'reviewed'`, default in `builtin/catalog.ts`);
+Today: 8 categories x 3 difficulties x 15 rounds = 360 factual rounds plus 105
+kids rounds (`ageRating: 'kids'`, all easy) in all six languages, AI-drafted
+and accepted in human review (whole pack on 2026-10-03, W9-03; Onda 17 food and
+kids rounds approved by the maintainer the same day; `review.status:
+'reviewed'` in `builtin/catalog.ts`). Kids mode (setting `kidsModeEnabled`)
+draws only kids rounds; otherwise they stay out.
+
+Seasonal packs (`src/game/data/seasonal/`): Christmas, Halloween and World Cup
+and Olympics, 30 rounds each, off by default, turned on in Packs. Their texts
+(`texts/seasonal-<lang>.ts`) are outside the precache and download the first
+time a pack is on.
 later per-round re-reviews are logged in `builtin/reviews.ts`. `game/content-review.ts` builds the
 review sheet (`npm run review:content`). Editorial checklist
 and authoring flow: `docs/CONTENT_GUIDE.md`. `game/content-audit.ts` checks
@@ -311,6 +344,8 @@ gtf.platform.profiles.v1
 gtf.game.guess-the-fake.quick-game.v1
 gtf.game.guess-the-fake.solo-records.v1
 gtf.game.guess-the-fake.round-history.v1
+gtf.game.guess-the-fake.pack-draft.v1      # W17-05 editor draft
+gtf.game.guess-the-fake.seasonal-packs.v1  # W17-06 enabled seasonal pack ids
 ```
 
 Onda 13 additions that did not bump a version: the quick-game state gained
@@ -322,6 +357,16 @@ saves); achievements gained `playerCounters` and new counters
 settings gained `lastSoloPlayerName`, `tableMomentsEnabled`,
 `specialRoundsEnabled`, and `suggestionMinutes`. The local data export now
 includes `profiles` and `gameData` (solo records, round history).
+
+Onda 15 additions, also without a version bump: the quick-game state gained
+`guessHistory` (settled guesses of past rounds, `[]` for older saves) and
+guesses gained an optional `elapsedSeconds`; settings gained
+`vibrationEnabled` and `passDeviceEnabled` (both `false` by default).
+
+Onda 17 additions, without a version bump: the quick-game state gained
+`bluffers` (`null` per round for older saves) and `challenge.kids`; settings
+gained `kidsModeEnabled` (`false`); solo challenge keys gained an optional
+`kids` segment.
 
 `gtf.platform.achievements.v1` gained an optional `modeCounters` record in
 2026-09. It is additive: `normalizeAchievementState` fills it with `{}` for old
@@ -359,16 +404,16 @@ five levels. Breakpoints are documented in `docs/FRONTEND_SYSTEM.md`.
 `VitePWA({ registerType: 'prompt' })` in `vite.config.ts` with an inline
 manifest (icons, `screenshots` for the rich install sheet) and a workbox glob
 over js, css, html, svg, png, jpg, webp, and ico. The base path is env-driven
-via `VITE_BASE_PATH`. Precache budget: under 3 MB (about 1.8 MB today).
+via `VITE_BASE_PATH`. Precache budget: under 3 MB (about 2.3 MB today).
 
 - **Precache:** app code, all six language chunks, the default (cosmic)
   backgrounds, and the icons. `includeManifestIcons` is off because the glob
   already lists the icons; duplicated entries with different revisions make
   Workbox throw `add-to-cache-list-conflicting-entries` and skip the whole
   precache (the bug the offline e2e test guards).
-- **Runtime caches (CacheFirst):** `gtf-music` for the mp3 loops and
-  `gtf-backgrounds` for the other themes' art, filled the first time each is
-  used. `core/audio` downloads a track with a plain GET and plays it from a
+- **Runtime caches (CacheFirst):** `gtf-music` for the mp3 loops,
+  `gtf-backgrounds` for the other themes' art and `gtf-seasonal-packs` for the
+  seasonal pack texts, filled the first time each is used. `core/audio` downloads a track with a plain GET and plays it from a
   blob URL, because `<audio>` streams with Range requests whose 206 responses
   cannot be cached.
 - **Excluded:** `assets/og/` and `assets/screenshots/` (store and social
@@ -419,9 +464,14 @@ it breaks the static-hosting constraint.
 
 ## Testing Strategy
 
-Present today (37 files, 179 tests):
+Present today (47 files, 248 tests):
 
-- Round and scoring rule tests (`game/rules.test.ts`).
+- Round and scoring rule tests (`game/rules.test.ts`), bluff modes and
+  "about us" rounds (`game/rules-bluff.test.ts`), pack editor
+  (`game/pack-editor.test.ts`) and seasonal packs
+  (`game/data/seasonal/seasonal.test.ts`).
+- Onda 17 UI flows (`app/onda-17-flow.test.tsx`): "about us", bluff master,
+  pack editor, Kids switch and seasonal packs.
 - Content validation tests (`game/content-schema.test.ts`).
 - Storage migration and fallback tests (`core/storage`, `core/settings`,
   `core/content-feedback`, `game/match-storage`).
@@ -446,7 +496,7 @@ Present today (37 files, 179 tests):
   Chromium against `vite preview` of the production build, in desktop
   1440x900, mobile portrait 402x874, and mobile landscape 874x402. It covers
   home, the `?demo=game` turn (start, pick, reveal, next round), a solo
-  challenge, horizontal overflow, the manifest assets, and an offline reload
+  challenge, the "about us" writing turn and the pack editor (Onda 17), horizontal overflow, the manifest assets, and an offline reload
   after the precache. Each flow attaches screenshots to the report. CI runs
   it in `.github/workflows/e2e.yml` on pull requests and on demand; it does
   not gate the deploy.

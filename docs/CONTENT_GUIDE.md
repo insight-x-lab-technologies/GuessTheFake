@@ -11,6 +11,14 @@ W9-01 a W9-04.
 - `src/game/data/builtin/texts/<lang>.ts`: so texto, `roundId -> { statements:
   [5], explanation }`. Um arquivo por idioma, carregado sob demanda.
 - A frase falsa e a de indice `fakeIndex` (0-4) no array `statements`.
+- Rodadas Kids (W17-03): `kids-<categoria>-<nn>`, todas `easy` e
+  `ageRating: 'kids'`, posicao da falsa em `kidsFakeIndexes` e texto em
+  `texts/kids-<lang>.ts`. Linguagem simples para 6-9 anos.
+- Packs sazonais (W17-06): `src/game/data/seasonal/catalog.ts` (3 packs, 10
+  rodadas por dificuldade, posicoes em `fakeIndexes` de cada pack) e
+  `texts/seasonal-<lang>.ts`. Ids `<categoria-do-pack>-<dificuldade>-<nn>`.
+- Packs da comunidade podem ser criados na tela Packs (editor W17-05) e
+  exportados em JSON.
 
 Para adicionar uma rodada: acrescente a posicao da falsa em `fakeIndexes` e o
 texto com o mesmo id nos seis arquivos de `texts/`. Rodada sem texto num idioma
@@ -66,10 +74,14 @@ npm run audit:content   # tabela de cobertura + problemas
 
 ## Estado (2026-10-03)
 
-315 rodadas (15 por categoria/dificuldade, meta de W9-01), redigidas e
-autoconferidas por IA e aceitas em revisao humana do pack inteiro em
-2026-10-03 (`review.status: 'reviewed'`, default em `catalog.ts`). Rodada
-editada depois disso deve ser reconferida e registrada em `reviews.ts`. Tres rodadas `10+`
+Pack builtin: 360 rodadas (8 categorias x 3 dificuldades x 15; `food`
+entrou na Onda 17) e 105 rodadas Kids (7 categorias originais x 15), nos seis
+idiomas. Packs sazonais: Natal, Halloween e Copa e Olimpiadas, 30 rodadas
+cada. Tudo redigido por IA; as 315 rodadas originais foram aceitas em revisao
+humana do pack inteiro (W9-03) e as 240 da Onda 17 (Comida, Kids e sazonais)
+foram aprovadas como versao final pelo mantenedor em 2026-10-03
+(`review.status: 'reviewed'`). Rodada editada depois disso deve ser
+reconferida e registrada em `reviews.ts`. Tres rodadas `10+`
 (`science-hard-05`, `-07`, `-13`).
 
 ## Themed pack metadata (W13-07)

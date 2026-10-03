@@ -1,7 +1,8 @@
-import { Cog, Download, RotateCcw, Upload, Volume2 } from 'lucide-react';
+import { Cog, Download, Music, RotateCcw, Upload, Volume2 } from 'lucide-react';
 import { useRef } from 'react';
 import { SUPPORTED_LANGUAGES, type Language } from '../../core/i18n/i18n';
 import { FONT_SCALE_OPTIONS, type FontScale, type PlatformSettings } from '../../core/settings/settings';
+import { getTrackThemeId } from '../../core/audio/audio';
 import { THEMES, type ThemeId } from '../../core/themes/themes';
 import { Button } from '../../core/ui/Button';
 import type { Translate } from '../app-types';
@@ -35,6 +36,8 @@ export function SettingsScreen({
   localData: LocalDataController;
 }) {
   const dataFileInputRef = useRef<HTMLInputElement | null>(null);
+  // No decorative toggle: without the Vibration API the switch stays off.
+  const canVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
   return (
     <section className={styles.panel}>
@@ -99,6 +102,11 @@ export function SettingsScreen({
               </button>
             ))}
           </div>
+          <p className={styles.helperText}>{t('art.seasonal.settingsHint')}</p>
+          <p className={styles.helperText}>
+            <Music size={16} aria-hidden="true" /> <b>{t('art.tracks.heading')}</b>{' '}
+            {t('art.tracks.mapping', { track: t(`art.tracks.${getTrackThemeId(settings.theme)}`) })}
+          </p>
           <label className={styles.field}>
             <span>{t('settings.fontScale')}</span>
             <select value={settings.fontScale} onChange={event => updateSettings({ fontScale: event.target.value as FontScale })}>
@@ -127,6 +135,11 @@ export function SettingsScreen({
             <input type="checkbox" checked={settings.shuffleRounds} onChange={event => updateSettings({ shuffleRounds: event.target.checked })} />
             <span>{t('settings.shuffle')}</span>
           </label>
+          <label className={styles.switchField}>
+            <input type="checkbox" checked={settings.passDeviceEnabled} onChange={event => updateSettings({ passDeviceEnabled: event.target.checked })} />
+            <span>{t('juice.settings.passDevice')}</span>
+          </label>
+          <p className={styles.helperText}>{t('juice.settings.passDeviceHint')}</p>
         </article>
 
         <article className={styles.smallCard}>
@@ -193,6 +206,16 @@ export function SettingsScreen({
               onChange={event => updateSettings({ musicVolume: Number(event.target.value) })}
             />
           </label>
+          <label className={styles.switchField}>
+            <input
+              type="checkbox"
+              checked={settings.vibrationEnabled && canVibrate}
+              disabled={!canVibrate}
+              onChange={event => updateSettings({ vibrationEnabled: event.target.checked })}
+            />
+            <span>{t('juice.settings.vibration')}</span>
+          </label>
+          {canVibrate ? null : <p className={styles.helperText}>{t('juice.settings.vibrationUnsupported')}</p>}
           <Button
             variant="secondary"
             icon={<Volume2 size={18} />}

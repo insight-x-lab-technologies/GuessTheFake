@@ -3150,6 +3150,457 @@ const fr: BuiltinTexts = {
       'Le corps humain n’a aucun muscle qui fonctionne sans notre volonté.'
     ],
     explanation: 'Le cœur, l’estomac et les intestins ont des muscles qui fonctionnent seuls, sans contrôle volontaire.'
+  },
+  // W17-04 food
+  'food-easy-01': {
+    statements: [
+      'Le chocolat est fait avec des grains de café.',
+      'Le pain est fait avec de la farine.',
+      'Le fromage est fait avec du lait.',
+      'Le miel est produit par les abeilles.',
+      'Le pop-corn vient du maïs.'
+    ],
+    explanation: 'Le chocolat est fait avec les fèves du cacaoyer.'
+  },
+  'food-easy-02': {
+    statements: [
+      'Les sushis sont un plat de la cuisine japonaise.',
+      'Les tacos sont un plat typique du Mexique.',
+      'La pizza est née au Japon.',
+      'La paella est un plat d’Espagne.',
+      'Le croissant est très associé à la France.'
+    ],
+    explanation: 'La pizza moderne est née en Italie, à Naples.'
+  },
+  'food-easy-03': {
+    statements: [
+      'Les pommes poussent sur des arbres.',
+      'La fraise est rouge à l’extérieur.',
+      'La pastèque contient beaucoup d’eau.',
+      'L’ananas a une couronne de feuilles.',
+      'Les carottes poussent suspendues aux arbres.'
+    ],
+    explanation: 'La carotte est une racine qui pousse sous la terre.'
+  },
+  'food-easy-04': {
+    statements: [
+      'Le riz est souvent cultivé dans des champs inondés.',
+      'Les haricots secs sont riches en protéines.',
+      'Le blé sert à faire de la farine.',
+      'Le riz pousse en grappes suspendues à de grands arbres.',
+      'L’avoine est une céréale.'
+    ],
+    explanation: 'Le riz est une plante basse qui ressemble à de l’herbe ; les grains poussent en épis au bout de la tige.'
+  },
+  'food-easy-05': {
+    statements: [
+      'Le yaourt est fait avec du lait.',
+      'Le lait de vache est naturellement bleu.',
+      'Le beurre est fait avec la matière grasse du lait.',
+      'La glace contient souvent du lait ou de la crème.',
+      'Un œuf de poule a un blanc et un jaune.'
+    ],
+    explanation: 'Le lait de vache est blanc.'
+  },
+  'food-easy-06': {
+    statements: [
+      'L’orange contient beaucoup de vitamine C.',
+      'La banane est riche en potassium.',
+      'L’avocat est l’ingrédient principal du guacamole.',
+      'Le citron est le fruit le plus sucré qui existe.',
+      'Le raisin peut devenir raisin sec en séchant.'
+    ],
+    explanation: 'Le citron est acide.'
+  },
+  'food-easy-07': {
+    statements: [
+      'Le ketchup est surtout fait avec des fraises.',
+      'La moutarde est faite avec des graines.',
+      'La mayonnaise se fait avec de l’œuf et de l’huile.',
+      'Le vinaigre est acide.',
+      'Le sel peut venir de l’eau de mer.'
+    ],
+    explanation: 'Le ketchup est surtout fait avec des tomates.'
+  },
+  'food-easy-08': {
+    statements: [
+      'Le jaune d’œuf est jaune.',
+      'Les œufs peuvent être cuits durs, au plat ou brouillés.',
+      'L’omelette se fait avec des œufs battus.',
+      'Les œufs de caille sont plus petits que ceux de poule.',
+      'Les œufs de poule sont toujours blancs.'
+    ],
+    explanation: 'Les œufs de poule peuvent être blancs, bruns ou même bleutés, selon la race.'
+  },
+  'food-easy-09': {
+    statements: [
+      'Le thé est fait avec des feuilles.',
+      'Le chocolat chaud contient du cacao.',
+      'Le café est fait avec les feuilles du caféier.',
+      'Le jus d’orange se fait en pressant des oranges.',
+      'Une tartine grillée, c’est du pain doré au grille-pain.'
+    ],
+    explanation: 'Le café est fait avec les grains torréfiés et moulus du caféier.'
+  },
+  'food-easy-10': {
+    statements: [
+      'La banane devient jaune en mûrissant.',
+      'Les bananes poussent la pointe tournée vers le bas.',
+      'La noix de coco contient de l’eau.',
+      'La mangue a un gros noyau.',
+      'Le fruit de la passion contient beaucoup de graines.'
+    ],
+    explanation: 'Chaque banane pousse la pointe tournée vers le haut, vers la lumière.'
+  },
+  'food-easy-11': {
+    statements: [
+      'La glace a été inventée en l’an 2000.',
+      'Les peuples de l’Amérique ancienne consommaient déjà du cacao.',
+      'Le sandwich doit son nom à un comte anglais.',
+      'Le pain est l’un des plus anciens aliments préparés.',
+      'La pomme de terre vient à l’origine d’Amérique du Sud.'
+    ],
+    explanation: 'Les desserts glacés existent depuis des siècles ; la glace était populaire bien avant 2000.'
+  },
+  'food-easy-12': {
+    statements: [
+      'La laitue est un légume-feuille.',
+      'L’ail a une odeur forte.',
+      'Couper des oignons peut faire pleurer.',
+      'Le brocoli ressemble à un petit arbre.',
+      'Tous les champignons trouvés dans la nature sont comestibles.'
+    ],
+    explanation: 'Beaucoup de champignons sauvages sont toxiques ; n’en mangez jamais sans l’avis d’un expert.'
+  },
+  'food-easy-13': {
+    statements: [
+      'Une sucette est un bonbon sur un bâton.',
+      'Le brigadeiro, une douceur brésilienne, contient du chocolat.',
+      'La gélatine est faite avec des fruits pressés.',
+      'La guimauve est moelleuse et légère.',
+      'La barbe à papa est faite de sucre fondu et filé.'
+    ],
+    explanation: 'La gélatine est faite de collagène, une protéine d’origine animale ; le goût de fruit est ajouté.'
+  },
+  'food-easy-14': {
+    statements: [
+      'Notre corps contient beaucoup d’eau.',
+      'L’eau est la boisson dont le corps a le moins besoin.',
+      'Les fruits et les légumes sont bons pour la santé.',
+      'Se laver les mains avant de manger aide à éviter les microbes.',
+      'Se brosser les dents après le repas aide à éviter les caries.'
+    ],
+    explanation: 'L’eau est indispensable : le corps en a besoin tous les jours.'
+  },
+  'food-easy-15': {
+    statements: [
+      'Un hot-dog est un petit pain avec une saucisse.',
+      'La pizza margherita a les couleurs du drapeau italien.',
+      'Les nuggets sont souvent faits avec de la viande de poulet.',
+      'Le hamburger doit son nom à une ville de Chine.',
+      'Les frites sont faites avec des pommes de terre.'
+    ],
+    explanation: 'Le nom hamburger vient de Hambourg, une ville d’Allemagne.'
+  },
+  'food-medium-01': {
+    statements: [
+      'La cannelle est faite avec l’écorce d’un arbre.',
+      'La vanille vient d’une sorte de rose.',
+      'Le safran fait partie des épices les plus chères du monde.',
+      'Le poivre noir a déjà servi de moyen de paiement.',
+      'Le gingembre sert d’épice et entre dans des infusions.'
+    ],
+    explanation: 'La vanille vient de la gousse d’une orchidée.'
+  },
+  'food-medium-02': {
+    statements: [
+      'La tomate est arrivée en Italie depuis la Chine.',
+      'Le riz a été domestiqué en Asie.',
+      'La pomme de terre a été domestiquée dans les Andes.',
+      'Le cacao est originaire d’Amérique.',
+      'La banane est originaire d’Asie du Sud-Est.'
+    ],
+    explanation: 'La tomate vient des Amériques et est arrivée en Europe au XVIe siècle.'
+  },
+  'food-medium-03': {
+    statements: [
+      'Le tofu est fait à base de soja.',
+      'Le kimchi est un plat fermenté de Corée.',
+      'Le wasabi servi dans la plupart des restaurants hors du Japon est du vrai wasabi.',
+      'Le miso est une pâte de soja fermentée.',
+      'Les ramen sont des nouilles servies dans un bouillon.'
+    ],
+    explanation: 'Une grande partie du wasabi servi hors du Japon est du raifort coloré en vert.'
+  },
+  'food-medium-04': {
+    statements: [
+      'Le roquefort est fait avec du lait de brebis.',
+      'La mozzarella traditionnelle peut être faite avec du lait de bufflonne.',
+      'Les trous de l’emmental viennent de gaz produits par des bactéries.',
+      'Le cheddar doit son nom à un village anglais.',
+      'Le parmesan est prêt en quelques jours.'
+    ],
+    explanation: 'Le Parmigiano Reggiano est affiné au moins 12 mois.'
+  },
+  'food-medium-05': {
+    statements: [
+      'Boire du lait aide à calmer le feu du piment.',
+      'L’échelle de Scoville mesure la force des piments.',
+      'Le poivron est de la même famille que les piments forts.',
+      'Ce qui rend le piment piquant, c’est la vitamine C.',
+      'Les oiseaux ne ressentent pas le piquant du piment comme nous.'
+    ],
+    explanation: 'Le piquant vient de la capsaïcine, une substance présente dans le piment.'
+  },
+  'food-medium-06': {
+    statements: [
+      'La levure de boulanger est faite d’êtres vivants appelés levures.',
+      'La pâte à pain doit reposer pour lever.',
+      'Le pain lève au four grâce au sel.',
+      'Le pain au levain utilise un ferment fait maison.',
+      'Pétrir la pâte aide à développer le gluten.'
+    ],
+    explanation: 'Le pain lève grâce à la levure : elle libère un gaz qui gonfle la pâte.'
+  },
+  'food-medium-07': {
+    statements: [
+      'La feijoada est un plat typique du Brésil.',
+      'Le strudel aux pommes est une pâtisserie célèbre d’Autriche.',
+      'Le ceviche est un plat de poisson cru mariné typique du Pérou.',
+      'Le croissant a été inventé au Japon.',
+      'Le couscous marocain est fait avec de la semoule de blé.'
+    ],
+    explanation: 'Le croissant est devenu célèbre en France, inspiré d’un pain autrichien appelé kipferl.'
+  },
+  'food-medium-08': {
+    statements: [
+      'Une pomme coupée brunit parce qu’elle pourrit instantanément.',
+      'Quelques gouttes de citron sur une pomme coupée l’empêchent de brunir.',
+      'L’ananas contient une enzyme qui attendrit la viande.',
+      'Couper un oignon libère un gaz qui irrite les yeux.',
+      'En haute montagne, l’eau bout à une température plus basse.'
+    ],
+    explanation: 'La pomme brunit parce qu’elle réagit avec l’oxygène de l’air (oxydation), pas parce qu’elle pourrit.'
+  },
+  'food-medium-09': {
+    statements: [
+      'L’avoine est riche en fibres.',
+      'Le riz complet contient moins de fibres que le riz blanc.',
+      'Le riz et les haricots forment une bonne association de protéines.',
+      'Les fruits à coque sont riches en bonnes graisses.',
+      'Le yaourt nature contient des bactéries vivantes.'
+    ],
+    explanation: 'Le riz complet garde les couches externes du grain et contient plus de fibres que le blanc.'
+  },
+  'food-medium-10': {
+    statements: [
+      'La patate douce est une proche parente de la pomme de terre.',
+      'La tomate et la pomme de terre sont de la même famille de plantes.',
+      'Pour les botanistes, la citrouille est un fruit.',
+      'L’arachide est une légumineuse, comme les haricots.',
+      'La betterave et l’épinard sont de la même famille.'
+    ],
+    explanation: 'La patate douce appartient à une autre famille ; elle est parente des liserons et des ipomées.'
+  },
+  'food-medium-11': {
+    statements: [
+      'Le pad thaï est un plat de Thaïlande.',
+      'Le phở est une soupe typique du Viêt Nam.',
+      'Le curry est très associé à la cuisine indienne.',
+      'Le houmous est fait avec des pois chiches.',
+      'Les sushis sont nés aux États-Unis.'
+    ],
+    explanation: 'Les sushis sont nés en Asie pour conserver le poisson dans le riz, puis sont devenus un plat japonais.'
+  },
+  'food-medium-12': {
+    statements: [
+      'Un œuf frais coule généralement dans l’eau.',
+      'L’anneau verdâtre autour du jaune d’un œuf dur montre que l’œuf est pourri.',
+      'Le blanc d’œuf est surtout composé d’eau et de protéines.',
+      'Les œufs d’autruche sont les plus gros œufs d’oiseau existants.',
+      'Le jaune contient des graisses et des vitamines.'
+    ],
+    explanation: 'L’anneau vert apparaît quand l’œuf a trop cuit ; il ne veut pas dire qu’il est pourri.'
+  },
+  'food-medium-13': {
+    statements: [
+      'Le thé vert et le thé noir viennent de la même plante.',
+      'Le maté se prépare avec de la yerba mate.',
+      'Le chocolat contient un peu de caféine.',
+      'Le café décaféiné ne contient pas la moindre trace de caféine.',
+      'L’Éthiopie est considérée comme le berceau du café.'
+    ],
+    explanation: 'Le décaféiné contient encore un peu de caféine, mais beaucoup moins.'
+  },
+  'food-medium-14': {
+    statements: [
+      'Le cornet de glace est devenu populaire lors d’une exposition universelle aux États-Unis en 1904.',
+      'Les frites sont très associées à la Belgique.',
+      'Le pão de queijo est typique du Minas Gerais, au Brésil.',
+      'Le sandwich cubain est associé à la communauté cubaine de Floride.',
+      'La pizza hawaïenne a été inventée à Hawaï.'
+    ],
+    explanation: 'La pizza hawaïenne a été créée au Canada en 1962 par un cuisinier d’origine grecque.'
+  },
+  'food-medium-15': {
+    statements: [
+      'L’autocuiseur cuit les aliments plus rapidement.',
+      'Le micro-ondes chauffe les aliments en agitant les molécules d’eau.',
+      'Saler l’eau la fait bouillir beaucoup plus vite.',
+      'Mettre un couvercle sur la casserole aide l’eau à bouillir plus vite.',
+      'La cuisson à la vapeur préserve bien les nutriments des légumes.'
+    ],
+    explanation: 'Le sel augmente même très légèrement la température d’ébullition ; en pratique, la différence est minime.'
+  },
+  'food-hard-01': {
+    statements: [
+      'La noix de muscade et le macis viennent du même fruit.',
+      'Le vrai safran est extrait des racines d’un arbre.',
+      'La cardamome est une parente du gingembre.',
+      'Le piment de la Jamaïque est une baie séchée, pas un mélange d’épices.',
+      'La cannelle de Ceylan vient du Sri Lanka.'
+    ],
+    explanation: 'Le safran provient des stigmates d’une fleur de crocus, récoltés à la main.'
+  },
+  'food-hard-02': {
+    statements: [
+      'L’emmental suisse est un fromage à grands trous.',
+      'Le Parmigiano Reggiano bénéficie d’une appellation d’origine protégée.',
+      'L’halloumi peut être grillé sans fondre.',
+      'La feta traditionnelle est un fromage grec.',
+      'Les veines bleues du gorgonzola viennent d’un colorant.'
+    ],
+    explanation: 'Les veines bleues viennent de moisissures du genre Penicillium.'
+  },
+  'food-hard-03': {
+    statements: [
+      'Le glutamate monosodique a été créé en Italie.',
+      'L’umami est considéré comme la cinquième saveur de base.',
+      'La tomate et le parmesan sont riches en glutamate.',
+      'La sauce de poisson est très utilisée dans la cuisine d’Asie du Sud-Est.',
+      'La sauce soja est faite avec du soja fermenté.'
+    ],
+    explanation: 'Le glutamate monosodique a été mis au point au Japon en 1908 par le chimiste Kikunae Ikeda.'
+  },
+  'food-hard-04': {
+    statements: [
+      'Les truffes sont des champignons qui poussent sous terre.',
+      'Le vrai caviar vient des œufs de saumon.',
+      'On utilise des cochons et des chiens pour trouver les truffes.',
+      'Le wagyu est une race de bovins japonais.',
+      'Le jamón ibérico vient de porcs de race ibérique.'
+    ],
+    explanation: 'Le vrai caviar vient des œufs d’esturgeon.'
+  },
+  'food-hard-05': {
+    statements: [
+      'Le piquant du piment se concentre surtout dans la partie blanche intérieure.',
+      'Le paprika est fait de piments doux séchés et moulus.',
+      'Le chipotle est un piment jalapeño fumé.',
+      'Le poivron ne contient presque pas de capsaïcine.',
+      'Le poivron vert et le poivron rouge sont d’espèces différentes.'
+    ],
+    explanation: 'Le poivron vert est le même fruit cueilli avant maturité ; mûr, il devient rouge, jaune ou orange.'
+  },
+  'food-hard-06': {
+    statements: [
+      'Les fèves de cacao sont fermentées avant de devenir du chocolat.',
+      'Le chocolat au lait a été inventé en Belgique.',
+      'Les Aztèques préparaient une boisson amère au cacao.',
+      'Le beurre de cacao est la matière grasse de la fève.',
+      'Le tempérage rend le chocolat brillant et croquant.'
+    ],
+    explanation: 'Le chocolat au lait a été créé en Suisse en 1875 par Daniel Peter.'
+  },
+  'food-hard-07': {
+    statements: [
+      'La carbonara traditionnelle ne contient pas de crème.',
+      'Les gnocchis peuvent être faits avec des pommes de terre.',
+      'Le pesto génois contient du basilic et des pignons.',
+      'Le risotto se fait avec du riz.',
+      'Le tiramisu est un dessert traditionnel de la Rome antique.'
+    ],
+    explanation: 'Le tiramisu est une recette récente, créée au XXe siècle en Vénétie.'
+  },
+  'food-hard-08': {
+    statements: [
+      'Le gelato italien contient plus d’air que la glace ordinaire.',
+      'Le gelato est généralement servi moins froid que la glace ordinaire.',
+      'Le sorbet traditionnel est fait sans lait.',
+      'L’esquimau glacé à l’eau a été inventé par un garçon de 11 ans aux États-Unis.',
+      'La glace frite existe : on l’enrobe de pâte et on la fait frire très vite.'
+    ],
+    explanation: 'Le gelato contient moins d’air, c’est pourquoi il est plus dense.'
+  },
+  'food-hard-09': {
+    statements: [
+      'Les olives fraîches sont trop amères pour être mangées sur l’arbre.',
+      'L’huile d’olive vierge extra est obtenue uniquement par des procédés mécaniques.',
+      'Les olives vertes et noires viennent d’arbres d’espèces différentes.',
+      'L’Espagne est le premier producteur mondial d’huile d’olive.',
+      'Les câpres sont des boutons de fleurs.'
+    ],
+    explanation: 'Verte ou noire, l’olive vient du même olivier ; seuls la maturité ou le traitement changent.'
+  },
+  'food-hard-10': {
+    statements: [
+      'La noix de pécan est originaire d’Italie.',
+      'La noix de macadamia est originaire d’Australie.',
+      'La noix du Brésil vient d’un arbre de l’Amazonie.',
+      'La pistache est originaire d’Asie centrale et du Moyen-Orient.',
+      'La noisette est très utilisée dans les pâtes à tartiner au chocolat.'
+    ],
+    explanation: 'La noix de pécan est originaire d’Amérique du Nord.'
+  },
+  'food-hard-11': {
+    statements: [
+      'Hors du Mexique, la fleur de vanille est généralement pollinisée à la main.',
+      'Madagascar est un grand producteur de vanille.',
+      'La majeure partie de l’arôme vanille utilisé par l’industrie est synthétique.',
+      'La vanille est l’épice la plus chère du monde.',
+      'L’orchidée à vanille est une plante grimpante.'
+    ],
+    explanation: 'L’épice la plus chère du monde est le safran ; la vanille arrive juste après.'
+  },
+  'food-hard-12': {
+    statements: [
+      'La meringue se fait en battant des blancs d’œufs avec du sucre.',
+      'Le soufflé monte grâce à l’air des blancs battus.',
+      'Le croissant classique est fait sans beurre.',
+      'La crème brûlée a une croûte de sucre caramélisé.',
+      'Les macarons sont faits avec de la poudre d’amande.'
+    ],
+    explanation: 'Le croissant classique contient beaucoup de beurre, replié en couches dans la pâte.'
+  },
+  'food-hard-13': {
+    statements: [
+      'Le manioc amer doit être traité pour éliminer ses substances toxiques.',
+      'Les feuilles de rhubarbe sont toxiques.',
+      'Au Japon, le fugu ne peut être préparé que par des cuisiniers titulaires d’une licence.',
+      'La noix de cajou peut se manger crue sur l’arbre, avec sa coque.',
+      'Les haricots rouges crus contiennent une toxine détruite par la cuisson.'
+    ],
+    explanation: 'La coque de la noix de cajou contient une résine irritante ; il faut la torréfier ou la traiter avant.'
+  },
+  'food-hard-14': {
+    statements: [
+      'Le tempura est arrivé au Japon sous l’influence des Portugais.',
+      'Le nattō est fait de soja fermenté.',
+      'Ce qui définit les sushis, c’est le poisson cru.',
+      'Le matcha est du thé vert en poudre.',
+      'L’umeboshi est une prune japonaise saumurée.'
+    ],
+    explanation: 'Ce qui définit les sushis, c’est le riz vinaigré ; le poisson cru est facultatif.'
+  },
+  'food-hard-15': {
+    statements: [
+      'La réaction de Maillard est ce qui fait dorer la viande et la croûte du pain.',
+      'On peut vérifier la cuisson de la viande avec un thermomètre.',
+      'Les marinades acides attendrissent la surface de la viande.',
+      'Le jus rouge d’un steak saignant, c’est du sang.',
+      'Une cuisson lente à basse température attendrit les morceaux durs.'
+    ],
+    explanation: 'Le jus rouge est surtout de l’eau avec de la myoglobine, une protéine du muscle, pas du sang.'
   }
 };
 

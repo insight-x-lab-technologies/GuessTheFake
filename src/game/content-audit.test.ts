@@ -3,7 +3,7 @@ import { SUPPORTED_LANGUAGES } from '../core/i18n/i18n';
 import { auditContent, formatAuditReport } from './content-audit';
 import { validateGuessTheFakePack } from './content-schema';
 import { loadBuiltinPack } from './data/builtin';
-import { BUILTIN_ROUNDS } from './data/builtin/catalog';
+import { ALL_BUILTIN_ROUNDS } from './data/builtin/catalog';
 import { GAME_ID } from './modes';
 import type { GuessTheFakePackContent } from './types';
 
@@ -19,7 +19,7 @@ describe('builtin content audit', () => {
     expect(report.issues).toEqual([]);
     expect(report.lowCells).toEqual([]);
     SUPPORTED_LANGUAGES.forEach(language => {
-      expect(packs[language].rounds).toHaveLength(BUILTIN_ROUNDS.length);
+      expect(packs[language].rounds).toHaveLength(ALL_BUILTIN_ROUNDS.length);
       expect(validateGuessTheFakePack({ id: 'x', gameId: GAME_ID, schemaVersion: 1, title: { en: 'x' }, enabled: true, content: packs[language] }, { expectedGameId: GAME_ID, language }).ok).toBe(true);
     });
   });

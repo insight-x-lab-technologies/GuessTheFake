@@ -8,20 +8,24 @@ It is a single, self-contained game: no backend, no accounts, no game launcher.
 ## Current Scope
 
 - Responsive web app for desktop, tablet, and mobile, installable as a PWA.
-- Solo challenge with personal records, plus classic, all-guess, and teams
-  modes, with speed bonus, streaks, category and difficulty filters, and
-  resumable matches.
+- Solo challenge with personal records, plus classic, all-guess, teams,
+  "About us" (the table writes the rounds) and "Bluff master" modes, with
+  speed bonus, streaks, category, difficulty and Kids filters, and resumable
+  matches.
 - Optional table moments and special rounds, local family profiles, progress
   tracks with a next objective, match suggestions, a presenter (TV) view, and
   themed pack metadata.
-- 315 curated built-in rounds (15 per category and difficulty) in six
-  languages, loaded per language on demand.
+- 360 curated built-in rounds (8 categories, 15 per category and difficulty)
+  plus 105 Kids rounds for ages 6-9, in six languages, loaded per language on
+  demand. Three optional seasonal packs (Christmas, Halloween, World Cup and
+  Olympics) download only when turned on.
+- In-app pack editor: create, validate, save, and export community packs.
 - Local scores, trophies, content packs, content feedback, themes, and settings,
   all persisted in versioned localStorage.
 - Optional local-first multi-device companion screen (no server).
-- Light first visit: about 1.8 MB precached; music loops download the first
+- Light first visit: about 2.3 MB precached; music loops download the first
   time they play and then work offline. In-app update and offline notices.
-- 37 test files / 179 tests in Vitest, including a responsive smoke across five
+- 47 test files / 248 tests in Vitest, including a responsive smoke across five
   viewports and a content coverage audit.
 
 Known limits: multi-device pairing is manual.

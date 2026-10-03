@@ -409,6 +409,143 @@
   --word-text-shadow: none;
 }
 
+/* W16-05: seasonal themes. Backgrounds are small SVGs shared by home and app. */
+:root[data-theme='halloween'] {
+  --font-body: 'Nunito', sans-serif;
+  --font-display: 'Fredoka One', cursive;
+  --home-bg-image: url("../assets/background/halloween_bg.svg");
+  --app-bg-image: url("../assets/background/halloween_bg.svg");
+  --bg: #14071f;
+  --bg2: #1f0c2e;
+  --card: #2a1440;
+  --card2: #3a1c55;
+  --accent1: #ff7a1a;
+  --accent2: #ffb347;
+  --accent3: #7ddc6a;
+  --accent4: #b28dff;
+  --accent5: #c084fc;
+  --text: #ffffff;
+  --text2: rgba(255, 255, 255, 0.78);
+  --text3: rgba(255, 255, 255, 0.5);
+  --body-overlay: radial-gradient(ellipse at 20% 20%, rgba(255, 122, 26, 0.12) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(20, 7, 31, 0.35), rgba(20, 7, 31, 0.55));
+  --app-bg-overlay: linear-gradient(180deg, rgba(20, 7, 31, 0.72), rgba(20, 7, 31, 0.82));
+  --logo-gradient: linear-gradient(135deg, #ffb347, #ff7a1a, #c084fc);
+  --hero-title-gradient: linear-gradient(135deg, #ffd58a, #ff7a1a);
+  --btn-primary-bg: linear-gradient(135deg, #ff8a2a, #ff6a00);
+  --btn-secondary-bg: linear-gradient(135deg, #7c3aed, #5b21b6);
+  --btn-danger-bg: linear-gradient(135deg, #ef4444, #b91c1c);
+  --btn-success-bg: linear-gradient(135deg, #7ddc6a, #3f9b34);
+  --word-card-bg: linear-gradient(135deg, var(--card), var(--card2));
+  --current-player-bg: linear-gradient(135deg, rgba(255, 122, 26, 0.2), rgba(192, 132, 252, 0.2));
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-md: 0.7rem;
+  --radius-lg: 1rem;
+  --surface: rgba(42, 20, 64, 0.92);
+  --surface-soft: rgba(255, 255, 255, 0.06);
+  --surface-strong: rgba(255, 255, 255, 0.12);
+  --muted: var(--text2);
+  --border: rgba(255, 179, 71, 0.18);
+  --card-border: rgba(255, 179, 71, 0.14);
+  --accent: var(--accent2);
+  --accent-contrast: #1a0b05;
+  --danger: #ef4444;
+  --danger-contrast: #ffffff;
+  --correct: var(--accent3);
+  --wrong: var(--accent1);
+  --ambient-a: rgba(255, 122, 26, 0.24);
+  --ambient-b: rgba(192, 132, 252, 0.2);
+  --star-color: #ffe9b8;
+  --preview-panel-bg: rgba(255, 255, 255, 0.05);
+  --preview-panel-border: rgba(255, 179, 71, 0.2);
+  --word-card-border: rgba(255, 179, 71, 0.16);
+  --ghost-bg: rgba(255, 255, 255, 0.06);
+  --ghost-bg-hover: rgba(255, 255, 255, 0.12);
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 179, 71, 0.22);
+  --timer-color-safe: #ffb347;
+  --timer-color-warning: #ff7a1a;
+  --timer-color-danger: #ef4444;
+  --btn-primary-text: #1a0b05;
+  --btn-secondary-text: #ffffff;
+  --btn-danger-text: #ffffff;
+  --btn-success-text: #0b2607;
+  --shadow-panel: 0 18px 40px rgba(6, 2, 10, 0.4);
+  --shadow-button: 0 4px 20px rgba(255, 122, 26, 0.45);
+  --shadow-button-hover: 0 6px 28px rgba(255, 122, 26, 0.65);
+  --word-text-shadow: drop-shadow(0 2px 8px rgba(255, 179, 71, 0.4));
+  --logo-shadow: drop-shadow(0 4px 12px rgba(255, 122, 26, 0.5));
+}
+
+:root[data-theme='festive'] {
+  --font-body: 'Nunito', sans-serif;
+  --font-display: 'Fredoka One', cursive;
+  --home-bg-image: url("../assets/background/festive_bg.svg");
+  --app-bg-image: url("../assets/background/festive_bg.svg");
+  --bg: #06231f;
+  --bg2: #0a2f2a;
+  --card: #0f3d36;
+  --card2: #15504a;
+  --accent1: #ff5d73;
+  --accent2: #ffd166;
+  --accent3: #5ee6a8;
+  --accent4: #7ee0ff;
+  --accent5: #ff9fb2;
+  --text: #ffffff;
+  --text2: rgba(255, 255, 255, 0.8);
+  --text3: rgba(255, 255, 255, 0.52);
+  --body-overlay: radial-gradient(ellipse at 80% 10%, rgba(255, 209, 102, 0.12) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(6, 35, 31, 0.3), rgba(6, 35, 31, 0.5));
+  --app-bg-overlay: linear-gradient(180deg, rgba(6, 35, 31, 0.74), rgba(6, 35, 31, 0.84));
+  --logo-gradient: linear-gradient(135deg, #ffd166, #ff5d73, #5ee6a8);
+  --hero-title-gradient: linear-gradient(135deg, #ffe7a8, #ffd166);
+  --btn-primary-bg: linear-gradient(135deg, #d63a52, #b8263d);
+  --btn-secondary-bg: linear-gradient(135deg, #167a5c, #0f5e46);
+  --btn-danger-bg: linear-gradient(135deg, #ef4444, #b91c1c);
+  --btn-success-bg: linear-gradient(135deg, #5ee6a8, #2fb37c);
+  --word-card-bg: linear-gradient(135deg, var(--card), var(--card2));
+  --current-player-bg: linear-gradient(135deg, rgba(255, 209, 102, 0.18), rgba(255, 93, 115, 0.16));
+  --radius: 20px;
+  --radius-sm: 12px;
+  --radius-md: 0.7rem;
+  --radius-lg: 1rem;
+  --surface: rgba(15, 61, 54, 0.92);
+  --surface-soft: rgba(255, 255, 255, 0.06);
+  --surface-strong: rgba(255, 255, 255, 0.12);
+  --muted: var(--text2);
+  --border: rgba(255, 209, 102, 0.18);
+  --card-border: rgba(255, 209, 102, 0.14);
+  --accent: var(--accent2);
+  --accent-contrast: #1b1405;
+  --danger: #ef4444;
+  --danger-contrast: #ffffff;
+  --correct: var(--accent3);
+  --wrong: var(--accent1);
+  --ambient-a: rgba(255, 209, 102, 0.2);
+  --ambient-b: rgba(255, 93, 115, 0.18);
+  --star-color: #e8fbff;
+  --preview-panel-bg: rgba(255, 255, 255, 0.05);
+  --preview-panel-border: rgba(255, 209, 102, 0.2);
+  --word-card-border: rgba(255, 209, 102, 0.16);
+  --ghost-bg: rgba(255, 255, 255, 0.06);
+  --ghost-bg-hover: rgba(255, 255, 255, 0.12);
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 209, 102, 0.22);
+  --timer-color-safe: #ffd166;
+  --timer-color-warning: #ff9fb2;
+  --timer-color-danger: #ff5d73;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-text: #ffffff;
+  --btn-danger-text: #ffffff;
+  --btn-success-text: #06231f;
+  --shadow-panel: 0 18px 40px rgba(2, 14, 12, 0.4);
+  --shadow-button: 0 4px 20px rgba(214, 58, 82, 0.45);
+  --shadow-button-hover: 0 6px 28px rgba(214, 58, 82, 0.65);
+  --word-text-shadow: drop-shadow(0 2px 8px rgba(255, 209, 102, 0.4));
+  --logo-shadow: drop-shadow(0 4px 12px rgba(255, 93, 115, 0.45));
+}
+
 @media (max-width: 767px) and (orientation: portrait) {
   :root[data-theme='cosmic'],
   :root:not([data-theme]) {

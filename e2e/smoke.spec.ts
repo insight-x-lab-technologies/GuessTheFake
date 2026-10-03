@@ -58,6 +58,26 @@ test('solo challenge reaches the personal result', async ({ page }) => {
   await attachScreenshot(page, 'solo-result');
 });
 
+test('about us writing turn and pack editor fit the screen', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: /nova partida/i }).first().click();
+  await page.getByRole('combobox', { name: 'Modo' }).selectOption('about-us');
+  await page.getByRole('button', { name: /escrever as rodadas/i }).click();
+  await page.getByRole('button', { name: /escrever minhas frases/i }).click();
+  await expect(page.getByLabel('Frase 5')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await attachScreenshot(page, 'about-us-writing');
+
+  await page.getByRole('button', { name: /^packs$/i }).first().click();
+  // Phones keep header actions behind the "Ações" disclosure.
+  const actions = page.locator('[data-mobile-actions="packs"] summary');
+  if (await actions.isVisible()) await actions.click();
+  await page.locator('button:visible', { hasText: /criar pack/i }).first().click();
+  await expect(page.getByLabel(/^título$/i)).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await attachScreenshot(page, 'pack-editor');
+});
+
 test('manifest exposes maskable, monochrome icons and screenshots', async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'viewport independent');
   const response = await request.get('./manifest.webmanifest');

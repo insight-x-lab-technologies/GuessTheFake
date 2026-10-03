@@ -1,8 +1,9 @@
-import { Download, ListChecks, Star, Upload } from 'lucide-react';
+import { CalendarHeart, Download, ListChecks, Pencil, Plus, Star, Upload } from 'lucide-react';
 import { useRef } from 'react';
 import { getPackDescription, getPackLicenseStatus, getPackTitle } from '../../core/content-packs/content-packs';
 import type { Language } from '../../core/i18n/i18n';
 import { Button } from '../../core/ui/Button';
+import { isSeasonalPackId } from '../../game/data/seasonal';
 import type { LocalizeText, Translate } from '../app-types';
 import type { PacksController } from '../hooks/usePacks';
 import { ResponsiveActions, ScreenHeader } from './ScreenHeader';
@@ -12,12 +13,18 @@ export function PacksScreen({
   t,
   text,
   language,
-  packs
+  packs,
+  onCreatePack,
+  onEditPack,
+  hasDraft
 }: {
   t: Translate;
   text: LocalizeText;
   language: Language;
   packs: PacksController;
+  onCreatePack: () => void;
+  onEditPack: (packId: string) => void;
+  hasDraft: boolean;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const previewRound = packs.enabledPacks[0]?.content.rounds[0];
@@ -29,6 +36,9 @@ export function PacksScreen({
         title={t('packs.title')}
         aside={(
           <ResponsiveActions label={t('app.actions')} name="packs">
+            <Button icon={<Plus size={18} />} onClick={onCreatePack}>
+              {hasDraft ? t('editor.continueDraft') : t('editor.create')}
+            </Button>
             <Button variant="secondary" icon={<Upload size={18} />} onClick={() => fileInputRef.current?.click()}>
               {t('packs.import')}
             </Button>
@@ -54,7 +64,7 @@ export function PacksScreen({
       {packs.packStatus ? <p className={styles.helperText}>{packs.packStatus}</p> : null}
       <div className={styles.packLayout}>
         <div className={styles.list}>
-          {packs.packValidations.map(({ pack, validation }) => (
+          {packs.packValidations.filter(({ pack }) => !isSeasonalPackId(pack.id)).map(({ pack, validation }) => (
             <article key={pack.id} className={styles.smallCard}>
               {pack.meta?.cover?.emoji ? (
                 <span
@@ -106,8 +116,44 @@ export function PacksScreen({
                   <span>{pack.enabled !== false ? t('packs.enabled') : t('packs.disabled')}</span>
                 </label>
                 {!pack.builtin ? (
+                  <button type="button" onClick={() => onEditPack(pack.id)}><Pencil size={14} /> {t('editor.edit')}</button>
+                ) : null}
+                {!pack.builtin ? (
                   <button type="button" onClick={() => packs.removePack(pack.id)}>{t('packs.remove')}</button>
                 ) : null}
+              </div>
+            </article>
+          ))}
+          <h3 className={styles.cardTitle}><CalendarHeart size={20} /> {t('seasonalPacks.title')}</h3>
+          <p className={styles.helperText}>{t('seasonalPacks.subtitle')}</p>
+          {packs.seasonalCatalog.map(({ entry, enabled, loading, inSeason, rounds }) => (
+            <article key={entry.id} className={styles.smallCard}>
+              <span
+                className={styles.packCover}
+                style={entry.meta.cover?.color ? { background: entry.meta.cover.color } : undefined}
+                aria-hidden="true"
+              >
+                {entry.meta.cover?.emoji}
+              </span>
+              <h3 className={styles.cardTitle}>
+                {entry.title[language] ?? entry.title.en}
+                {inSeason ? <> <span className={styles.seasonBadge}>{t('seasonalPacks.inSeason')}</span></> : null}
+              </h3>
+              <p>{entry.meta.description?.[language] ?? entry.meta.description?.en}</p>
+              <p>
+                {loading
+                  ? t('seasonalPacks.loading')
+                  : t('seasonalPacks.rounds', { rounds: rounds ?? 30 })}
+              </p>
+              <div className={styles.feedbackActions}>
+                <label className={styles.switchField}>
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    onChange={event => packs.toggleSeasonalPack(entry.id, event.target.checked)}
+                  />
+                  <span>{enabled ? t('packs.enabled') : t('packs.disabled')}</span>
+                </label>
               </div>
             </article>
           ))}

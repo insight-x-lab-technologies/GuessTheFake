@@ -24,6 +24,8 @@ export function TableMomentPanel({
   const moment = gameState.tableMoment;
   if (!moment) return null;
   const guesses = Object.entries(gameState.roundGuesses);
+  // W17-02: the bluff master's final defense reuses the change-mind moment.
+  const copyKey = gameState.modeId === 'bluff-master' ? 'bluff.finalDefense' : `moments.${moment.kind}`;
   const icon = moment.kind === 'vote' ? <Vote size={28} /> : moment.kind === 'change-mind' ? <Repeat2 size={28} /> : <MessageCircle size={28} />;
 
   return (
@@ -31,8 +33,8 @@ export function TableMomentPanel({
       {icon}
       <div>
         <p className={styles.kicker}>{t('moments.label')}</p>
-        <h3 className={styles.cardTitle}>{t(`moments.${moment.kind}.title`)}</h3>
-        <p>{t(`moments.${moment.kind}.description`, { bonus: TABLE_VOTE_BONUS })}</p>
+        <h3 className={styles.cardTitle}>{t(`${copyKey}.title`)}</h3>
+        <p>{t(`${copyKey}.description`, { bonus: TABLE_VOTE_BONUS })}</p>
 
         {moment.kind === 'vote' ? (
           <div className={styles.momentChoices} aria-label={t('moments.vote.title')}>

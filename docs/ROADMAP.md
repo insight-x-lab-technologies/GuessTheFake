@@ -4,7 +4,7 @@ Documento de avaliacao do estado atual e plano de evolucao do Guess the Fake:
 um jogo unico, local-first, hobby-friendly, publicado como PWA estatico.
 
 Data da revisao: 2026-10-03
-Ultima atualizacao de implementacao: 2026-10-03 (Onda 14 completa: W14-01 a W14-06)
+Ultima atualizacao de implementacao: 2026-10-03 (Onda 17: W17-01 a W17-06 completos; 240 rodadas novas aprovadas pelo mantenedor)
 
 > Nota de 2026-08-07: o projeto deixou de ser descrito como "plataforma de
 > varios jogos". Guess the Fake e um jogo isolado. A antiga Onda 6 (registry
@@ -19,27 +19,31 @@ Ultima atualizacao de implementacao: 2026-10-03 (Onda 14 completa: W14-01 a W14-
 
 A base em Vite, React, TypeScript e PWA esta madura. O jogo e completavel do
 inicio ao fim, as regras principais estao cobertas por testes unitarios, e
-`npm test` (37 arquivos, 179 testes) e `npm run build` passam.
+`npm test` (47 arquivos, 248 testes) e `npm run build` passam.
 
-O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8 a 14 completas; Ondas 5 e 7
-entregues com um item parcial cada (adiados).** O modo solo (desafio pessoal
+O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8 a 15 e 17 completas; Ondas
+5, 7 e 16 entregues com um item parcial cada.** O modo solo (desafio pessoal
 com recorde) foi entregue junto com a Onda 13.
 
 Itens parciais e a razao de cada um:
 
 - W5-03 e W7-01 - pareamento peer-to-peer automatico exigiria sinalizacao;
   optou-se por WebRTC manual para preservar o app estatico sem backend.
+- W16-04 - trilhas mapeadas por tema; falta o mantenedor registrar origem e
+  licenca das musicas em `CREDITS.md`.
 
 Resumo executivo:
 
 - **Base tecnica:** completa. CI publica no GitHub Pages a cada push em `main`.
 - **Gameplay:** jogavel com shuffle real, amostragem sem reposicao, filtros de
-  categoria/dificuldade, modos classico/todos palpitam/times, bonus de
+  categoria/dificuldade/Kids, modos solo/classico/todos palpitam/times/Sobre
+  nos/Mestre do blefe, bonus de
   velocidade, streaks e feedback de conteudo.
-- **Conteudo:** pack embutido com 315 rodadas factuais (7 categorias x 3
-  dificuldades x 15 rodadas), localizadas em `pt`, `en`, `es`, `fr`, `de` e `it`,
-  um chunk carregado sob demanda por idioma. Redigido por IA e aceito em revisao
-  humana em 2026-10-03.
+- **Conteudo:** pack embutido com 360 rodadas factuais (8 categorias x 3
+  dificuldades x 15 rodadas) mais 105 rodadas Kids (6-9 anos), localizadas em
+  `pt`, `en`, `es`, `fr`, `de` e `it`, carregadas sob demanda por idioma. Tres
+  packs sazonais opcionais (Natal, Halloween, Copa e Olimpiadas; 30 rodadas
+  cada). Tudo redigido por IA e aprovado pelo mantenedor em 2026-10-03.
 - **Packs e dados locais:** import/export, validacao, ativacao granular e
   persistencia local foram conectados.
 - **Audio:** servico em `src/core/audio` com biblioteca de faixas por tema
@@ -63,9 +67,23 @@ Resumo executivo:
 - **Onda 14:** primeira visita leve (precache ~1.8 MB, musica sob demanda),
   icones corretos, fundos retrato, toast de atualizacao/offline, vitrine
   (OG, screenshots) e smoke Playwright em navegador real.
+- **Onda 15:** juice de party game: menu `...` e placar em faixa no
+  tabuleiro, timer com urgencia (tique, vibracao opcional), carimbo "FAKE" com
+  confete, passe o aparelho (opcional), podio com destaques e revanche,
+  contagem 3-2-1 e View Transitions. Design em
+  `docs/superpowers/specs/2026-10-03-onda-15-design.md`.
+- **Onda 16:** identidade visual: mascote com 5 expressoes, 24 avatares SVG,
+  arte por categoria, trilha mapeada por tema, temas sazonais (Halloween e
+  festas) sugeridos pela data e medalhas com raridade. Design em
+  `docs/superpowers/specs/2026-10-03-onda-16-design.md`.
+- **Onda 17:** modos "Sobre nos" (a mesa escreve as rodadas) e "Mestre do
+  blefe", pack Kids, categoria Comida, editor de packs na UI e packs sazonais
+  sob demanda. Design em
+  `docs/superpowers/specs/2026-10-03-onda-17-design.md`.
 - **Proxima prioridade:** validacao manual em aparelhos reais (apresentador em
-  TV, multi-device com dois aparelhos) e Onda 15 (juice/FX). Ondas 14 a 19
-  propostas em 2026-10-03.
+  TV, multi-device com dois aparelhos, vibracao no Android), fechar W16-04
+  (origem/licenca das musicas) e Onda 18. Ondas 14 a 19 propostas em
+  2026-10-03.
 
 ---
 
@@ -92,16 +110,22 @@ Resumo executivo:
   perfeitas, categorias, packs e feedback de conteudo.
 - Import/export local de leaderboard, packs e dados de usuario.
 - Wake lock durante gameplay quando suportado pelo navegador.
-- Seis temas visuais aplicados por tokens CSS.
+- Seis temas visuais aplicados por tokens CSS, mais dois sazonais (Halloween
+  e festas) sugeridos pela data local (Onda 16).
 - i18n real da UI nos seis idiomas (`pt`, `en`, `es`, `fr`, `de`, `it`), com
   teste de paridade de chaves.
 - Shell responsivo para desktop, tablet e mobile, com validacao documentada em
   `docs/DEVICE_VALIDATION.md` e smoke automatizado por viewport em
   `src/app/responsive-smoke.test.tsx`.
 - PWA via `vite-plugin-pwa` em modo prompt: toast de atualizacao, aviso
-  offline, precache de ~1.8 MB, musica e fundos extras em runtime cache,
+  offline, precache de ~2.3 MB, musica, fundos extras e packs sazonais em runtime cache,
   icones maskable/monochrome/apple-touch, screenshots e imagens OG (Onda 14).
 - Smoke em navegador real (Playwright, 3 viewports) em `e2e/`.
+- Juice de party game (Onda 15): menu `...` no tabuleiro, timer com urgencia,
+  carimbo/confete na revelacao, passe o aparelho, podio com destaques e
+  revanche, contagem 3-2-1 e View Transitions.
+- Identidade visual (Onda 16): mascote com 5 expressoes, 24 avatares SVG,
+  arte por categoria e medalhas de trofeu com raridade.
 - Servico de audio com trilha de menu/gameplay por tema, SFX sintetizados e
   volumes separados.
 - Shell fino em `src/app/App.tsx`, estado e timers em hooks
@@ -114,8 +138,11 @@ Resumo executivo:
   respeito a `prefers-reduced-motion`.
 - Fluxo explicito de nova partida com continuar/reiniciar/setup limpo e
   persistencia versionada da partida em andamento.
-- Conteudo builtin: 315 rodadas factuais em seis idiomas com metadados
-  editoriais, auditoria automatizada e revisao humana aceita (Onda 9).
+- Conteudo builtin: 360 rodadas factuais (8 categorias) e 105 rodadas Kids em
+  seis idiomas com metadados editoriais, auditoria automatizada e revisao
+  humana aceita (Ondas 9 e 17); tres packs sazonais opcionais.
+- Modos sociais (Onda 17): "Sobre nos" e "Mestre do blefe", e editor de packs
+  na tela Packs com validacao e exportacao JSON.
 - CI de deploy para GitHub Pages em `.github/workflows/static.yml`, rodando
   `npm test` e `npm run build` a cada push em `main`.
 - Modo solo com recordes por desafio e Onda 13: momentos de mesa, rodadas
@@ -584,8 +611,8 @@ varias sessoes familiares sem repeticao rapida.
    - `src/game/content-audit.test.ts` falha se algum idioma publicado ficar
      abaixo de `RELEASE_MIN_ROUNDS_PER_CELL` ou tiver qualquer problema.
    - `npm run audit:content` imprime a tabela de cobertura.
-   - Ainda nao ha tela interna de autoria; o fluxo de edicao e pelos arquivos
-     de texto.
+   - Packs da comunidade ganham editor na UI em W17-05; o pack builtin
+     continua sendo editado pelos arquivos de texto.
 
 5. `[x]` **W9-05 - Traducoes reais da UI**
    - Dicionarios reais de shell em `src/app/locales/<lang>.ts` e de jogo em
@@ -929,107 +956,180 @@ base pronta para divulgar o jogo.
 Objetivo: cada palpite, revelacao e fim de partida ter um momento memoravel,
 sem atrasar o ritmo e respeitando `prefers-reduced-motion`.
 
-1. `[ ]` **W15-01 - Tabuleiro mobile compacto**
+1. `[x]` **W15-01 - Tabuleiro mobile compacto**
    - Mover "Recalibrar", "Tela de exibicao" e "Modo apresentador" para um menu
      `...` no cabecalho da rodada; placar vira faixa de chips rolavel.
    - Cards com padding menor e numero inline; meta: 5 cards visiveis em
      390x844 com frases medias.
    - Solo: igual (solo ja nao tem atalho de apresentador).
-2. `[ ]` **W15-02 - Timer com urgencia**
+   - Entregue (2026-10-03): `RoundMenu` (`...`, menu acessivel com Escape,
+     setas e clique fora) com Recalibrar, Tela de exibicao e Modo
+     apresentador; placar em chips rolaveis no mobile; cards com numero
+     inline e padding menor. Medido: 5 cards visiveis em 390x844 no
+     `?demo=game`.
+2. `[x]` **W15-02 - Timer com urgencia**
    - Anel/barra de progresso no lugar do texto; ultimos 10s mudam de cor,
      pulsam e tocam tique sintetizado; ultimos 3s com batida mais forte.
    - Vibracao curta (`navigator.vibrate`) opcional em settings.
    - Solo: igual.
-3. `[ ]` **W15-03 - Revelacao com carimbo "FAKE"**
+   - Entregue (2026-10-03): `RoundTimer` (barra + segundos, `role="timer"`),
+     cores/pulso em 10s e 3s; eventos de audio `tick`/`tick-strong` decididos
+     por `getTimerCue` (`app/fx.ts`); setting `vibrationEnabled` (desligada,
+     desabilitada sem `navigator.vibrate`) vibra nos 3s finais e no timeout.
+3. `[x]` **W15-03 - Revelacao com carimbo "FAKE"**
    - Card falso recebe carimbo animado (SVG + CSS), verdadeiros viram "check"
      em cascata; acerto dispara confete leve (canvas proprio, sem lib).
    - Erro faz shake curto no card escolhido.
    - Pontos sobem com contagem animada e "+bonus" flutuante.
    - Solo: igual.
-4. `[ ]` **W15-04 - Passe o aparelho**
+   - Entregue (2026-10-03): carimbo SVG traduzido na falsa, check em cascata
+     nas verdadeiras, shake no card errado, confete em canvas proprio
+     (`ConfettiBurst`, sem lib), pontos com `useCountUp` e "+bonus"
+     flutuante. Tudo desligado em reduced motion.
+4. `[x]` **W15-04 - Passe o aparelho**
    - Em "todos palpitam" e times, tela intermediaria "Passe para Bruno" com
      avatar/cor do perfil, escondendo o palpite anterior e evitando espiar.
    - Opcional em settings; testado na regra/hook sem depender de timer.
    - Solo: some.
-5. `[ ]` **W15-05 - Final com podio**
+   - Entregue (2026-10-03): setting `passDeviceEnabled` (desligada por
+     padrao); `getHandoffSubject` em `rules.ts`; `PassDevicePanel` com
+     avatar/cor do perfil (ou membros do time) na intro e entre palpites de
+     "todos palpitam"; timer pausa durante a troca; a escolha anterior nunca
+     fica marcada em `all-guess`. Testes de regra, hook e fluxo.
+5. `[x]` **W15-05 - Final com podio**
    - Podio animado 1o/2o/3o com avatares, destaques ("mais rapido", "maior
      streak", "melhor blefe") derivados em `match-summary.ts`.
    - Botao "Revanche" (mesmos jogadores e config, rodadas novas) em destaque.
    - Solo: variante; mostra recorde batido/nao batido com comparacao.
-6. `[ ]` **W15-06 - Transicoes entre fases**
+   - Entregue (2026-10-03): `guessHistory` e `elapsedSeconds` no estado;
+     `getPodium`/`getMatchHighlights` em `match-summary.ts`; podio animado
+     (empates dividem posicao), destaques mais rapido/maior sequencia/melhor
+     blefe, "Revanche" em destaque (`rematch`). Solo: barras voce x recorde
+     e confete so em recorde novo.
+6. `[x]` **W15-06 - Transicoes entre fases**
    - Transicoes curtas (View Transitions API quando disponivel, fallback CSS)
      entre intro, preparacao, jogo e revelacao; contagem 3-2-1 na preparacao.
    - Solo: igual.
+   - Entregue (2026-10-03): `runViewTransition` + `flushSync` nas trocas de
+     fase, fallback CSS sob `@supports not (view-transition-name: none)`,
+     contagem 3-2-1 animada (com tique) na preparacao.
 
 ### Onda 16 - Identidade visual e arte
 
 Objetivo: o jogo ter personagem e cara propria, nao so fundo bonito.
 
-1. `[ ]` **W16-01 - Mascote com expressoes**
+1. `[x]` **W16-01 - Mascote com expressoes**
    - Evoluir o rosto do `icon.svg` em mascote SVG com 5 estados: pensando,
      desconfiado, rindo, chocado, comemorando.
    - Usar na intro, revelacao (acerto/erro), estados vazios e final.
    - SVG inline, tematizavel por tokens; sem custo de geracao recorrente.
    - Solo: igual.
-2. `[ ]` **W16-02 - Biblioteca de avatares**
+   - Entregue (2026-10-03): `Mascot` (SVG inline, tokens `--mascot-*`) com os
+     5 humores; humor por momento em `app/mascot.ts` (`getRevealMood`,
+     `getFinalMood`, testado). Na intro do turno, revelacao, final de mesa e
+     solo, home e estados vazios de Familia, Leaderboard e Trofeus.
+2. `[x]` **W16-02 - Biblioteca de avatares**
    - 16-24 avatares SVG (animais/personagens) com cor do perfil, escolhidos em
      Familia e no setup; manter `player-default.svg` como fallback.
    - Solo: igual (avatar do perfil solo).
-3. `[ ]` **W16-03 - Arte por categoria**
+   - Entregue (2026-10-03): 24 avatares em `AvatarArt.tsx` sobre a cor do
+     perfil, nomeados nos seis idiomas; `avatar` virou id
+     (`PROFILE_AVATARS`) e emojis salvos migram na leitura, sem bump de
+     versao. Escolhidos em Familia; no setup aparecem nos chips de perfil.
+     Jogador sem perfil usa `player-default.svg` (`PlayerAvatar`).
+3. `[x]` **W16-03 - Arte por categoria**
    - Icone/ilustracao por categoria (historia, geografia, ciencia, animais,
      cultura pop, esportes, bizarros) no banner da rodada, filtros e trilhas.
    - Solo: igual.
-4. `[ ]` **W16-04 - Trilhas para todos os temas**
+   - Entregue (2026-10-03): `CategoryArt` (icone sobre gradiente por
+     categoria; categoria de pack cai numa etiqueta neutra) na etiqueta da
+     rodada no tabuleiro, nos chips de categoria do setup, nas trilhas de
+     progresso e no proximo objetivo.
+4. `[/]` **W16-04 - Trilhas para todos os temas**
    - Faixas para `dark`, `light`, `contrast` e `flowers` (ou mapeamento
      intencional documentado), usando musica gerada ja licenciada ou CC0
      (registrar licenca e origem em `docs/CONTENT_GUIDE.md` ou `CREDITS.md`).
    - Respeitar a meta de peso de W14-01.
    - Solo: igual.
-5. `[ ]` **W16-05 - Temas sazonais**
+   - Parcial (2026-10-03): mapeamento intencional `THEME_TRACK_MAP` em
+     `core/audio` (todo tema, inclusive os sazonais, testado), tabela e
+     justificativa em `CREDITS.md`, Settings mostra a trilha do tema. Peso
+     inalterado (nenhuma faixa nova). Pendente fora do codigo: preencher em
+     `CREDITS.md` a origem e a licenca dos mestres de `art-source/songs/`.
+5. `[x]` **W16-05 - Temas sazonais**
    - Tema de festas de fim de ano e Halloween (fundo, paleta, trilha opcional)
      ativados manualmente ou sugeridos pela data local.
    - Solo: igual.
-6. `[ ]` **W16-06 - Selos e trofeus ilustrados**
+   - Entregue (2026-10-03): temas `halloween` e `festive` (paleta auditada,
+     fundo SVG de ~3 KB, trilha outono/cosmica) em Settings; card na home
+     sugerido por `getSeasonalSuggestion` (1/10-2/11 e 1/12-6/1) com "Usar
+     tema"/"Agora nao", dispensa por temporada em `seasonalDismissed`.
+6. `[x]` **W16-06 - Selos e trofeus ilustrados**
    - Substituir icones genericos de trofeus por medalhas SVG com raridade
      (bronze/prata/ouro/lendario) e animacao de desbloqueio.
    - Solo: igual.
+   - Entregue (2026-10-03): `rarity` nas definicoes, trofeu lendario novo
+     `legend-streak` (10 seguidos); `Medal` SVG (cinza bloqueada) nos cards de
+     Trofeus com etiqueta de raridade, no toast de desbloqueio (pop + brilho)
+     e nos trofeus pessoais da Familia.
 
 ### Onda 17 - Conteudo e modos sociais
 
 Objetivo: mais partidas sem repeticao e modos que geram conteudo pela propria
-mesa, sem custo editorial.
+mesa, sem custo editorial. Design em
+`docs/superpowers/specs/2026-10-03-onda-17-design.md`.
 
-1. `[ ]` **W17-01 - Modo "Sobre nos" (conteudo da mesa)**
+1. `[x]` **W17-01 - Modo "Sobre nos" (conteudo da mesa)**
    - Cada jogador escreve 4 verdades e 1 mentira sobre si (ou sobre a familia)
      no proprio aparelho/turno; os outros adivinham.
    - Rodadas montadas por regra pura a partir das entradas; nada sai do
      aparelho; opcao de salvar como pack local.
-   - Conteudo infinito e personalizado sem custo editorial.
    - Solo: some.
-2. `[ ]` **W17-02 - Modo "Mestre do blefe"**
+   - Entregue (2026-10-03): modo `about-us` (2-8 jogadores); autoria em
+     `useAboutUsAuthoring` (passe o aparelho, 5 frases, marcar a mentira, so em
+     memoria); `buildAboutUsRounds` em `game/about-us.ts` (frases sempre
+     embaralhadas); o autor nao palpita e ganha `BLUFF_POINTS_PER_FOOLED` (5)
+     por enganado; "Salvar como pack local" (`aboutUsRoundsToPack`) no final.
+2. `[x]` **W17-02 - Modo "Mestre do blefe"**
    - Um jogador ve qual e a falsa e defende todas as frases em voz alta; os
      demais votam; o mestre pontua por quem enganou.
    - Usa a fase `discussing` de W13-01 como base.
    - Solo: some.
-3. `[ ]` **W17-03 - Pack Kids (6-9 anos)**
+   - Entregue (2026-10-03): modo `bluff-master` (3-8); mestre rotativo em
+     `state.bluffers`; briefing privado "Ver a falsa"; timer x2 e sem bonus de
+     velocidade; depois do ultimo voto sempre abre `discussing` com
+     `change-mind` apresentado como "Defesa final"; mestre pontua por enganado.
+3. `[x]` **W17-03 - Pack Kids (6-9 anos)**
    - 105 rodadas faceis (7 categorias x 15) com linguagem simples, usando
      `ageRating`; filtro "Kids" no setup.
-   - Mesmo fluxo de W9-03 (IA redige, humano revisa, audit no CI).
    - Solo: igual.
-4. `[ ]` **W17-04 - Novas categorias**
-   - Ex.: comida, corpo humano, tecnologia, espaco, Brasil/cultura local por
-     idioma. Comecar com 1 categoria x 3 dificuldades x 15 rodadas.
+   - Entregue (2026-10-03): `ageRating: 'kids'`; 105 rodadas
+     `kids-<categoria>-NN` em `texts/kids-<lang>.ts`; interruptor "Kids
+     (6-9 anos)" no setup (setting `kidsModeEnabled`); segmento `kids` na
+     chave do desafio solo. Aprovadas pelo mantenedor em 2026-10-03.
+4. `[x]` **W17-04 - Novas categorias**
+   - Comecar com 1 categoria x 3 dificuldades x 15 rodadas.
    - Solo: igual.
-5. `[ ]` **W17-05 - Editor de packs na UI**
+   - Entregue (2026-10-03): categoria `food` (Comida), 45 rodadas nos seis
+     idiomas, com arte propria em `CategoryArt`. Aprovadas em 2026-10-03.
+5. `[x]` **W17-05 - Editor de packs na UI**
    - Tela para criar/editar rodadas (5 frases, falsa, explicacao, categoria),
      validar com `content-schema` e exportar JSON.
-   - Fecha o pendente "ferramenta de autoria com UI" de W9-04; base para
-     packs da comunidade.
    - Solo: igual.
-6. `[ ]` **W17-06 - Packs sazonais**
+   - Entregue (2026-10-03): `game/pack-editor.ts` (rascunho, problemas com
+     chave de i18n, `draftToPack`/`packToDraft`), `usePackEditor` com
+     rascunho em `gtf.game.guess-the-fake.pack-draft.v1` e `PackEditorPanel`
+     na tela Packs ("Criar pack", "Editar" em packs instalados); salvar no
+     aparelho e exportar JSON. Fecha o pendente de UI de W9-04.
+6. `[x]` **W17-06 - Packs sazonais**
    - Packs pequenos (30 rodadas) de Natal, Halloween, Copa/Olimpiadas,
      carregados sob demanda como chunk opcional.
    - Solo: igual.
+   - Entregue (2026-10-03): `game/data/seasonal/` (catalogo +
+     `texts/seasonal-<lang>.ts`), desligados por padrao, ativados na tela
+     Packs e salvos em `gtf.game.guess-the-fake.seasonal-packs.v1`; selo "Da
+     temporada" na janela dos temas sazonais; chunks fora do precache
+     (runtime cache `gtf-seasonal-packs`). Aprovados em 2026-10-03.
 
 ### Onda 18 - Retencao e crescimento organico
 

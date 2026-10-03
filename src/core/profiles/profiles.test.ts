@@ -34,8 +34,8 @@ describe('local family profiles', () => {
     model = addProfile(model, { name: 'Bruno' }, { id: 'p2' }).model;
     expect(updateProfile(model, 'p2', { name: 'ana' }).error).toBe('name-taken');
     expect(updateProfile(model, 'missing', { name: 'Caio' }).error).toBe('not-found');
-    const updated = updateProfile(model, 'p2', { name: 'Bruno', avatar: '🦉', color: 'teal' });
-    expect(updated.profile).toMatchObject({ avatar: '🦉', color: 'teal' });
+    const updated = updateProfile(model, 'p2', { name: 'Bruno', avatar: 'owl', color: 'teal' });
+    expect(updated.profile).toMatchObject({ avatar: 'owl', color: 'teal' });
     // Unknown avatar or color falls back to the list.
     expect(updateProfile(model, 'p2', { name: 'Bruno', avatar: 'x', color: 'neon' }).profile).toMatchObject({ avatar: PROFILE_AVATARS[0], color: 'coral' });
     expect(removeProfile(updated.model, 'p1').profiles.map(profile => profile.id)).toEqual(['p2']);
@@ -56,5 +56,16 @@ describe('local family profiles', () => {
 
     saveProfiles(addProfile({ profiles: [] }, { name: 'Caio' }, { id: 'p3' }).model, storage);
     expect(loadProfiles(storage).profiles[0].name).toBe('Caio');
+  });
+
+  it('offers 24 avatars and maps the emoji avatars saved before W16-02', () => {
+    expect(PROFILE_AVATARS).toHaveLength(24);
+    expect(new Set(PROFILE_AVATARS).size).toBe(24);
+    const storage = createMemoryStorage();
+    storage.setItem(PROFILES_KEY, JSON.stringify({
+      version: 1,
+      value: { profiles: [{ id: 'p1', name: 'Ana', avatar: '🐙' }, { id: 'p2', name: 'Bia', avatar: '🛸' }, { id: 'p3', name: 'Caio', avatar: 'ghost' }] }
+    }));
+    expect(loadProfiles(storage).profiles.map(profile => profile.avatar)).toEqual(['octopus', PROFILE_AVATARS[1], 'ghost']);
   });
 });

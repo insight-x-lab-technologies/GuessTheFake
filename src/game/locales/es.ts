@@ -51,7 +51,15 @@ export const es: TranslationTree = {
     },
     classic: { title: 'Clásico', description: 'Un jugador por turno intenta encontrar la frase falsa.' },
     allGuess: { title: 'Todos responden', description: 'Cada jugador registra su respuesta antes de la revelación.' },
-    teams: { title: 'Equipos', description: 'Los equipos alternan turnos y puntúan en un marcador aparte.' }
+    teams: { title: 'Equipos', description: 'Los equipos alternan turnos y puntúan en un marcador aparte.' },
+    aboutUs: {
+      title: 'Sobre nosotros',
+      description: 'Cada uno escribe 4 verdades y 1 mentira sobre sí; la mesa adivina.'
+    },
+    bluffMaster: {
+      title: 'Maestro del farol',
+      description: 'Un jugador sabe cuál es la falsa y defiende las cinco; cada engañado suma.'
+    }
   },
   setup: {
     variationsTitle: 'Variaciones',
@@ -313,5 +321,208 @@ export const es: TranslationTree = {
     version: 'v{version}',
     author: 'Por {author}',
     changelog: 'Historial de versiones'
+  },
+  art: {
+    avatars: {
+      fox: 'Zorro',
+      panda: 'Panda',
+      owl: 'Búho',
+      octopus: 'Pulpo',
+      lion: 'León',
+      turtle: 'Tortuga',
+      penguin: 'Pingüino',
+      unicorn: 'Unicornio',
+      bee: 'Abeja',
+      whale: 'Ballena',
+      cactus: 'Cactus',
+      rocket: 'Cohete',
+      cat: 'Gato',
+      dog: 'Perro',
+      frog: 'Rana',
+      bear: 'Oso',
+      rabbit: 'Conejo',
+      koala: 'Koala',
+      monkey: 'Mono',
+      pig: 'Cerdito',
+      chick: 'Pollito',
+      robot: 'Robot',
+      alien: 'Alienígena',
+      ghost: 'Fantasmita'
+    },
+    defaultAvatar: 'Jugador sin perfil',
+    medal: {
+      bronze: 'Bronce',
+      silver: 'Plata',
+      gold: 'Oro',
+      legendary: 'Legendaria',
+      label: 'Medalla {rarity}',
+      locked: 'Bloqueada',
+      unlockedRarity: '{rarity} desbloqueada'
+    },
+    seasonal: {
+      halloween: {
+        title: 'Ambiente de Halloween',
+        body: 'Murciélagos, calabazas y la música de otoño para la mesa.'
+      },
+      festive: {
+        title: 'Ambiente de fiestas',
+        body: 'Luces, nieve y brillo de fin de año para la mesa.'
+      },
+      apply: 'Usar tema',
+      dismiss: 'Ahora no',
+      settingsHint: 'Temas de temporada: aplícalos cuando quieras; en su época la app los sugiere en el inicio.'
+    },
+    tracks: {
+      heading: 'Música',
+      mapping: 'Este tema reproduce la pista {track}.',
+      cosmic: 'Cósmica',
+      spring: 'Primavera',
+      autumn: 'Otoño'
+    }
+  },
+  juice: {
+    menu: {
+      label: 'Más acciones de la ronda'
+    },
+    scoreboard: 'Marcador',
+    stamp: 'FALSO',
+    bonusFloat: '+{bonus} bonus',
+    countdown: '{seconds} para empezar',
+    pass: {
+      title: 'Pásalo a {name}',
+      hint: 'Sin espiar: la respuesta anterior queda oculta.',
+      ready: 'Soy {name}, mostrar'
+    },
+    podium: {
+      kicker: 'Podio',
+      label: 'Podio de la partida',
+      points: '{points} pts',
+      place: '{place}.º puesto',
+      restLine: '{place}.º {name} · {points} pts'
+    },
+    highlights: {
+      label: 'Momentos de la partida',
+      fastest: 'El más rápido',
+      'longest-streak': 'Mejor racha',
+      'best-bluff': 'Mejor engaño',
+      fastestLine: '{name} acertó en {seconds} s de media',
+      streakLine: '{name} acertó {streak} seguidas',
+      bluffLine: '"{text}" engañó a {count}'
+    },
+    rematch: 'Revancha',
+    solo: {
+      you: 'Tú',
+      record: 'Récord',
+      previousRecord: 'Récord anterior'
+    },
+    settings: {
+      passDevice: 'Pasar el dispositivo entre respuestas',
+      passDeviceHint: 'En "todos responden" y equipos, muestra una pantalla de cambio que oculta la respuesta anterior.',
+      vibration: 'Vibrar en los últimos segundos',
+      vibrationUnsupported: 'Este dispositivo o navegador no vibra.'
+    }
+  },
+  aboutUs: {
+    category: 'Sobre nosotros',
+    subtitle: 'Cada jugador escribe en su turno. Nada sale de este dispositivo.',
+    progress: 'Jugador {current} de {total}',
+    startWriting: 'Escribir mis frases',
+    writeTitle: '{name}, escribe sobre ti',
+    writeHint: 'Cuatro verdades y una mentira. Marca la mentira; las frases se barajan.',
+    statementLabel: 'Frase {number}',
+    lieLabel: 'Mentira',
+    issue: {
+      'empty-statement': 'Completa las cinco frases.',
+      'too-long': 'Cada frase puede tener hasta 140 caracteres.',
+      'duplicate-statement': 'Las frases deben ser distintas.',
+      'no-lie': 'Marca qué frase es la mentira.'
+    },
+    cancel: 'Volver a la configuración',
+    confirm: 'Listo, ocultar',
+    doneTitle: '¡Todos han escrito!',
+    doneHint: '{count} rondas listas, una por jugador. Quien escribió la ronda no adivina en ella.',
+    missingEntries: 'Cada jugador debe escribir sus cinco frases antes de empezar.',
+    saveAsPack: 'Guardar como pack local',
+    packTitle: 'Sobre nosotros ({date})',
+    packExplanation: 'Frase escrita por {name}.',
+    saved: 'Pack guardado. Actívalo o edítalo en Packs.',
+    setupTitle: 'Contenido de la mesa',
+    setupNote: 'Sin packs ni filtros: cada jugador escribe una ronda sobre sí ({count} rondas). El autor puntúa por cada engañado.',
+    summaryLine: '{players} jugadores · una ronda escrita por cada uno',
+    startWritingAll: 'Escribir las rondas'
+  },
+  bluff: {
+    result: '{name} engañó a {count} ({names}): +{points} puntos.',
+    resultNone: '{name} no engañó a nadie esta vez.',
+    masterBanner: 'Maestro del farol: {name}',
+    masterBannerHint: '{name} defiende las cinco frases; vota cuando las escuches.',
+    aboutUsBanner: 'Frases de {name}',
+    aboutUsBannerHint: '{name} no adivina; puntúa por cada engañado.',
+    aboutUsIntro: 'Ronda de {name}',
+    aboutUsIntroHint: '{name}, lee tus cinco frases en voz alta. Los demás adivinan de uno en uno.',
+    briefingTitle: 'Solo mira {name}',
+    briefingHint: 'Los demás apartan la vista. El maestro ve cuál es la falsa.',
+    briefingReveal: 'Ver la falsa',
+    briefingDefend: 'Defiende las cinco como si todas fueran verdad.',
+    briefingReady: 'Listo, ocultar',
+    finalDefense: {
+      title: 'Defensa final',
+      description: 'El maestro hace su último alegato. Cada uno puede cambiar su voto una vez antes de revelar.'
+    }
+  },
+  kids: {
+    toggle: 'Kids (6-9 años)',
+    toggleHint: 'Solo rondas fáciles con lenguaje sencillo, escritas para niños.',
+    short: 'Kids'
+  },
+  editor: {
+    title: 'Nuevo pack',
+    editTitle: 'Editar pack',
+    subtitle: 'Escribe rondas con 5 frases y una falsa. El borrador se guarda en este dispositivo.',
+    back: 'Volver a los packs',
+    packInfo: 'Pack',
+    packTitle: 'Título',
+    emoji: 'Portada (emoji)',
+    language: 'Idioma',
+    description: 'Descripción',
+    newCategory: 'Nueva categoría',
+    addCategory: 'Añadir categoría',
+    categoryInvalid: 'Escribe un nombre de categoría que aún no exista.',
+    roundTitle: 'Ronda {number}',
+    removeRound: 'Quitar',
+    statement: 'Frase {number}',
+    fake: 'Falsa',
+    explanation: 'Explicación (se ve al revelar)',
+    addRound: 'Añadir ronda',
+    summary: 'Resumen',
+    summaryLine: '{rounds} rondas · {issues} pendientes',
+    validate: 'Validar',
+    save: 'Guardar en el dispositivo',
+    export: 'Exportar JSON',
+    discard: 'Descartar borrador',
+    invalid: '{count} pendientes por corregir.',
+    valid: 'Todo bien: el pack está listo.',
+    saved: 'Pack guardado y activado.',
+    exported: 'JSON exportado.',
+    create: 'Crear pack',
+    continueDraft: 'Seguir el borrador',
+    edit: 'Editar',
+    issue: {
+      title: 'Ponle un título al pack.',
+      noRounds: 'Añade al menos una ronda.',
+      category: 'Ronda {round}: elige una categoría.',
+      statement: 'Ronda {round}: completa la frase {statement}.',
+      statementLong: 'Ronda {round}: la frase {statement} supera los 200 caracteres.',
+      duplicate: 'Ronda {round}: la frase {statement} repite otra del pack.',
+      fake: 'Ronda {round}: marca qué frase es la falsa.',
+      explanation: 'Ronda {round}: escribe la explicación.'
+    }
+  },
+  seasonalPacks: {
+    title: 'Packs de temporada',
+    subtitle: 'Packs pequeños y opcionales, descargados solo al activarlos.',
+    inSeason: 'De temporada',
+    loading: 'Cargando…',
+    rounds: '{rounds} rondas'
   }
 };

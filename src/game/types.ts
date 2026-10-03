@@ -7,7 +7,8 @@ export type GuessTheFakeStatement = {
 
 export type GuessTheFakeDifficulty = 'easy' | 'medium' | 'hard';
 
-export type GuessTheFakeAgeRating = 'all' | '10+';
+// 'kids': written for 6-9 year olds (W17-03).
+export type GuessTheFakeAgeRating = 'all' | '10+' | 'kids';
 
 // Editorial metadata. Never shown during a match.
 export type GuessTheFakeReview = {
@@ -26,6 +27,8 @@ export type GuessTheFakeRound = {
   ageRating?: GuessTheFakeAgeRating;
   sources?: string[];
   review?: GuessTheFakeReview;
+  // W17-01: player who wrote a table ("about us") round. Never saved in packs.
+  authorPlayerId?: string;
 };
 
 export type GuessTheFakePackContent = {
@@ -46,7 +49,7 @@ export type GuessTheFakeTeam = {
   score: number;
 };
 
-export type GuessTheFakeModeId = 'solo' | 'classic' | 'all-guess' | 'teams';
+export type GuessTheFakeModeId = 'solo' | 'classic' | 'all-guess' | 'teams' | 'about-us' | 'bluff-master';
 
 export type GuessTheFakePhase = 'setup' | 'intro' | 'preparing' | 'playing' | 'discussing' | 'revealed' | 'finished';
 
@@ -70,6 +73,8 @@ export type GuessTheFakeChallenge = {
   difficulty: GuessTheFakeDifficulty | 'all';
   // Installed (non-builtin) packs active when the match started.
   packIds: string[];
+  // W17-03: kids-only content.
+  kids?: boolean;
 };
 
 export type GuessTheFakeState = {
@@ -97,7 +102,14 @@ export type GuessTheFakeState = {
   specialRounds: Array<SpecialRoundKind | null>;
   // `gradual-clue`: how many statements are visible in the current round.
   revealedClues: number;
+  // W15-05: every settled guess of the match, appended when a round closes.
+  guessHistory: RoundGuessRecord[];
+  // W17-01/02: player who bluffs each round (author or bluff master); null
+  // in the other modes. The bluffer does not guess and scores per fooled guess.
+  bluffers: Array<string | null>;
 };
+
+export type RoundGuessRecord = GuessResult & { roundIndex: number };
 
 export type GuessResult = {
   selectedStatementId: string;
@@ -107,6 +119,9 @@ export type GuessResult = {
   basePoints: number;
   speedBonus: number;
   streakMultiplier: number;
+  // Seconds between the statements showing up and the guess; absent on
+  // timeouts and on table-moment changes.
+  elapsedSeconds?: number;
   // Streak of the subject before this guess; lets a table moment undo it.
   previousStreak?: number;
   longestStreakBefore?: number;

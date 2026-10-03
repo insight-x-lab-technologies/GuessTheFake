@@ -37,6 +37,18 @@ export const THEME_CONTRAST_AUDIT: Record<ThemeId, ContrastPair[]> = {
     { label: 'text on surface', foreground: '#ffffff', background: '#000000', requiredRatio: 7 },
     { label: 'accent text', foreground: '#000000', background: '#ffff00', requiredRatio: 7 },
     { label: 'secondary button', foreground: '#000000', background: '#00e5ff', requiredRatio: 7 }
+  ],
+  halloween: [
+    { label: 'text on surface', foreground: '#ffffff', background: '#2a1440', requiredRatio: 4.5 },
+    { label: 'accent text', foreground: '#1a0b05', background: '#ffb347', requiredRatio: 4.5 },
+    { label: 'primary button', foreground: '#1a0b05', background: '#ff8a2a', requiredRatio: 4.5 },
+    { label: 'secondary button', foreground: '#ffffff', background: '#7c3aed', requiredRatio: 4.5 }
+  ],
+  festive: [
+    { label: 'text on surface', foreground: '#ffffff', background: '#0f3d36', requiredRatio: 4.5 },
+    { label: 'accent text', foreground: '#1b1405', background: '#ffd166', requiredRatio: 4.5 },
+    { label: 'primary button', foreground: '#ffffff', background: '#d63a52', requiredRatio: 4.5 },
+    { label: 'secondary button', foreground: '#ffffff', background: '#167a5c', requiredRatio: 4.5 }
   ]
 };
 

@@ -45,8 +45,12 @@ describe('solo records', () => {
       categoryId: 'all',
       difficulty: 'all',
       specialRounds: true,
-      packIds: ['a', 'z']
+      packIds: ['a', 'z'],
+      kids: false
     });
+    const kidsKey = getSoloChallengeKey({ totalRounds: 5, categoryId: 'all', difficulty: 'easy', kids: true });
+    expect(kidsKey).toBe('5|all|easy|kids');
+    expect(parseSoloChallengeKey(kidsKey).kids).toBe(true);
   });
 
   it('derives the result of a finished solo match', () => {

@@ -1,16 +1,26 @@
-import { Clock, Eye, MonitorUp, Play, RotateCcw, Sparkles, Tv } from 'lucide-react';
+import { Eye, MessageCircleHeart, MonitorUp, Play, RotateCcw, Sparkles, Theater, Tv } from 'lucide-react';
 import type { MutableRefObject } from 'react';
 import type { LocalProfile } from '../../core/profiles/profiles';
 import { Button } from '../../core/ui/Button';
+import { isEveryoneGuessesMode } from '../../game/modes';
 import { getVisibleStatementCount } from '../../game/rules';
 import type { GuessTheFakeRound } from '../../game/types';
 import type { LocalizeText, Translate } from '../app-types';
 import type { GrowthController } from '../hooks/useGrowth';
 import type { MatchController } from '../hooks/useMatch';
 import type { MultiDeviceController } from '../hooks/useMultiDevice';
+import { getFinalMood } from '../mascot';
+import { getMatchHighlights, getPodium } from '../match-summary';
+import { BluffBriefingPanel } from './BluffBriefingPanel';
+import { CategoryArt } from './CategoryArt';
+import { ConfettiBurst } from './ConfettiBurst';
 import { FinalResultPanel } from './FinalResultPanel';
-import { ProfileAvatar } from './ProfileAvatar';
+import { Mascot } from './Mascot';
+import { PassDevicePanel } from './PassDevicePanel';
+import { PlayerAvatar } from './ProfileAvatar';
+import { RoundMenu } from './RoundMenu';
 import { RoundResultPanel } from './RoundResultPanel';
+import { RoundTimer } from './RoundTimer';
 import { ScoreResetFeedback } from './ScoreResetFeedback';
 import { SoloResultPanel } from './SoloResultPanel';
 import { StatementGrid } from './StatementGrid';
@@ -26,7 +36,8 @@ export function GameBoardScreen({
   presenter,
   categoryLabel,
   getProfileForName,
-  statementButtonRefs
+  statementButtonRefs,
+  saveAsPack
 }: {
   t: Translate;
   text: LocalizeText;
@@ -38,8 +49,11 @@ export function GameBoardScreen({
   categoryLabel: (categoryId: string) => string;
   getProfileForName: (name: string) => LocalProfile | null;
   statementButtonRefs: MutableRefObject<Array<HTMLButtonElement | null>>;
+  saveAsPack?: { status: string; onSave: () => void };
 }) {
-  const { gameState, timerSeconds, activeSubjectName: subjectName, solo, specialRound } = match;
+  const { gameState, timerSeconds, activeSubjectName: subjectName, solo, specialRound, handoffSubject, bluffer } = match;
+  const bluffMaster = gameState.modeId === 'bluff-master';
+  const everyoneGuesses = isEveryoneGuessesMode(gameState.modeId);
   const isTeams = gameState.modeId === 'teams';
   const roundLabel = t('game.round', {
     current: Math.min(gameState.currentRoundIndex + 1, gameState.totalRounds),
@@ -48,23 +62,30 @@ export function GameBoardScreen({
   const readyLabel = isTeams
     ? t('game.readyTeam', { name: subjectName })
     : t('game.readyPlayer', { name: subjectName });
-  const avatarFor = (name: string) => {
-    const profile = getProfileForName(name);
-    return profile ? <ProfileAvatar profile={profile} size="sm" /> : undefined;
-  };
+  const avatarFor = (name: string) => <PlayerAvatar profile={getProfileForName(name)} size="sm" />;
   const scoreLines = isTeams
     ? gameState.teams.map(team => ({ id: team.id, label: t('game.teamScore', { name: team.name, score: team.score }), avatar: undefined }))
     : gameState.players.map(player => ({ id: player.id, label: `${player.name}: ${player.score}`, avatar: avatarFor(player.name) }));
+  const teamMembers = (teamName: string) => {
+    const team = gameState.teams.find(candidate => candidate.name === teamName);
+    return team ? team.playerIds.map(id => gameState.players.find(player => player.id === id)?.name ?? '').filter(Boolean) : [];
+  };
   const soloPlayer = gameState.players[0];
   const soloStreak = soloPlayer ? gameState.currentStreakByPlayer[soloPlayer.id] ?? 0 : 0;
   const answeredRounds = gameState.currentRoundIndex + (gameState.phase === 'revealed' ? 1 : 0);
   const visibleCount = getVisibleStatementCount(gameState);
   const showSpecial = Boolean(specialRound) && gameState.phase !== 'finished';
+  const anyCorrect = Object.values(gameState.roundGuesses).some(guess => guess.correct);
+  const onTable = gameState.phase === 'playing' || gameState.phase === 'discussing' || gameState.phase === 'revealed';
+  const handingOff = gameState.phase === 'playing' && Boolean(handoffSubject);
+  const finished = gameState.phase === 'finished';
+  const celebrate = finished && (solo ? Boolean(match.soloOutcome?.isNewRecord) : true);
+  const { podium, rest } = finished && !solo ? getPodium(gameState) : { podium: [], rest: [] };
 
   return (
-    <div className={styles.gameBoard}>
+    <div className={styles.gameBoard} data-phase={gameState.phase}>
       <header className={styles.gameHeader}>
-        <div>
+        <div className={styles.gameHeaderTitle}>
           {solo ? (
             <h2 className={styles.pageTitle}>{roundLabel}</h2>
           ) : (
@@ -75,6 +96,13 @@ export function GameBoardScreen({
               </h2>
             </>
           )}
+          {bluffer && gameState.phase !== 'finished' ? (
+            <div className={styles.bluffBanner} role="note">
+              {bluffMaster ? <Theater size={18} /> : <MessageCircleHeart size={18} />}
+              <strong>{t(bluffMaster ? 'bluff.masterBanner' : 'bluff.aboutUsBanner', { name: bluffer.name })}</strong>
+              <span>{t(bluffMaster ? 'bluff.masterBannerHint' : 'bluff.aboutUsBannerHint', { name: bluffer.name })}</span>
+            </div>
+          ) : null}
           {showSpecial && specialRound ? (
             <div className={styles.specialBanner} role="note">
               <Sparkles size={18} />
@@ -96,23 +124,24 @@ export function GameBoardScreen({
             </div>
           ) : (
             <>
-              <div className={styles.scoreStrip}>
-                {scoreLines.map(line => <span key={line.id}>{line.avatar}{line.label}</span>)}
-                <button
-                  aria-controls="score-reset-confirmation"
-                  aria-expanded={match.scoreResetStatus === 'confirm'}
-                  className={styles.inlineTool}
-                  type="button"
-                  onClick={match.requestScoreReset}
-                >
-                  <RotateCcw size={16} /> {t('game.recalibrateScores')}
-                </button>
-                <button className={styles.inlineTool} type="button" onClick={presenter.openPresenterWindow}>
-                  <MonitorUp size={16} /> {t('presenter.openWindow')}
-                </button>
-                <button className={styles.inlineTool} type="button" onClick={presenter.openPresenter}>
-                  <Tv size={16} /> {t('presenter.open')}
-                </button>
+              <div className={styles.scoreRow}>
+                <div className={styles.scoreStrip} aria-label={t('juice.scoreboard')}>
+                  {scoreLines.map(line => <span key={line.id}>{line.avatar}{line.label}</span>)}
+                </div>
+                <RoundMenu
+                  t={t}
+                  items={[
+                    {
+                      id: 'recalibrate',
+                      icon: <RotateCcw size={16} />,
+                      label: t('game.recalibrateScores'),
+                      controls: 'score-reset-confirmation',
+                      onSelect: match.requestScoreReset
+                    },
+                    { id: 'presenter-window', icon: <MonitorUp size={16} />, label: t('presenter.openWindow'), onSelect: presenter.openPresenterWindow },
+                    { id: 'presenter', icon: <Tv size={16} />, label: t('presenter.open'), onSelect: presenter.openPresenter }
+                  ]}
+                />
               </div>
               <ScoreResetFeedback
                 id="score-reset-confirmation"
@@ -126,10 +155,43 @@ export function GameBoardScreen({
         </div>
       </header>
 
+      {gameState.phase === 'intro' && bluffMaster && bluffer && round ? (
+        <BluffBriefingPanel
+          key={gameState.currentRoundIndex}
+          t={t}
+          masterName={bluffer.name}
+          profile={getProfileForName(bluffer.name)}
+          fakeText={text(round.statements.find(statement => statement.id === round.fakeStatementId)?.text)}
+          kicker={roundLabel}
+          onReady={match.beginTurn}
+        />
+      ) : null}
 
-      {gameState.phase === 'intro' ? (
+      {gameState.phase === 'intro' && gameState.modeId === 'about-us' && bluffer ? (
         <div className={styles.turnPanel}>
-          <div className={styles.timerBadge}><Clock size={26} /></div>
+          <PlayerAvatar profile={getProfileForName(bluffer.name)} size="lg" />
+          <p className={styles.kicker}>{roundLabel}</p>
+          <h2 className={styles.pageTitle}>{t('bluff.aboutUsIntro', { name: bluffer.name })}</h2>
+          <p>{t('bluff.aboutUsIntroHint', { name: bluffer.name })}</p>
+          <Button icon={<Play size={18} />} onClick={match.beginTurn}>{t('game.startTurn')}</Button>
+        </div>
+      ) : null}
+
+      {gameState.phase === 'intro' && match.passDevice && !bluffer ? (
+        <PassDevicePanel
+          t={t}
+          name={subjectName}
+          members={isTeams ? teamMembers(subjectName) : []}
+          profile={isTeams ? null : getProfileForName(subjectName)}
+          kicker={roundLabel}
+          actionLabel={t('game.startTurn')}
+          onReady={match.beginTurn}
+        />
+      ) : null}
+
+      {gameState.phase === 'intro' && !match.passDevice && !bluffer ? (
+        <div className={styles.turnPanel}>
+          <Mascot mood="thinking" size="lg" />
           <p className={styles.kicker}>{roundLabel}</p>
           <h2 className={styles.pageTitle}>{readyLabel}</h2>
           <p>{t('game.prepareHint')}</p>
@@ -139,9 +201,8 @@ export function GameBoardScreen({
 
       {gameState.phase === 'preparing' ? (
         <div className={styles.turnPanel}>
-          <div className={styles.timerRing}>
-            <strong>{timerSeconds}</strong>
-            <span>{t('game.secondsLabel')}</span>
+          <div className={styles.countdown} role="timer" aria-label={t('juice.countdown', { seconds: timerSeconds })}>
+            <strong key={timerSeconds} aria-hidden="true">{timerSeconds}</strong>
           </div>
           <h2 className={styles.pageTitle}>{t('game.preparation')}</h2>
           <p>{readyLabel}</p>
@@ -149,15 +210,29 @@ export function GameBoardScreen({
         </div>
       ) : null}
 
-      {round && (gameState.phase === 'playing' || gameState.phase === 'discussing' || gameState.phase === 'revealed') ? (
+      {handingOff && handoffSubject ? (
+        <PassDevicePanel
+          t={t}
+          name={handoffSubject.name}
+          profile={getProfileForName(handoffSubject.name)}
+          kicker={roundLabel}
+          onReady={match.confirmHandoff}
+        />
+      ) : null}
+
+      {round && onTable && !handingOff ? (
         <>
           <div className={styles.roundToolbar}>
+            <span className={styles.categoryTag}>
+              <CategoryArt categoryId={round.categoryId} size="sm" />
+              {categoryLabel(round.categoryId)}
+            </span>
             <p className={styles.prompt}>
               {gameState.phase === 'revealed'
                 ? t('game.revealedPrompt')
                 : gameState.phase === 'discussing'
                   ? t('moments.prompt')
-                  : gameState.modeId === 'all-guess'
+                  : everyoneGuesses
                     ? t('game.chooseFakeAll', { name: subjectName })
                     : t('game.chooseFake')}
             </p>
@@ -167,7 +242,7 @@ export function GameBoardScreen({
               </button>
             ) : null}
             {gameState.phase === 'playing' ? (
-              <span className={styles.timerPill}><Clock size={16} /> {t('game.timeLeft', { seconds: timerSeconds })}</span>
+              <RoundTimer t={t} seconds={timerSeconds} totalSeconds={match.roundTimeSeconds} />
             ) : null}
           </div>
           <StatementGrid
@@ -178,6 +253,7 @@ export function GameBoardScreen({
             buttonRefs={statementButtonRefs}
             visibleCount={visibleCount}
             changing={Boolean(match.changingSubjectId)}
+            hideSelection={everyoneGuesses}
             onChoose={match.chooseStatement}
           />
         </>
@@ -206,9 +282,18 @@ export function GameBoardScreen({
         />
       ) : null}
 
-      {gameState.phase === 'finished' && solo ? (
+      {gameState.phase === 'revealed' && anyCorrect ? <ConfettiBurst key={`round-${gameState.currentRoundIndex}`} /> : null}
+      {celebrate ? <ConfettiBurst key="final" /> : null}
+
+      {finished && solo ? (
         <SoloResultPanel
           t={t}
+          mood={getFinalMood({
+            solo: true,
+            isNewRecord: Boolean(match.soloOutcome?.isNewRecord),
+            correct: gameState.correctGuessesInMatch,
+            totalRounds: gameState.totalRounds
+          })}
           outcome={match.soloOutcome}
           points={soloPlayer?.score ?? 0}
           correct={gameState.correctGuessesInMatch}
@@ -218,21 +303,27 @@ export function GameBoardScreen({
           categoryLabel={categoryLabel}
           shareStatus={growth.growthStatus}
           onShare={growth.shareResult}
-          onPlayAgain={match.replaySoloChallenge}
+          onPlayAgain={match.rematch}
           onNewChallenge={() => match.openCleanSetup()}
         />
       ) : null}
 
-      {gameState.phase === 'finished' && !solo ? (
+      {finished && !solo ? (
         <FinalResultPanel
           t={t}
+          text={text}
           winnerNames={match.winners.map(player => player.name)}
-          scoreLines={scoreLines}
+          podium={podium}
+          rest={rest}
+          highlights={getMatchHighlights(gameState)}
+          avatarFor={avatarFor}
           nextObjective={match.nextObjective}
           categoryLabel={categoryLabel}
           shareStatus={growth.growthStatus}
           onShare={growth.shareResult}
-          onPlayAgain={() => match.openCleanSetup()}
+          onRematch={match.rematch}
+          onNewSetup={() => match.openCleanSetup()}
+          saveAsPack={gameState.modeId === 'about-us' ? saveAsPack : undefined}
         />
       ) : null}
     </div>

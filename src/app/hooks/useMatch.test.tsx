@@ -233,4 +233,108 @@ describe('useMatch', () => {
     expect(result.current.progress.achievementState.playerCounters.ana.correctGuesses).toBe(1);
     expect(result.current.progress.roundHistory.recentRoundIds).toHaveLength(1);
   });
+
+  it('ticks the 3-2-1 preparation and the last seconds, vibrating only when enabled', async () => {
+    const vibrate = vi.fn();
+    Object.defineProperty(navigator, 'vibrate', { configurable: true, value: vibrate });
+    const { result, audio } = renderMatch({ vibrationEnabled: true });
+    act(() => {
+      result.current.match.startNewMatch();
+    });
+    act(() => {
+      result.current.match.beginTurn();
+    });
+    await tick(2);
+    const ticksDuringPreparation = audio.play.mock.calls.filter(([event]) => event === 'tick').length;
+    expect(ticksDuringPreparation).toBe(2);
+
+    await tick(19);
+    const events = audio.play.mock.calls.map(([event]) => event);
+    expect(events.filter(event => event === 'tick')).toHaveLength(2 + 7);
+    expect(events.filter(event => event === 'tick-strong')).toHaveLength(3);
+    expect(vibrate).toHaveBeenCalledTimes(3);
+    Reflect.deleteProperty(navigator, 'vibrate');
+  });
+
+  it('pauses the round on a pass-the-device hand-off in all-guess', async () => {
+    const { result } = renderMatch({ passDeviceEnabled: true });
+    act(() => {
+      result.current.setup.selectMode('all-guess');
+    });
+    act(() => {
+      result.current.match.startNewMatch();
+    });
+    act(() => {
+      result.current.match.showStatementsNow();
+    });
+    expect(result.current.match.passDevice).toBe(true);
+    const first = result.current.match.gameState.players[0].name;
+    const second = result.current.match.gameState.players[1].name;
+
+    act(() => {
+      result.current.match.chooseStatement(result.current.match.round?.statements[0].id ?? '');
+    });
+    expect(result.current.match.handoffSubject?.name).toBe(second);
+    expect(result.current.match.handoffSubject?.name).not.toBe(first);
+    const pausedAt = result.current.match.timerSeconds;
+    await tick(3);
+    expect(result.current.match.timerSeconds).toBe(pausedAt);
+
+    act(() => {
+      result.current.match.confirmHandoff();
+    });
+    expect(result.current.match.handoffSubject).toBeNull();
+    await tick(2);
+    expect(result.current.match.timerSeconds).toBe(pausedAt - 2);
+  });
+
+  it('skips the hand-off when the setting is off', () => {
+    const { result } = renderMatch();
+    act(() => {
+      result.current.setup.selectMode('all-guess');
+    });
+    act(() => {
+      result.current.match.startNewMatch();
+    });
+    act(() => {
+      result.current.match.showStatementsNow();
+    });
+    act(() => {
+      result.current.match.chooseStatement(result.current.match.round?.statements[0].id ?? '');
+    });
+    expect(result.current.match.passDevice).toBe(false);
+    expect(result.current.match.handoffSubject).toBeNull();
+  });
+
+  it('starts a rematch with the same players and a clean history', () => {
+    const { result } = renderMatch();
+    act(() => {
+      result.current.setup.changeRoundCount('1');
+    });
+    act(() => {
+      result.current.match.startNewMatch();
+    });
+    const players = result.current.match.gameState.players.map(player => player.name);
+    const firstRoundId = result.current.match.round?.id;
+    act(() => {
+      result.current.match.showStatementsNow();
+    });
+    act(() => {
+      result.current.match.chooseStatement(result.current.match.round?.fakeStatementId ?? '');
+    });
+    act(() => {
+      result.current.match.continueRound();
+    });
+    expect(result.current.match.gameState.phase).toBe('finished');
+    expect(result.current.match.gameState.guessHistory).toHaveLength(1);
+
+    act(() => {
+      result.current.match.rematch();
+    });
+    expect(result.current.match.gameState.phase).toBe('intro');
+    expect(result.current.match.gameState.players.map(player => player.name)).toEqual(players);
+    expect(result.current.match.gameState.guessHistory).toEqual([]);
+    // The round just played goes to the back of the queue.
+    expect(result.current.match.round?.id).not.toBe(firstRoundId);
+  });
 });

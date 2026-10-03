@@ -122,3 +122,22 @@ room. Five statement columns above `1100px`, auto-fit below, one column at
 Special-round banners live inside the game header so the board keeps its four
 rows. The table-moment panel takes the result panel's row while the phase is
 `discussing`.
+
+## Onda 15 Juice
+
+- Round actions (recalibrate, presenter window, presenter mode) live in the
+  `RoundMenu` (`...`) next to the score chips; solo has no menu. On mobile the
+  score chips scroll horizontally in one line and statement cards use an
+  inline number, so five cards fit at 390x844.
+- `RoundTimer` replaces the timer pill: bar plus seconds, `data-urgency`
+  `calm` / `warning` (<= 10s) / `critical` (<= 3s) drives color and pulse.
+- Reveal: the fake gets an SVG stamp, true cards a check in cascade
+  (`--cascade-index`), a wrong pick shakes, and a correct round fires
+  `ConfettiBurst` (fixed canvas, `pointer-events: none`). On mobile revealed
+  cards reserve right padding so the check and stamp never cover text.
+- `PassDevicePanel` takes the board's main row during a hand-off.
+- The multiplayer final screen is a podium (2nd, 1st, 3rd) with highlights;
+  solo shows record comparison bars.
+- Phase changes use the View Transitions API when present (220ms root
+  cross-fade in `base.css`); otherwise panels fade in via CSS.
+- Every Onda 15 animation is disabled under `prefers-reduced-motion`.

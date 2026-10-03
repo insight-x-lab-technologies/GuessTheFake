@@ -1,10 +1,11 @@
-import { AtSign, CheckCircle2, Lightbulb, ListChecks, Play, Sparkles, Star, Trophy } from 'lucide-react';
+import { AtSign, Baby, CheckCircle2, Lightbulb, ListChecks, MessageCircleHeart, Play, Sparkles, Star, Trophy } from 'lucide-react';
 import type { LocalProfile } from '../../core/profiles/profiles';
 import { Button } from '../../core/ui/Button';
 import { GAME_MODES } from '../../game/modes';
 import type { GuessTheFakeDifficulty, GuessTheFakeModeId } from '../../game/types';
 import type { LocalizeText, Translate } from '../app-types';
 import { SUGGESTION_MINUTE_OPTIONS, type MatchSetupController } from '../hooks/useMatchSetup';
+import { CategoryArt } from './CategoryArt';
 import { ProfileAvatar } from './ProfileAvatar';
 import { ScreenHeader } from './ScreenHeader';
 import styles from '../App.module.css';
@@ -39,6 +40,8 @@ export function SetupScreen({
   const suggestion = setup.suggestion;
   const suggestedMode = GAME_MODES.find(mode => mode.id === suggestion.modeId);
   const selectedNames = setup.solo ? [setup.soloPlayerName.trim()] : setup.tablePlayers;
+  // W17-01: the table writes the rounds, so packs and filters do not apply.
+  const aboutUs = setup.selectedModeId === 'about-us';
 
   return (
     <div className={styles.panel}>
@@ -120,9 +123,28 @@ export function SetupScreen({
             ) : null}
           </article>
 
-          <article className={styles.smallCard}>
+          {aboutUs ? (
+            <article className={styles.smallCard}>
+              <MessageCircleHeart size={22} />
+              <h3 className={styles.cardTitle}>{t('aboutUs.setupTitle')}</h3>
+              <p className={styles.helperText}>{t('aboutUs.setupNote', { count: Math.max(setup.tablePlayers.length, 2) })}</p>
+            </article>
+          ) : null}
+
+          <article className={styles.smallCard} hidden={aboutUs}>
             <Star size={22} />
             <h3 className={styles.cardTitle}>{t('setup.filtersTitle')}</h3>
+            <label className={styles.switchField}>
+              <input
+                type="checkbox"
+                checked={setup.kidsModeEnabled}
+                onChange={event => setup.setKidsModeEnabled(event.target.checked)}
+              />
+              <span>
+                <b><Baby size={16} aria-hidden="true" /> {t('kids.toggle')}</b>
+                <small>{t('kids.toggleHint')}</small>
+              </span>
+            </label>
             <div className={styles.setupFieldsGrid}>
               <label className={styles.field}>
                 <span>{t('setup.rounds')}</span>
@@ -134,7 +156,7 @@ export function SetupScreen({
                   onChange={event => setup.changeRoundCount(event.target.value)}
                 />
               </label>
-              <label className={styles.field}>
+              <label className={styles.visuallyHidden}>
                 <span>{t('setup.category')}</span>
                 <select value={setup.selectedCategoryId} onChange={event => setup.setSelectedCategoryId(event.target.value)}>
                   <option value="all">{t('setup.allCategories')}</option>
@@ -156,6 +178,22 @@ export function SetupScreen({
                 </select>
               </label>
             </div>
+            <fieldset className={styles.pickerField}>
+              <legend>{t('setup.category')}</legend>
+              <div className={styles.categoryChips}>
+                {[{ id: 'all' }, ...setup.availableCategories].map(category => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    aria-pressed={setup.selectedCategoryId === category.id}
+                    onClick={() => setup.setSelectedCategoryId(category.id)}
+                  >
+                    {category.id === 'all' ? null : <CategoryArt categoryId={category.id} size="sm" />}
+                    <span>{categoryLabel(category.id)}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
           </article>
 
           <article className={styles.smallCard}>
@@ -192,7 +230,9 @@ export function SetupScreen({
           <article className={styles.metricCard}>
             <span>{t('setup.summaryTitle')}</span>
             <strong className={styles.metricText}>{t(setup.selectedMode.titleKey)}</strong>
-            <p>{setup.solo
+            <p>{aboutUs
+              ? t('aboutUs.summaryLine', { players: Math.max(setup.players.length, 1) })
+              : setup.solo
               ? t('solo.summaryLine', { rounds: selectedRounds, available })
               : t('setup.summaryLine', {
                 players: Math.max(setup.players.length, 1),
@@ -268,7 +308,10 @@ export function SetupScreen({
                 : <span>{t('packs.empty')}</span>}
             </div>
           </article>
-          <Button icon={<Play size={18} />} onClick={onStart} disabled={contentStatus === 'loading'}>{t('setup.start')}</Button>
+          {aboutUs && setup.setupError ? <p className={styles.errorText} role="alert">{setup.setupError}</p> : null}
+          <Button icon={<Play size={18} />} onClick={onStart} disabled={contentStatus === 'loading' && !aboutUs}>
+            {aboutUs ? t('aboutUs.startWritingAll') : t('setup.start')}
+          </Button>
         </aside>
       </div>
     </div>

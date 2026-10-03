@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { getBuiltinRounds } from '../test/builtin';
 import { GAME_ID } from '../game/modes';
 import { beginPlaying, createInitialGuessTheFakeState, startMatch, submitGuess } from '../game/rules';
-import { buildMultiplayerSnapshot, buildPresenterBoard, getLeaderboardRows, getScoreRows } from './match-summary';
+import type { RoundGuessRecord } from '../game/types';
+import {
+  buildMultiplayerSnapshot,
+  buildPresenterBoard,
+  getLeaderboardRows,
+  getMatchHighlights,
+  getPodium,
+  getScoreRows
+} from './match-summary';
 
 function createMatch(modeId: 'classic' | 'teams') {
   return startMatch(createInitialGuessTheFakeState(), {
@@ -82,5 +90,71 @@ describe('presenter board (W13-06)', () => {
     expect(board?.badge).toBe('specials.gradual-clue.title');
     expect(board?.items.filter(item => item.state === 'hidden')).toHaveLength(3);
     expect(board?.items.filter(item => item.state === 'hidden').every(item => item.text === '')).toBe(true);
+  });
+});
+
+function record(partial: Partial<RoundGuessRecord> & { roundIndex: number; playerName: string; correct: boolean }): RoundGuessRecord {
+  return {
+    selectedStatementId: partial.correct ? 'fake' : 'other',
+    fakeStatementId: 'fake',
+    pointsAwarded: 0,
+    basePoints: 0,
+    speedBonus: 0,
+    streakMultiplier: 1,
+    ...partial
+  };
+}
+
+describe('podium and highlights', () => {
+  it('ranks the top three and lets ties share a place', () => {
+    const state = createMatch('classic');
+    const scored = {
+      ...state,
+      players: state.players.map((player, index) => ({ ...player, score: [10, 30, 10, 5][index] }))
+    };
+    const { podium, rest } = getPodium(scored);
+
+    expect(podium.map(entry => [entry.name, entry.rank])).toEqual([['Bruno', 1], ['Ana', 2], ['Caio', 2]]);
+    expect(rest.map(entry => [entry.name, entry.rank])).toEqual([['Duda', 4]]);
+  });
+
+  it('uses teams on the team podium', () => {
+    const teams = createMatch('teams');
+    expect(getPodium(teams).podium.map(entry => entry.id)).toEqual(teams.teams.map(team => team.id));
+  });
+
+  it('returns no highlights without a guess history', () => {
+    expect(getMatchHighlights(createMatch('classic'))).toEqual([]);
+  });
+
+  it('derives fastest, longest streak and best bluff from the history', () => {
+    const state = createMatch('classic');
+    const fakeText = state.rounds[1].statements.find(statement => statement.id === state.rounds[1].fakeStatementId)!.text;
+    const guessHistory: RoundGuessRecord[] = [
+      record({ roundIndex: 0, playerName: 'Ana', correct: true, elapsedSeconds: 12 }),
+      record({ roundIndex: 0, playerName: 'Bruno', correct: true, elapsedSeconds: 4 }),
+      record({ roundIndex: 1, playerName: 'Ana', correct: true, elapsedSeconds: 10 }),
+      record({ roundIndex: 1, playerName: 'Bruno', correct: false, elapsedSeconds: 2 }),
+      record({ roundIndex: 1, playerName: 'Caio', correct: false }),
+      record({ roundIndex: 2, playerName: 'Ana', correct: true, elapsedSeconds: 8 }),
+      // A timeout does not count as being fooled.
+      record({ roundIndex: 2, playerName: 'Caio', correct: false, selectedStatementId: '' })
+    ];
+
+    expect(getMatchHighlights({ ...state, guessHistory })).toEqual([
+      { kind: 'fastest', name: 'Bruno', seconds: 4 },
+      { kind: 'longest-streak', name: 'Ana', streak: 3 },
+      { kind: 'best-bluff', fooled: 2, text: fakeText }
+    ]);
+  });
+
+  it('skips a streak shorter than two and rounds tiny averages up to one second', () => {
+    const state = createMatch('classic');
+    const guessHistory = [
+      record({ roundIndex: 0, playerName: 'Ana', correct: true, elapsedSeconds: 0 }),
+      record({ roundIndex: 1, playerName: 'Ana', correct: false, selectedStatementId: '' })
+    ];
+
+    expect(getMatchHighlights({ ...state, guessHistory })).toEqual([{ kind: 'fastest', name: 'Ana', seconds: 1 }]);
   });
 });

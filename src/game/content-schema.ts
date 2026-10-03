@@ -19,7 +19,7 @@ export type ContentValidationResult = {
 };
 
 const difficulties: GuessTheFakeDifficulty[] = ['easy', 'medium', 'hard'];
-const ageRatings: GuessTheFakeAgeRating[] = ['all', '10+'];
+const ageRatings: GuessTheFakeAgeRating[] = ['all', '10+', 'kids'];
 
 export function validateGuessTheFakePack(
   pack: unknown,
@@ -175,7 +175,7 @@ function validateRounds(
     }
     validateLocalizedText(round.explanation, `${path}.explanation`, issues, language);
     if (round.ageRating !== undefined && !ageRatings.includes(round.ageRating)) {
-      issues.push({ path: `${path}.ageRating`, message: 'Age rating must be all or 10+.' });
+      issues.push({ path: `${path}.ageRating`, message: 'Age rating must be all, 10+, or kids.' });
     }
   });
 }

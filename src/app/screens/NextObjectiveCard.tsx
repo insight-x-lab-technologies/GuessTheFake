@@ -1,6 +1,7 @@
 import { Target } from 'lucide-react';
 import type { Translate } from '../app-types';
 import type { NextObjective } from '../progress-tracks';
+import { CategoryArt } from './CategoryArt';
 import styles from '../App.module.css';
 
 // W13-04: the closest unfinished step, shown after a match.
@@ -17,7 +18,7 @@ export function NextObjectiveCard({
   const { track } = objective;
   return (
     <div className={styles.objectiveCard} role="status">
-      <Target size={20} />
+      {track.categoryId ? <CategoryArt categoryId={track.categoryId} /> : <Target size={20} />}
       <div>
         <strong>{t('tracks.nextObjective')}</strong>
         <span>{t(track.objectiveKey, {

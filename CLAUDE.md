@@ -61,7 +61,8 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   `useLocalData` (import/export), `useMatchSetup` (formulario de Nova
   Partida), `useMatch` (partida, timers, persistencia, wake lock),
   `useMultiDevice` (BroadcastChannel/WebRTC/QR/apresentador), `useGrowth`
-  (share/PWA) e `useProfiles` (perfis familiares).
+  (share/PWA), `useProfiles` (perfis familiares), `useAboutUsAuthoring`
+  (autoria do modo "Sobre nos") e `usePackEditor` (editor de packs).
   Nao ha Context, reducer, Redux ou Zustand; o shell passa o controller de
   cada hook por props.
 - **Telas** em `src/app/screens/`: componentes visuais que recebem dados e
@@ -73,7 +74,8 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   com render condicional. Nao ha router. Deep-links: `?demo=game` e
   `?join=CODE[&presenter=1]` (tela de exibicao do modo apresentador).
 - **Identidade e modos** em `src/game/modes.ts`: `GAME_ID` e `GAME_MODES`
-  (`solo`, `classic`, `all-guess`, `teams`). Nao ha objeto de manifesto nem
+  (`solo`, `classic`, `all-guess`, `teams`, `about-us`, `bluff-master`).
+  `isEveryoneGuessesMode` e `isBluffMode` agrupam os modos. Nao ha objeto de manifesto nem
   registry. Comportamento solo e decidido por `isSoloMode(modeId)`, nunca por
   `players.length`; todo item novo declara se no solo e igual, variante ou
   some (contrato em `docs/superpowers/specs/2026-10-03-solo-mode-design.md`).
@@ -84,6 +86,28 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   trilhas em `app/progress-tracks.ts`; `PresenterView` le o snapshot do
   multi-device; packs tematicos via `ContentPack.meta`. Design em
   `docs/superpowers/specs/2026-10-03-onda-13-design.md`.
+- **Onda 15** (juice): helpers puros de timer/confete em `app/fx.ts`;
+  `guessHistory`/`elapsedSeconds` e `getHandoffSubject` em `rules.ts`; podio e
+  destaques em `match-summary.ts`; menu `...` (`RoundMenu`), `RoundTimer`,
+  `ConfettiBurst`, `PassDevicePanel`. Settings `vibrationEnabled` e
+  `passDeviceEnabled` (desligadas). Design em
+  `docs/superpowers/specs/2026-10-03-onda-15-design.md`.
+- **Onda 16** (identidade visual): mascote SVG com 5 humores
+  (`screens/Mascot.tsx`, humor por momento em `app/mascot.ts`); avatares sao
+  ids (`PROFILE_AVATARS`, 24) desenhados em `screens/AvatarArt.tsx`, emojis
+  antigos migram na leitura; `PlayerAvatar` cai em `player-default.svg`;
+  `CategoryArt`; `Medal` + `rarity` nas definicoes de trofeu; temas
+  `halloween`/`festive` com sugestao por data (`core/themes/seasonal.ts`,
+  setting `seasonalDismissed`); mapa tema -> trilha `THEME_TRACK_MAP` em
+  `core/audio`. Origem/licenca de assets em `CREDITS.md`. Design em
+  `docs/superpowers/specs/2026-10-03-onda-16-design.md`.
+- **Onda 17** (conteudo e modos sociais): modos com blefador
+  (`state.bluffers`, `getRoundBluffer`, `getBluffOutcome` em `rules.ts`):
+  `about-us` (rodadas da mesa em `game/about-us.ts`) e `bluff-master`
+  (defesa final = momento `change-mind`); `ageRating: 'kids'` + setting
+  `kidsModeEnabled`; categoria `food`; editor de packs puro em
+  `game/pack-editor.ts`; packs sazonais em `game/data/seasonal/` (fora do
+  precache). Design em `docs/superpowers/specs/2026-10-03-onda-17-design.md`.
 - **Regras puras** em `src/game/rules.ts` - sem React, DOM, storage, timer,
   audio ou rede. Mantenha assim.
 - **i18n**: seis idiomas (`pt en es fr de it`) com UI traduzida de verdade.
@@ -91,9 +115,10 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   `es/fr/de/it` em `src/app/locales/` e `src/game/locales/`. Toda chave nova
   entra nos seis (`src/app/translations.test.ts` checa paridade).
 - **Conteudo builtin e curado, carregado por idioma**: catalogo neutro em
-  `src/game/data/builtin/catalog.ts` + `texts/<lang>.ts` via `import()`.
-  315 rodadas (7 x 3 x 15, meta de W9-01), redigidas por IA e aceitas em
-  revisao humana do pack inteiro em 2026-10-03 (W9-03); re-revisoes por rodada
+  `src/game/data/builtin/catalog.ts` + `texts/<lang>.ts` e
+  `texts/kids-<lang>.ts` via `import()`. 360 rodadas (8 x 3 x 15) + 105 Kids,
+  redigidas por IA e aceitas em revisao humana (W9-03 e Onda 17, 2026-10-03);
+  packs sazonais em `data/seasonal/` (3 x 30, tambem aprovados); re-revisoes por rodada
   vao em `data/builtin/reviews.ts`. Checklist em `docs/CONTENT_GUIDE.md`;
   `npm run audit:content` mostra a cobertura; `npm run review:content` gera a
   folha de revisao em `content-review/<lang>.md`.
@@ -143,7 +168,7 @@ Regras nao negociaveis:
 
 ```bash
 npm run dev      # vite --host 0.0.0.0
-npm test         # vitest run (37 arquivos, 179 testes)
+npm test         # vitest run (47 arquivos, 248 testes)
 npm run audit:content  # cobertura do conteudo builtin
 npm run review:content # folha de revisao humana (REVIEW_LANG, REVIEW_COMPARE)
 npm run build    # tsc -b && vite build (typecheck + bundle)

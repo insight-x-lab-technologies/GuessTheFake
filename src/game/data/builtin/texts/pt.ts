@@ -3150,6 +3150,457 @@ const pt: BuiltinTexts = {
       'O corpo humano não tem nenhum músculo que funcione sem a nossa vontade.'
     ],
     explanation: 'O coração, o estômago e os intestinos têm músculos que funcionam sozinhos, sem controle voluntário.'
+  },
+  // W17-04 food
+  'food-easy-01': {
+    statements: [
+      'O chocolate é feito de grãos de café.',
+      'O pão é feito com farinha.',
+      'O queijo é feito de leite.',
+      'O mel é produzido pelas abelhas.',
+      'A pipoca vem do milho.'
+    ],
+    explanation: 'O chocolate é feito das sementes do cacau.'
+  },
+  'food-easy-02': {
+    statements: [
+      'O sushi é um prato da culinária japonesa.',
+      'O taco é um prato típico do México.',
+      'A pizza nasceu no Japão.',
+      'A paella é um prato da Espanha.',
+      'O croissant é muito associado à França.'
+    ],
+    explanation: 'A pizza moderna nasceu na Itália, em Nápoles.'
+  },
+  'food-easy-03': {
+    statements: [
+      'As maçãs crescem em árvores.',
+      'O morango é vermelho por fora.',
+      'A melancia tem muita água.',
+      'O abacaxi tem uma coroa de folhas.',
+      'A cenoura cresce pendurada em árvores.'
+    ],
+    explanation: 'A cenoura é uma raiz que cresce debaixo da terra.'
+  },
+  'food-easy-04': {
+    statements: [
+      'O arroz costuma ser plantado em campos alagados.',
+      'O feijão é rico em proteína.',
+      'O trigo é usado para fazer farinha.',
+      'O arroz cresce em cachos pendurados em árvores altas.',
+      'A aveia é um cereal.'
+    ],
+    explanation: 'O arroz é uma planta baixa, parecida com capim; os grãos ficam em espigas no alto do talo.'
+  },
+  'food-easy-05': {
+    statements: [
+      'O iogurte é feito com leite.',
+      'O leite de vaca é naturalmente azul.',
+      'A manteiga é feita com a gordura do leite.',
+      'O sorvete costuma levar leite ou creme.',
+      'O ovo de galinha tem clara e gema.'
+    ],
+    explanation: 'O leite de vaca é branco.'
+  },
+  'food-easy-06': {
+    statements: [
+      'A laranja tem bastante vitamina C.',
+      'A banana é rica em potássio.',
+      'O abacate é o ingrediente principal do guacamole.',
+      'O limão é a fruta mais doce que existe.',
+      'A uva pode virar passa quando seca.'
+    ],
+    explanation: 'O limão é ácido e azedo.'
+  },
+  'food-easy-07': {
+    statements: [
+      'O ketchup é feito principalmente de morango.',
+      'A mostarda é feita de sementes.',
+      'A maionese leva ovo e óleo.',
+      'O vinagre é ácido.',
+      'O sal pode vir da água do mar.'
+    ],
+    explanation: 'O ketchup é feito principalmente de tomate.'
+  },
+  'food-easy-08': {
+    statements: [
+      'A gema do ovo é amarela.',
+      'Os ovos podem ser cozidos, fritos ou mexidos.',
+      'A omelete é feita com ovos batidos.',
+      'Os ovos de codorna são menores que os de galinha.',
+      'Os ovos de galinha são sempre brancos.'
+    ],
+    explanation: 'Os ovos de galinha podem ser brancos, marrons e até azulados, conforme a raça da galinha.'
+  },
+  'food-easy-09': {
+    statements: [
+      'O chá é feito com folhas.',
+      'O chocolate quente leva cacau.',
+      'O café é feito com as folhas da planta do café.',
+      'O suco de laranja é feito espremendo laranjas.',
+      'A torrada é pão tostado.'
+    ],
+    explanation: 'O café é feito com os grãos torrados e moídos da planta do café.'
+  },
+  'food-easy-10': {
+    statements: [
+      'A banana fica amarela quando amadurece.',
+      'As bananas crescem com a ponta virada para baixo.',
+      'O coco tem água dentro.',
+      'A manga tem um caroço grande.',
+      'O maracujá tem muitas sementes.'
+    ],
+    explanation: 'Cada banana cresce com a ponta virada para cima, em direção à luz.'
+  },
+  'food-easy-11': {
+    statements: [
+      'O sorvete foi inventado no ano 2000.',
+      'Os povos da América antiga já consumiam cacau.',
+      'O sanduíche leva o nome de um conde inglês.',
+      'O pão é um dos alimentos preparados mais antigos.',
+      'A batata veio originalmente da América do Sul.'
+    ],
+    explanation: 'Sobremesas geladas existem há séculos; o sorvete já era popular muito antes de 2000.'
+  },
+  'food-easy-12': {
+    statements: [
+      'A alface é uma verdura de folha.',
+      'O alho tem cheiro forte.',
+      'Cortar cebola pode fazer os olhos lacrimejarem.',
+      'O brócolis parece uma arvorezinha.',
+      'Todo cogumelo encontrado na natureza pode ser comido.'
+    ],
+    explanation: 'Muitos cogumelos selvagens são venenosos; nunca coma um sem a ajuda de um especialista.'
+  },
+  'food-easy-13': {
+    statements: [
+      'O pirulito é um doce espetado num palito.',
+      'O brigadeiro, doce brasileiro, leva chocolate.',
+      'A gelatina é feita de frutas espremidas.',
+      'O marshmallow é macio e fofo.',
+      'O algodão-doce é feito de açúcar derretido e girado.'
+    ],
+    explanation: 'A gelatina é feita de colágeno, uma proteína de origem animal; o sabor de fruta é adicionado.'
+  },
+  'food-easy-14': {
+    statements: [
+      'O nosso corpo tem muita água.',
+      'A água é a bebida de que o corpo menos precisa.',
+      'Frutas e verduras fazem bem à saúde.',
+      'Lavar as mãos antes de comer ajuda a evitar germes.',
+      'Escovar os dentes depois de comer ajuda a evitar cáries.'
+    ],
+    explanation: 'A água é essencial: o corpo precisa dela todos os dias.'
+  },
+  'food-easy-15': {
+    statements: [
+      'O cachorro-quente é um pão com salsicha.',
+      'A pizza margherita tem as cores da bandeira italiana.',
+      'O nugget costuma ser feito de carne de frango.',
+      'O hambúrguer leva o nome de uma cidade da China.',
+      'As batatas fritas são feitas de batata.'
+    ],
+    explanation: 'O nome hambúrguer vem de Hamburgo, uma cidade da Alemanha.'
+  },
+  'food-medium-01': {
+    statements: [
+      'A canela é feita da casca de uma árvore.',
+      'A baunilha vem de uma espécie de rosa.',
+      'O açafrão está entre as especiarias mais caras do mundo.',
+      'A pimenta-do-reino já foi usada como forma de pagamento.',
+      'O gengibre é usado como tempero e em chás.'
+    ],
+    explanation: 'A baunilha vem da vagem de uma orquídea.'
+  },
+  'food-medium-02': {
+    statements: [
+      'O tomate chegou à Itália vindo da China.',
+      'O arroz foi domesticado na Ásia.',
+      'A batata foi domesticada nos Andes.',
+      'O cacau é nativo da América.',
+      'A banana é originária do Sudeste Asiático.'
+    ],
+    explanation: 'O tomate veio das Américas e chegou à Europa no século 16.'
+  },
+  'food-medium-03': {
+    statements: [
+      'O tofu é feito de soja.',
+      'O kimchi é um prato fermentado da Coreia.',
+      'O wasabi servido na maioria dos restaurantes fora do Japão é wasabi verdadeiro.',
+      'O missô é uma pasta de soja fermentada.',
+      'O ramen é um prato de macarrão servido em caldo.'
+    ],
+    explanation: 'Boa parte do wasabi servido fora do Japão é feita de raiz-forte com corante verde.'
+  },
+  'food-medium-04': {
+    statements: [
+      'O queijo roquefort é feito com leite de ovelha.',
+      'A mozarela tradicional pode ser feita com leite de búfala.',
+      'Os buracos do queijo suíço vêm de gases produzidos por bactérias.',
+      'O queijo cheddar tem o nome de uma vila inglesa.',
+      'O queijo parmesão fica pronto em poucos dias.'
+    ],
+    explanation: 'O Parmigiano Reggiano amadurece por no mínimo 12 meses.'
+  },
+  'food-medium-05': {
+    statements: [
+      'Beber leite ajuda a aliviar a ardência da pimenta.',
+      'A escala Scoville mede a ardência das pimentas.',
+      'O pimentão é da mesma família das pimentas ardidas.',
+      'O que faz a pimenta arder é a vitamina C.',
+      'As aves não sentem a ardência da pimenta como nós.'
+    ],
+    explanation: 'A ardência vem da capsaicina, uma substância presente na pimenta.'
+  },
+  'food-medium-06': {
+    statements: [
+      'O fermento biológico é formado por seres vivos chamados leveduras.',
+      'A massa do pão precisa descansar para crescer.',
+      'O pão cresce no forno por causa do sal.',
+      'O pão de fermentação natural usa um fermento caseiro.',
+      'Sovar a massa ajuda a formar o glúten.'
+    ],
+    explanation: 'O pão cresce por causa do fermento: as leveduras soltam gás, que enche a massa.'
+  },
+  'food-medium-07': {
+    statements: [
+      'A feijoada é um prato típico do Brasil.',
+      'O strudel de maçã é um doce famoso da Áustria.',
+      'O ceviche é um prato de peixe cru marinado típico do Peru.',
+      'O croissant foi inventado no Japão.',
+      'O cuscuz marroquino é feito com sêmola de trigo.'
+    ],
+    explanation: 'O croissant ficou famoso na França, inspirado num pão austríaco chamado kipferl.'
+  },
+  'food-medium-08': {
+    statements: [
+      'A maçã escurece depois de cortada porque apodrece na hora.',
+      'Pingar limão na maçã cortada ajuda a evitar que ela escureça.',
+      'O abacaxi tem uma enzima que amacia a carne.',
+      'Cortar cebola libera um gás que irrita os olhos.',
+      'No alto das montanhas, a água ferve a uma temperatura mais baixa.'
+    ],
+    explanation: 'A maçã escurece porque reage com o oxigênio do ar (oxidação), não porque apodreceu.'
+  },
+  'food-medium-09': {
+    statements: [
+      'A aveia é rica em fibras.',
+      'O arroz integral tem menos fibras que o arroz branco.',
+      'Arroz com feijão forma uma boa combinação de proteínas.',
+      'As castanhas são ricas em gorduras boas.',
+      'O iogurte natural contém bactérias vivas.'
+    ],
+    explanation: 'O arroz integral mantém camadas externas do grão e tem mais fibras que o branco.'
+  },
+  'food-medium-10': {
+    statements: [
+      'A batata-doce é parente próxima da batata comum.',
+      'O tomate e a batata são da mesma família de plantas.',
+      'A abóbora é um fruto para os botânicos.',
+      'O amendoim é uma leguminosa, como o feijão.',
+      'A beterraba e o espinafre são parentes.'
+    ],
+    explanation: 'A batata-doce é de outra família, parente das ipomeias, aquelas flores trepadeiras.'
+  },
+  'food-medium-11': {
+    statements: [
+      'O pad thai é um prato da Tailândia.',
+      'O pho é uma sopa típica do Vietnã.',
+      'O curry é muito associado à culinária da Índia.',
+      'O homus é feito com grão-de-bico.',
+      'O sushi nasceu nos Estados Unidos.'
+    ],
+    explanation: 'O sushi surgiu na Ásia, como forma de conservar peixe no arroz, e virou um prato japonês.'
+  },
+  'food-medium-12': {
+    statements: [
+      'Um ovo fresco costuma afundar na água.',
+      'O anel esverdeado na gema do ovo cozido mostra que o ovo estragou.',
+      'A clara do ovo é feita principalmente de água e proteína.',
+      'Os ovos de avestruz são os maiores ovos de ave que existem hoje.',
+      'A gema tem gordura e vitaminas.'
+    ],
+    explanation: 'O anel verde aparece quando o ovo cozinha demais; ele não indica que estragou.'
+  },
+  'food-medium-13': {
+    statements: [
+      'O chá-verde e o chá-preto vêm da mesma planta.',
+      'O chimarrão é feito com erva-mate.',
+      'O chocolate tem um pouco de cafeína.',
+      'O café descafeinado não tem nem um pouquinho de cafeína.',
+      'A Etiópia é considerada o berço do café.'
+    ],
+    explanation: 'O descafeinado ainda tem um pouquinho de cafeína, só que bem menos.'
+  },
+  'food-medium-14': {
+    statements: [
+      'O sorvete de casquinha ficou popular numa feira mundial nos Estados Unidos, em 1904.',
+      'A batata frita é muito associada à Bélgica.',
+      'O pão de queijo é típico de Minas Gerais, no Brasil.',
+      'O sanduíche cubano é associado à comunidade cubana da Flórida.',
+      'A pizza havaiana foi inventada no Havaí.'
+    ],
+    explanation: 'A pizza havaiana foi criada no Canadá, em 1962, por um cozinheiro de origem grega.'
+  },
+  'food-medium-15': {
+    statements: [
+      'A panela de pressão cozinha os alimentos mais rápido.',
+      'O micro-ondas aquece a comida agitando as moléculas de água.',
+      'Colocar sal na água faz ela ferver muito mais rápido.',
+      'Tampar a panela ajuda a água a ferver mais rápido.',
+      'Cozinhar no vapor preserva bem os nutrientes dos legumes.'
+    ],
+    explanation: 'O sal até aumenta um pouquinho a temperatura de fervura; na prática, a diferença é mínima.'
+  },
+  'food-hard-01': {
+    statements: [
+      'A noz-moscada e o macis vêm do mesmo fruto.',
+      'O açafrão verdadeiro é extraído das raízes de uma árvore.',
+      'O cardamomo é parente do gengibre.',
+      'A pimenta-da-jamaica é um fruto seco, não uma mistura de temperos.',
+      'A canela-do-ceilão vem do Sri Lanka.'
+    ],
+    explanation: 'O açafrão vem dos estigmas da flor de um tipo de crocus, colhidos à mão.'
+  },
+  'food-hard-02': {
+    statements: [
+      'O Emmental é um queijo suíço com buracos grandes.',
+      'O Parmigiano Reggiano tem denominação de origem protegida.',
+      'O halloumi pode ser grelhado sem derreter.',
+      'O feta tradicional é um queijo grego.',
+      'As veias azuis do gorgonzola vêm de um corante.'
+    ],
+    explanation: 'As veias azuis vêm de fungos do gênero Penicillium.'
+  },
+  'food-hard-03': {
+    statements: [
+      'O glutamato monossódico foi criado na Itália.',
+      'O umami é considerado o quinto gosto básico.',
+      'O tomate e o parmesão são ricos em glutamato.',
+      'O molho de peixe é muito usado na culinária do Sudeste Asiático.',
+      'O shoyu é feito com soja fermentada.'
+    ],
+    explanation: 'O glutamato monossódico foi desenvolvido no Japão, em 1908, pelo químico Kikunae Ikeda.'
+  },
+  'food-hard-04': {
+    statements: [
+      'As trufas são fungos que crescem debaixo da terra.',
+      'O caviar verdadeiro vem das ovas do salmão.',
+      'Porcos e cães são usados para encontrar trufas.',
+      'O wagyu é um tipo de gado japonês.',
+      'O jamón ibérico vem de porcos da raça ibérica.'
+    ],
+    explanation: 'O caviar verdadeiro vem das ovas de esturjão.'
+  },
+  'food-hard-05': {
+    statements: [
+      'A ardência da pimenta se concentra principalmente na parte branca de dentro.',
+      'A páprica é feita de pimentões secos e moídos.',
+      'O chipotle é uma pimenta jalapeño defumada.',
+      'O pimentão quase não tem capsaicina.',
+      'O pimentão verde e o pimentão vermelho são de espécies diferentes.'
+    ],
+    explanation: 'O pimentão verde é o mesmo fruto colhido antes de amadurecer; maduro, ele fica vermelho, amarelo ou laranja.'
+  },
+  'food-hard-06': {
+    statements: [
+      'As sementes de cacau são fermentadas antes de virar chocolate.',
+      'O chocolate ao leite foi inventado na Bélgica.',
+      'Os astecas preparavam uma bebida amarga de cacau.',
+      'A manteiga de cacau é a gordura da semente do cacau.',
+      'A temperagem deixa o chocolate brilhante e crocante.'
+    ],
+    explanation: 'O chocolate ao leite foi criado na Suíça, em 1875, por Daniel Peter.'
+  },
+  'food-hard-07': {
+    statements: [
+      'A carbonara tradicional não leva creme de leite.',
+      'O nhoque pode ser feito com batata.',
+      'O pesto genovês leva manjericão e pinhões.',
+      'O risoto é feito com arroz.',
+      'O tiramisu é um doce tradicional da Roma antiga.'
+    ],
+    explanation: 'O tiramisu é uma receita recente, criada no século 20 na região do Vêneto.'
+  },
+  'food-hard-08': {
+    statements: [
+      'O gelato italiano leva mais ar batido que o sorvete comum.',
+      'O gelato costuma ser servido menos gelado que o sorvete comum.',
+      'O sorbet tradicional é feito sem leite.',
+      'O picolé foi inventado por um menino de 11 anos nos Estados Unidos.',
+      'Existe sorvete frito: ele é empanado e frito bem rapidinho.'
+    ],
+    explanation: 'O gelato leva menos ar batido, por isso é mais denso.'
+  },
+  'food-hard-09': {
+    statements: [
+      'As azeitonas frescas são amargas demais para comer direto do pé.',
+      'O azeite extravirgem é obtido só por processos mecânicos.',
+      'As azeitonas verdes e as pretas vêm de árvores de espécies diferentes.',
+      'A Espanha é o maior produtor de azeite do mundo.',
+      'As alcaparras são botões de flor.'
+    ],
+    explanation: 'Verde ou preta, a azeitona vem da mesma oliveira; muda o ponto de maturação ou o processo.'
+  },
+  'food-hard-10': {
+    statements: [
+      'A noz-pecã é nativa da Itália.',
+      'A macadâmia é nativa da Austrália.',
+      'A castanha-do-pará vem de uma árvore da Amazônia.',
+      'O pistache é nativo da Ásia Central e do Oriente Médio.',
+      'A avelã é muito usada em cremes de chocolate.'
+    ],
+    explanation: 'A noz-pecã é nativa da América do Norte.'
+  },
+  'food-hard-11': {
+    statements: [
+      'Fora do México, a flor da baunilha costuma ser polinizada à mão.',
+      'Madagascar é um grande produtor de baunilha.',
+      'A maior parte do sabor de baunilha usado na indústria é sintético.',
+      'A baunilha é a especiaria mais cara do mundo.',
+      'A orquídea da baunilha é uma planta trepadeira.'
+    ],
+    explanation: 'A especiaria mais cara do mundo é o açafrão; a baunilha vem logo atrás.'
+  },
+  'food-hard-12': {
+    statements: [
+      'O merengue é feito batendo claras com açúcar.',
+      'O suflê cresce por causa do ar nas claras batidas.',
+      'O croissant clássico é feito sem manteiga.',
+      'A crème brûlée tem uma casquinha de açúcar queimado.',
+      'O macaron francês é feito com farinha de amêndoas.'
+    ],
+    explanation: 'O croissant clássico leva muita manteiga, dobrada em camadas na massa.'
+  },
+  'food-hard-13': {
+    statements: [
+      'A mandioca-brava precisa ser processada para remover substâncias tóxicas.',
+      'As folhas do ruibarbo são tóxicas.',
+      'No Japão, o baiacu (fugu) só pode ser preparado por cozinheiros licenciados.',
+      'A castanha-de-caju pode ser comida crua direto do pé, ainda na casca.',
+      'O feijão-vermelho cru tem uma substância tóxica que o cozimento destrói.'
+    ],
+    explanation: 'A casca da castanha-de-caju tem uma resina irritante; ela precisa ser torrada ou processada antes.'
+  },
+  'food-hard-14': {
+    statements: [
+      'O tempurá chegou ao Japão com influência dos portugueses.',
+      'O natto é feito de soja fermentada.',
+      'O que define o sushi é o peixe cru.',
+      'O matcha é chá-verde em pó.',
+      'O umeboshi é uma ameixa japonesa em conserva salgada.'
+    ],
+    explanation: 'O que define o sushi é o arroz temperado com vinagre; o peixe cru é opcional.'
+  },
+  'food-hard-15': {
+    statements: [
+      'A reação de Maillard é o que doura a carne e a casca do pão.',
+      'O ponto da carne pode ser conferido com um termômetro.',
+      'Marinadas ácidas amaciam a superfície da carne.',
+      'O líquido vermelho que sai da carne malpassada é sangue.',
+      'Assar devagar em temperatura baixa ajuda cortes duros a ficarem macios.'
+    ],
+    explanation: 'O líquido vermelho é principalmente água com mioglobina, uma proteína do músculo, e não sangue.'
   }
 };
 

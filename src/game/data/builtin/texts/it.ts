@@ -3150,6 +3150,457 @@ const it: BuiltinTexts = {
       'Il corpo umano non ha muscoli che funzionano senza la nostra volontà.'
     ],
     explanation: 'Cuore, stomaco e intestino hanno muscoli che funzionano da soli, senza controllo volontario.'
+  },
+  // W17-04 food
+  'food-easy-01': {
+    statements: [
+      'Il cioccolato si fa con i chicchi di caffè.',
+      'Il pane si fa con la farina.',
+      'Il formaggio si fa con il latte.',
+      'Il miele è prodotto dalle api.',
+      'I popcorn vengono dal mais.'
+    ],
+    explanation: 'Il cioccolato si fa con i semi del cacao.'
+  },
+  'food-easy-02': {
+    statements: [
+      'Il sushi è un piatto della cucina giapponese.',
+      'I tacos sono un piatto tipico del Messico.',
+      'La pizza è nata in Giappone.',
+      'La paella è un piatto spagnolo.',
+      'Il croissant è molto legato alla Francia.'
+    ],
+    explanation: 'La pizza moderna è nata in Italia, a Napoli.'
+  },
+  'food-easy-03': {
+    statements: [
+      'Le mele crescono sugli alberi.',
+      'La fragola è rossa fuori.',
+      'L’anguria contiene tantissima acqua.',
+      'L’ananas ha una corona di foglie.',
+      'Le carote crescono appese agli alberi.'
+    ],
+    explanation: 'La carota è una radice che cresce sottoterra.'
+  },
+  'food-easy-04': {
+    statements: [
+      'Il riso si coltiva spesso in campi allagati.',
+      'I fagioli sono ricchi di proteine.',
+      'Il grano si usa per fare la farina.',
+      'Il riso cresce a grappoli appesi ad alberi alti.',
+      'L’avena è un cereale.'
+    ],
+    explanation: 'Il riso è una pianta bassa simile all’erba; i chicchi crescono in pannocchie in cima allo stelo.'
+  },
+  'food-easy-05': {
+    statements: [
+      'Lo yogurt si fa con il latte.',
+      'Il latte di mucca è blu per natura.',
+      'Il burro si fa con il grasso del latte.',
+      'Il gelato di solito contiene latte o panna.',
+      'L’uovo di gallina ha albume e tuorlo.'
+    ],
+    explanation: 'Il latte di mucca è bianco.'
+  },
+  'food-easy-06': {
+    statements: [
+      'L’arancia ha molta vitamina C.',
+      'La banana è ricca di potassio.',
+      'L’avocado è l’ingrediente principale del guacamole.',
+      'Il limone è il frutto più dolce che esista.',
+      'L’uva può diventare uvetta quando si secca.'
+    ],
+    explanation: 'Il limone è acido e aspro.'
+  },
+  'food-easy-07': {
+    statements: [
+      'Il ketchup è fatto soprattutto di fragole.',
+      'La senape si fa con dei semi.',
+      'La maionese si fa con uovo e olio.',
+      'L’aceto è acido.',
+      'Il sale può venire dall’acqua del mare.'
+    ],
+    explanation: 'Il ketchup è fatto soprattutto di pomodoro.'
+  },
+  'food-easy-08': {
+    statements: [
+      'Il tuorlo dell’uovo è giallo.',
+      'Le uova si possono cuocere sode, al tegamino o strapazzate.',
+      'La frittata si fa con uova sbattute.',
+      'Le uova di quaglia sono più piccole di quelle di gallina.',
+      'Le uova di gallina sono sempre bianche.'
+    ],
+    explanation: 'Le uova di gallina possono essere bianche, marroni o perfino azzurrine, a seconda della razza.'
+  },
+  'food-easy-09': {
+    statements: [
+      'Il tè si fa con le foglie.',
+      'La cioccolata calda contiene cacao.',
+      'Il caffè si fa con le foglie della pianta del caffè.',
+      'La spremuta d’arancia si fa spremendo le arance.',
+      'Il pane tostato è pane abbrustolito.'
+    ],
+    explanation: 'Il caffè si fa con i chicchi tostati e macinati della pianta del caffè.'
+  },
+  'food-easy-10': {
+    statements: [
+      'La banana diventa gialla quando matura.',
+      'Le banane crescono con la punta rivolta verso il basso.',
+      'La noce di cocco ha l’acqua dentro.',
+      'Il mango ha un grosso nocciolo.',
+      'Il frutto della passione ha tanti semi.'
+    ],
+    explanation: 'Ogni banana cresce con la punta rivolta verso l’alto, verso la luce.'
+  },
+  'food-easy-11': {
+    statements: [
+      'Il gelato è stato inventato nel 2000.',
+      'I popoli dell’America antica consumavano già il cacao.',
+      'Il sandwich prende il nome da un conte inglese.',
+      'Il pane è uno dei cibi preparati più antichi.',
+      'La patata viene originariamente dall’America del Sud.'
+    ],
+    explanation: 'I dolci ghiacciati esistono da secoli; il gelato era popolare molto prima del 2000.'
+  },
+  'food-easy-12': {
+    statements: [
+      'La lattuga è una verdura a foglia.',
+      'L’aglio ha un odore forte.',
+      'Tagliare la cipolla può far lacrimare gli occhi.',
+      'I broccoli sembrano piccoli alberi.',
+      'Tutti i funghi che si trovano in natura si possono mangiare.'
+    ],
+    explanation: 'Molti funghi selvatici sono velenosi; non mangiarne mai uno senza l’aiuto di un esperto.'
+  },
+  'food-easy-13': {
+    statements: [
+      'Il lecca-lecca è una caramella con il bastoncino.',
+      'Il brigadeiro, un dolcetto brasiliano, contiene cioccolato.',
+      'La gelatina si fa con la frutta spremuta.',
+      'I marshmallow sono morbidi e soffici.',
+      'Lo zucchero filato si fa con zucchero fuso e fatto girare.'
+    ],
+    explanation: 'La gelatina si fa con il collagene, una proteina di origine animale; il gusto di frutta viene aggiunto.'
+  },
+  'food-easy-14': {
+    statements: [
+      'Il nostro corpo contiene tanta acqua.',
+      'L’acqua è la bevanda di cui il corpo ha meno bisogno.',
+      'Frutta e verdura fanno bene alla salute.',
+      'Lavarsi le mani prima di mangiare aiuta a evitare i germi.',
+      'Lavarsi i denti dopo mangiato aiuta a prevenire le carie.'
+    ],
+    explanation: 'L’acqua è indispensabile: il corpo ne ha bisogno ogni giorno.'
+  },
+  'food-easy-15': {
+    statements: [
+      'L’hot dog è un panino con il würstel.',
+      'La pizza margherita ha i colori della bandiera italiana.',
+      'I nuggets di solito sono fatti di carne di pollo.',
+      'L’hamburger prende il nome da una città della Cina.',
+      'Le patatine fritte sono fatte di patate.'
+    ],
+    explanation: 'Il nome hamburger viene da Amburgo, una città della Germania.'
+  },
+  'food-medium-01': {
+    statements: [
+      'La cannella si ricava dalla corteccia di un albero.',
+      'La vaniglia viene da un tipo di rosa.',
+      'Lo zafferano è tra le spezie più costose del mondo.',
+      'Il pepe nero è stato usato anche come forma di pagamento.',
+      'Lo zenzero si usa come spezia e nelle tisane.'
+    ],
+    explanation: 'La vaniglia viene dal baccello di un’orchidea.'
+  },
+  'food-medium-02': {
+    statements: [
+      'Il pomodoro è arrivato in Italia dalla Cina.',
+      'Il riso è stato addomesticato in Asia.',
+      'La patata è stata addomesticata sulle Ande.',
+      'Il cacao è originario dell’America.',
+      'La banana è originaria del Sud-est asiatico.'
+    ],
+    explanation: 'Il pomodoro viene dalle Americhe ed è arrivato in Europa nel Cinquecento.'
+  },
+  'food-medium-03': {
+    statements: [
+      'Il tofu si fa con la soia.',
+      'Il kimchi è un piatto fermentato della Corea.',
+      'Il wasabi servito nella maggior parte dei ristoranti fuori dal Giappone è wasabi vero.',
+      'Il miso è una pasta di soia fermentata.',
+      'Il ramen è un piatto di spaghetti in brodo.'
+    ],
+    explanation: 'Gran parte del wasabi servito fuori dal Giappone è rafano colorato di verde.'
+  },
+  'food-medium-04': {
+    statements: [
+      'Il roquefort si fa con latte di pecora.',
+      'La mozzarella tradizionale può essere fatta con latte di bufala.',
+      'I buchi del formaggio svizzero vengono dai gas prodotti dai batteri.',
+      'Il cheddar prende il nome da un villaggio inglese.',
+      'Il parmigiano è pronto in pochi giorni.'
+    ],
+    explanation: 'Il Parmigiano Reggiano stagiona almeno 12 mesi.'
+  },
+  'food-medium-05': {
+    statements: [
+      'Bere latte aiuta a calmare il bruciore del peperoncino.',
+      'La scala di Scoville misura quanto sono piccanti i peperoncini.',
+      'Il peperone è della stessa famiglia dei peperoncini piccanti.',
+      'A rendere piccante il peperoncino è la vitamina C.',
+      'Gli uccelli non sentono il piccante del peperoncino come noi.'
+    ],
+    explanation: 'Il piccante viene dalla capsaicina, una sostanza presente nel peperoncino.'
+  },
+  'food-medium-06': {
+    statements: [
+      'Il lievito di birra è fatto di esseri viventi chiamati lieviti.',
+      'L’impasto del pane deve riposare per lievitare.',
+      'Il pane cresce in forno grazie al sale.',
+      'Il pane a lievitazione naturale usa un lievito madre fatto in casa.',
+      'Impastare aiuta a sviluppare il glutine.'
+    ],
+    explanation: 'Il pane cresce grazie al lievito: libera un gas che gonfia l’impasto.'
+  },
+  'food-medium-07': {
+    statements: [
+      'La feijoada è un piatto tipico del Brasile.',
+      'Lo strudel di mele è un dolce famoso dell’Austria.',
+      'Il ceviche è un piatto di pesce crudo marinato tipico del Perù.',
+      'Il croissant è stato inventato in Giappone.',
+      'Il cuscus marocchino si fa con semola di grano.'
+    ],
+    explanation: 'Il croissant è diventato famoso in Francia, ispirato a un pane austriaco chiamato kipferl.'
+  },
+  'food-medium-08': {
+    statements: [
+      'La mela tagliata diventa scura perché marcisce all’istante.',
+      'Qualche goccia di limone sulla mela tagliata aiuta a non farla annerire.',
+      'L’ananas contiene un enzima che rende tenera la carne.',
+      'Tagliare la cipolla libera un gas che irrita gli occhi.',
+      'In alta montagna l’acqua bolle a una temperatura più bassa.'
+    ],
+    explanation: 'La mela diventa scura perché reagisce con l’ossigeno dell’aria (ossidazione), non perché marcisce.'
+  },
+  'food-medium-09': {
+    statements: [
+      'L’avena è ricca di fibre.',
+      'Il riso integrale ha meno fibre del riso bianco.',
+      'Riso e fagioli insieme formano una buona combinazione di proteine.',
+      'La frutta secca è ricca di grassi buoni.',
+      'Lo yogurt bianco contiene batteri vivi.'
+    ],
+    explanation: 'Il riso integrale conserva gli strati esterni del chicco e ha più fibre di quello bianco.'
+  },
+  'food-medium-10': {
+    statements: [
+      'La patata dolce è una parente stretta della patata comune.',
+      'Il pomodoro e la patata appartengono alla stessa famiglia di piante.',
+      'Per i botanici la zucca è un frutto.',
+      'L’arachide è un legume, come i fagioli.',
+      'La barbabietola e gli spinaci sono parenti.'
+    ],
+    explanation: 'La patata dolce appartiene a un’altra famiglia; è parente dei convolvoli, piante rampicanti.'
+  },
+  'food-medium-11': {
+    statements: [
+      'Il pad thai è un piatto della Thailandia.',
+      'Il pho è una zuppa tipica del Vietnam.',
+      'Il curry è molto legato alla cucina indiana.',
+      'L’hummus si fa con i ceci.',
+      'Il sushi è nato negli Stati Uniti.'
+    ],
+    explanation: 'Il sushi è nato in Asia come modo per conservare il pesce nel riso ed è diventato un piatto giapponese.'
+  },
+  'food-medium-12': {
+    statements: [
+      'Un uovo fresco di solito va a fondo nell’acqua.',
+      'L’anello verdastro intorno al tuorlo dell’uovo sodo indica che l’uovo è andato a male.',
+      'L’albume è fatto soprattutto di acqua e proteine.',
+      'Le uova di struzzo sono le uova di uccello più grandi che esistano oggi.',
+      'Il tuorlo contiene grassi e vitamine.'
+    ],
+    explanation: 'L’anello verde compare quando l’uovo cuoce troppo; non significa che sia andato a male.'
+  },
+  'food-medium-13': {
+    statements: [
+      'Il tè verde e il tè nero vengono dalla stessa pianta.',
+      'Il mate si prepara con l’erba mate.',
+      'Il cioccolato contiene un po’ di caffeina.',
+      'Il caffè decaffeinato non contiene nemmeno un po’ di caffeina.',
+      'L’Etiopia è considerata la culla del caffè.'
+    ],
+    explanation: 'Il decaffeinato contiene ancora un pochino di caffeina, solo molta meno.'
+  },
+  'food-medium-14': {
+    statements: [
+      'Il cono gelato divenne popolare a un’esposizione universale negli Stati Uniti nel 1904.',
+      'Le patatine fritte sono molto legate al Belgio.',
+      'Il pão de queijo è tipico del Minas Gerais, in Brasile.',
+      'Il sandwich cubano è legato alla comunità cubana della Florida.',
+      'La pizza hawaiana è stata inventata alle Hawaii.'
+    ],
+    explanation: 'La pizza hawaiana è stata creata in Canada nel 1962 da un cuoco di origine greca.'
+  },
+  'food-medium-15': {
+    statements: [
+      'La pentola a pressione cuoce i cibi più velocemente.',
+      'Il microonde scalda il cibo facendo agitare le molecole d’acqua.',
+      'Mettere il sale nell’acqua la fa bollire molto più in fretta.',
+      'Mettere il coperchio aiuta l’acqua a bollire prima.',
+      'La cottura a vapore conserva bene i nutrienti delle verdure.'
+    ],
+    explanation: 'Il sale alza addirittura di pochissimo la temperatura di ebollizione; in pratica la differenza è minima.'
+  },
+  'food-hard-01': {
+    statements: [
+      'La noce moscata e il macis vengono dallo stesso frutto.',
+      'Lo zafferano vero si estrae dalle radici di un albero.',
+      'Il cardamomo è parente dello zenzero.',
+      'Il pimento è una bacca essiccata, non un miscuglio di spezie.',
+      'La cannella di Ceylon viene dallo Sri Lanka.'
+    ],
+    explanation: 'Lo zafferano viene dagli stimmi del fiore di un tipo di croco, raccolti a mano.'
+  },
+  'food-hard-02': {
+    statements: [
+      'L’Emmental è un formaggio svizzero con buchi grandi.',
+      'Il Parmigiano Reggiano ha una denominazione di origine protetta.',
+      'L’halloumi si può grigliare senza che si sciolga.',
+      'La feta tradizionale è un formaggio greco.',
+      'Le venature blu del gorgonzola vengono da un colorante.'
+    ],
+    explanation: 'Le venature blu vengono da muffe del genere Penicillium.'
+  },
+  'food-hard-03': {
+    statements: [
+      'Il glutammato monosodico è stato creato in Italia.',
+      'L’umami è considerato il quinto gusto fondamentale.',
+      'Il pomodoro e il parmigiano sono ricchi di glutammato.',
+      'La salsa di pesce è molto usata nella cucina del Sud-est asiatico.',
+      'La salsa di soia si fa con soia fermentata.'
+    ],
+    explanation: 'Il glutammato monosodico fu sviluppato in Giappone nel 1908 dal chimico Kikunae Ikeda.'
+  },
+  'food-hard-04': {
+    statements: [
+      'I tartufi sono funghi che crescono sottoterra.',
+      'Il vero caviale viene dalle uova di salmone.',
+      'Per trovare i tartufi si usano maiali e cani.',
+      'Il wagyu è una razza bovina giapponese.',
+      'Il jamón ibérico viene da maiali di razza iberica.'
+    ],
+    explanation: 'Il vero caviale viene dalle uova di storione.'
+  },
+  'food-hard-05': {
+    statements: [
+      'Il piccante del peperoncino si concentra soprattutto nella parte bianca interna.',
+      'La paprika si fa con peperoni essiccati e macinati.',
+      'Il chipotle è un jalapeño affumicato.',
+      'Il peperone non contiene quasi capsaicina.',
+      'Il peperone verde e quello rosso sono specie diverse.'
+    ],
+    explanation: 'Il peperone verde è lo stesso frutto raccolto prima di maturare; maturo, diventa rosso, giallo o arancione.'
+  },
+  'food-hard-06': {
+    statements: [
+      'I semi di cacao vengono fermentati prima di diventare cioccolato.',
+      'Il cioccolato al latte è stato inventato in Belgio.',
+      'Gli Aztechi preparavano una bevanda amara al cacao.',
+      'Il burro di cacao è il grasso del seme di cacao.',
+      'Il temperaggio rende il cioccolato lucido e croccante.'
+    ],
+    explanation: 'Il cioccolato al latte fu creato in Svizzera nel 1875 da Daniel Peter.'
+  },
+  'food-hard-07': {
+    statements: [
+      'La carbonara tradizionale non contiene panna.',
+      'Gli gnocchi si possono fare con le patate.',
+      'Il pesto alla genovese si fa con basilico e pinoli.',
+      'Il risotto si fa con il riso.',
+      'Il tiramisù è un dolce tradizionale dell’antica Roma.'
+    ],
+    explanation: 'Il tiramisù è una ricetta recente, nata nel Novecento in Veneto.'
+  },
+  'food-hard-08': {
+    statements: [
+      'Il gelato artigianale italiano contiene più aria del gelato industriale.',
+      'Il gelato artigianale di solito si serve meno freddo di quello industriale.',
+      'Il sorbetto tradizionale si fa senza latte.',
+      'Il ghiacciolo fu inventato da un bambino di 11 anni negli Stati Uniti.',
+      'Esiste il gelato fritto: viene impanato e fritto rapidissimamente.'
+    ],
+    explanation: 'Il gelato artigianale contiene meno aria, per questo è più denso.'
+  },
+  'food-hard-09': {
+    statements: [
+      'Le olive fresche sono troppo amare per mangiarle appena colte.',
+      'L’olio extravergine di oliva si ottiene solo con procedimenti meccanici.',
+      'Le olive verdi e quelle nere vengono da alberi di specie diverse.',
+      'La Spagna è il maggior produttore di olio d’oliva al mondo.',
+      'I capperi sono boccioli di fiori.'
+    ],
+    explanation: 'Verde o nera, l’oliva viene dallo stesso olivo; cambiano solo la maturazione o la lavorazione.'
+  },
+  'food-hard-10': {
+    statements: [
+      'La noce pecan è originaria dell’Italia.',
+      'La noce di macadamia è originaria dell’Australia.',
+      'La noce del Brasile viene da un albero dell’Amazzonia.',
+      'Il pistacchio è originario dell’Asia centrale e del Medio Oriente.',
+      'La nocciola è molto usata nelle creme spalmabili al cioccolato.'
+    ],
+    explanation: 'La noce pecan è originaria dell’America del Nord.'
+  },
+  'food-hard-11': {
+    statements: [
+      'Fuori dal Messico il fiore della vaniglia viene di solito impollinato a mano.',
+      'Il Madagascar è un grande produttore di vaniglia.',
+      'La maggior parte dell’aroma di vaniglia usato dall’industria è sintetico.',
+      'La vaniglia è la spezia più cara del mondo.',
+      'L’orchidea della vaniglia è una pianta rampicante.'
+    ],
+    explanation: 'La spezia più cara del mondo è lo zafferano; la vaniglia viene subito dopo.'
+  },
+  'food-hard-12': {
+    statements: [
+      'La meringa si fa montando gli albumi con lo zucchero.',
+      'Il soufflé si gonfia grazie all’aria degli albumi montati.',
+      'Il croissant classico si fa senza burro.',
+      'La crème brûlée ha una crosticina di zucchero bruciato.',
+      'I macaron francesi si fanno con farina di mandorle.'
+    ],
+    explanation: 'Il croissant classico contiene tanto burro, ripiegato a strati nell’impasto.'
+  },
+  'food-hard-13': {
+    statements: [
+      'La manioca amara va lavorata per eliminare le sostanze tossiche.',
+      'Le foglie del rabarbaro sono tossiche.',
+      'In Giappone il pesce palla (fugu) può essere preparato solo da cuochi con licenza.',
+      'L’anacardo si può mangiare crudo appena colto, ancora nel guscio.',
+      'I fagioli rossi crudi contengono una tossina che la cottura distrugge.'
+    ],
+    explanation: 'Il guscio dell’anacardo contiene una resina irritante; va tostato o lavorato prima.'
+  },
+  'food-hard-14': {
+    statements: [
+      'La tempura arrivò in Giappone per influenza dei portoghesi.',
+      'Il natto si fa con soia fermentata.',
+      'Ciò che definisce il sushi è il pesce crudo.',
+      'Il matcha è tè verde in polvere.',
+      'L’umeboshi è una prugna giapponese conservata sotto sale.'
+    ],
+    explanation: 'Ciò che definisce il sushi è il riso condito con aceto; il pesce crudo è facoltativo.'
+  },
+  'food-hard-15': {
+    statements: [
+      'La reazione di Maillard è ciò che rosola la carne e la crosta del pane.',
+      'La cottura della carne si può controllare con un termometro.',
+      'Le marinate acide inteneriscono la superficie della carne.',
+      'Il liquido rosso che esce dalla carne al sangue è sangue.',
+      'Cuocere lentamente a bassa temperatura rende teneri i tagli duri.'
+    ],
+    explanation: 'Il liquido rosso è soprattutto acqua con mioglobina, una proteina del muscolo, e non sangue.'
   }
 };
 

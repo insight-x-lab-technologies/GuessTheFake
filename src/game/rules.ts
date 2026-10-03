@@ -1,4 +1,4 @@
-import { isSoloMode } from './modes';
+import { isBluffMode, isEveryoneGuessesMode, isSoloMode } from './modes';
 import type {
   GuessResult,
   GuessTheFakeChallenge,
@@ -8,6 +8,7 @@ import type {
   GuessTheFakeScoring,
   GuessTheFakeState,
   GuessTheFakeTeam,
+  RoundGuessRecord,
   SpecialRoundKind,
   TableMomentKind
 } from './types';
@@ -38,6 +39,10 @@ export const GRADUAL_CLUE_BONUS_PER_HIDDEN = 2;
 export const LIGHTNING_MIN_SECONDS = 10;
 export const CATEGORY_CHALLENGE_MULTIPLIER = 1.5;
 
+// W17-01/02 bluff modes.
+export const BLUFF_POINTS_PER_FOOLED = 5;
+export const BLUFF_MASTER_TIME_MULTIPLIER = 2;
+
 export const DEFAULT_CHALLENGE: GuessTheFakeChallenge = { categoryId: 'all', difficulty: 'all', packIds: [] };
 
 export function createInitialGuessTheFakeState(): GuessTheFakeState {
@@ -66,7 +71,9 @@ export function createInitialGuessTheFakeState(): GuessTheFakeState {
     tableMoment: null,
     specialRoundsEnabled: false,
     specialRounds: [],
-    revealedClues: GRADUAL_CLUE_START
+    revealedClues: GRADUAL_CLUE_START,
+    guessHistory: [],
+    bluffers: []
   };
 }
 
@@ -104,12 +111,15 @@ export function startMatch(
   const teams = modeId === 'teams' ? createBalancedTeams(players) : [];
   const random = options.random ?? Math.random;
   const preparedRounds = prepareRoundsForMatch(options.rounds, {
-    shuffle: options.shuffleRounds ?? false,
+    // A table round lists the author's lie where they typed it: always shuffle.
+    shuffle: modeId === 'about-us' || (options.shuffleRounds ?? false),
     random,
     deprioritizedRoundIds: options.deprioritizedRoundIds
   });
   const totalRounds = sanitizeRoundCount(options.totalRounds, preparedRounds.length);
   const specialRoundsEnabled = Boolean(options.specialRounds);
+  const matchRounds = preparedRounds.slice(0, totalRounds);
+  const bluffers = getMatchBluffers(modeId, players, matchRounds);
 
   return {
     ...state,
@@ -117,10 +127,10 @@ export function startMatch(
     modeId,
     players,
     teams,
-    rounds: preparedRounds.slice(0, totalRounds),
+    rounds: matchRounds,
     totalRounds,
     currentRoundIndex: 0,
-    activePlayerIndex: 0,
+    activePlayerIndex: getFirstGuesserIndex(players, bluffers[0] ?? null, 0),
     activeTeamIndex: 0,
     selectedStatementId: null,
     lastResult: null,
@@ -139,7 +149,9 @@ export function startMatch(
     tableMoment: null,
     specialRoundsEnabled,
     specialRounds: specialRoundsEnabled ? assignSpecialRounds(totalRounds, random) : Array(totalRounds).fill(null),
-    revealedClues: GRADUAL_CLUE_START
+    revealedClues: GRADUAL_CLUE_START,
+    guessHistory: [],
+    bluffers
   };
 }
 
@@ -188,17 +200,21 @@ export function submitGuess(
   const roundGuesses = { ...state.roundGuesses, [subject.id]: scored.result };
   const nextSubjectState = advanceGuessSubject(state, roundGuesses);
   const closesRound = shouldRevealAfterGuess(state, roundGuesses);
+  // W17-02: the bluff master always gets a final defense before the reveal.
+  const bluffMaster = state.modeId === 'bluff-master';
+  const discusses = closesRound && (state.tableMoments || bluffMaster);
+  const next: GuessTheFakeState = {
+    ...scored.state,
+    ...nextSubjectState,
+    phase: closesRound ? (discusses ? 'discussing' : 'revealed') : 'playing',
+    tableMoment: discusses
+      ? { kind: bluffMaster ? 'change-mind' : getTableMomentKind(state.currentRoundIndex), votedSubjectId: null, changedSubjectIds: [] }
+      : null,
+    roundGuesses
+  };
 
   return {
-    state: {
-      ...scored.state,
-      ...nextSubjectState,
-      phase: closesRound ? (state.tableMoments ? 'discussing' : 'revealed') : 'playing',
-      tableMoment: closesRound && state.tableMoments
-        ? { kind: getTableMomentKind(state.currentRoundIndex), votedSubjectId: null, changedSubjectIds: [] }
-        : null,
-      roundGuesses
-    },
+    state: next.phase === 'revealed' ? awardBluffer(next) : next,
     result: scored.result
   };
 }
@@ -207,19 +223,38 @@ export function advanceRound(state: GuessTheFakeState): GuessTheFakeState {
   if (state.phase !== 'revealed') return state;
   const nextRoundIndex = state.currentRoundIndex + 1;
   const isFinished = nextRoundIndex >= state.totalRounds;
+  const nextBluffer = state.bluffers?.[nextRoundIndex] ?? null;
+  const blufferIndex = state.players.findIndex(player => player.id === nextBluffer);
+  // Bluff modes start next to the bluffer; the others rotate the opener.
+  const preferredIndex = blufferIndex >= 0 ? blufferIndex + 1 : state.activePlayerIndex + 1;
 
   return {
     ...state,
     phase: isFinished ? 'finished' : 'intro',
     currentRoundIndex: nextRoundIndex,
-    activePlayerIndex: (state.activePlayerIndex + 1) % state.players.length,
+    activePlayerIndex: getFirstGuesserIndex(state.players, nextBluffer, preferredIndex),
     activeTeamIndex: state.teams.length ? (state.activeTeamIndex + 1) % state.teams.length : 0,
     selectedStatementId: null,
     lastResult: null,
     roundGuesses: {},
     tableMoment: null,
-    revealedClues: GRADUAL_CLUE_START
+    revealedClues: GRADUAL_CLUE_START,
+    guessHistory: [
+      ...(state.guessHistory ?? []),
+      ...Object.values(state.roundGuesses).map((guess): RoundGuessRecord => ({ ...guess, roundIndex: state.currentRoundIndex }))
+    ]
   };
+}
+
+// W15-04: in `all-guess` the device changes hands between guesses of the same
+// round. Returns who receives it, or null when the turn did not move.
+export function getHandoffSubject(previous: GuessTheFakeState, next: GuessTheFakeState) {
+  if (!isEveryoneGuessesMode(next.modeId) || next.phase !== 'playing') return null;
+  if (previous.currentRoundIndex !== next.currentRoundIndex) return null;
+  const before = getActiveGuessSubject(previous);
+  const after = getActiveGuessSubject(next);
+  if (!after || before?.id === after.id) return null;
+  return after;
 }
 
 export function timeOutRound(state: GuessTheFakeState, scoring: GuessTheFakeScoring = DEFAULT_SCORING) {
@@ -269,8 +304,8 @@ export function getPendingGuessSubjects(state: GuessTheFakeState) {
     const team = state.teams[state.activeTeamIndex];
     return team && !state.roundGuesses[team.id] ? [{ kind: 'team' as const, id: team.id, name: team.name }] : [];
   }
-  if (state.modeId === 'all-guess') {
-    return state.players
+  if (isEveryoneGuessesMode(state.modeId)) {
+    return getRoundGuessers(state)
       .filter(player => !state.roundGuesses[player.id])
       .map(player => ({ kind: 'player' as const, id: player.id, name: player.name }));
   }
@@ -351,7 +386,7 @@ export function changeGuessInDiscussion(
 export function revealDiscussion(state: GuessTheFakeState): GuessTheFakeState {
   if (state.phase !== 'discussing') return state;
   const votedId = state.tableMoment?.kind === 'vote' ? state.tableMoment.votedSubjectId : null;
-  return {
+  return awardBluffer({
     ...state,
     phase: 'revealed',
     players: votedId
@@ -360,7 +395,29 @@ export function revealDiscussion(state: GuessTheFakeState): GuessTheFakeState {
     teams: votedId
       ? state.teams.map(team => team.id === votedId ? { ...team, score: team.score + TABLE_VOTE_BONUS } : team)
       : state.teams
-  };
+  });
+}
+
+// W17-01/02: the player who bluffs the current round, if any.
+export function getRoundBluffer(state: GuessTheFakeState, roundIndex = state.currentRoundIndex) {
+  const blufferId = state.bluffers?.[roundIndex] ?? null;
+  return blufferId ? state.players.find(player => player.id === blufferId) ?? null : null;
+}
+
+// Players who guess this round: everyone but the bluffer.
+export function getRoundGuessers(state: GuessTheFakeState) {
+  const bluffer = getRoundBluffer(state);
+  return bluffer ? state.players.filter(player => player.id !== bluffer.id) : state.players;
+}
+
+// Who the bluffer fooled this round. Timeouts (no statement) do not count.
+export function getBluffOutcome(state: GuessTheFakeState) {
+  const bluffer = getRoundBluffer(state);
+  if (!bluffer) return null;
+  const fooled = Object.values(state.roundGuesses)
+    .filter(guess => !guess.correct && guess.selectedStatementId)
+    .map(guess => guess.playerName ?? '');
+  return { blufferId: bluffer.id, blufferName: bluffer.name, fooledNames: fooled, points: fooled.length * BLUFF_POINTS_PER_FOOLED };
 }
 
 // Every SPECIAL_ROUND_INTERVAL rounds one is special; with 3+ rounds the
@@ -377,8 +434,10 @@ export function assignSpecialRounds(totalRounds: number, random: () => number = 
 }
 
 export function getRoundTimeSeconds(state: GuessTheFakeState, baseSeconds: number) {
-  if (getCurrentSpecialRound(state) !== 'lightning') return baseSeconds;
-  return Math.max(LIGHTNING_MIN_SECONDS, Math.round(baseSeconds / 3));
+  // W17-02: the bluff master defends all five before the votes.
+  const seconds = state.modeId === 'bluff-master' ? baseSeconds * BLUFF_MASTER_TIME_MULTIPLIER : baseSeconds;
+  if (getCurrentSpecialRound(state) !== 'lightning') return seconds;
+  return Math.max(LIGHTNING_MIN_SECONDS, Math.round(seconds / 3));
 }
 
 // `gradual-clue`: statements beyond this count stay hidden.
@@ -443,7 +502,10 @@ function scoreGuess(
   const special = getCurrentSpecialRound(state);
   const correct = statementId === round.fakeStatementId;
   const basePoints = correct ? scoring.correctGuessPoints : scoring.wrongGuessPenalty;
-  const maxSpeedBonus = (scoring.speedBonusPoints ?? 0) * (special === 'lightning' ? 2 : 1);
+  // W17-02: the defense eats the clock, so the bluff master mode has no speed bonus.
+  const maxSpeedBonus = state.modeId === 'bluff-master'
+    ? 0
+    : (scoring.speedBonusPoints ?? 0) * (special === 'lightning' ? 2 : 1);
   const speedBonus = correct && !changedMind
     ? calculateSpeedBonus(timing.remainingSeconds ?? 0, timing.totalSeconds ?? 0, maxSpeedBonus)
     : 0;
@@ -462,6 +524,10 @@ function scoreGuess(
     scoring,
     hiddenStatements: round.statements.length - getVisibleStatementCount(state)
   });
+  const total = timing.totalSeconds ?? 0;
+  const elapsedSeconds = !changedMind && statementId && total > 0
+    ? Math.max(0, Math.min(total, total - (timing.remainingSeconds ?? 0)))
+    : undefined;
   const result: GuessResult = {
     selectedStatementId: statementId,
     fakeStatementId: round.fakeStatementId,
@@ -473,6 +539,7 @@ function scoreGuess(
     previousStreak,
     longestStreakBefore: state.longestStreakInMatch,
     special,
+    ...(elapsedSeconds === undefined ? {} : { elapsedSeconds }),
     ...(changedMind ? { changedMind } : {}),
     ...(subject.kind === 'player'
       ? { playerId: subject.id, playerName: subject.name }
@@ -549,13 +616,47 @@ function createBalancedTeams(players: GuessTheFakePlayer[]): GuessTheFakeTeam[] 
 }
 
 function shouldRevealAfterGuess(state: GuessTheFakeState, roundGuesses: Record<string, GuessResult>) {
-  if (state.modeId === 'all-guess') return state.players.every(player => roundGuesses[player.id]);
+  if (isEveryoneGuessesMode(state.modeId)) return getRoundGuessers(state).every(player => roundGuesses[player.id]);
   const subject = getActiveGuessSubject(state);
   return Boolean(subject && roundGuesses[subject.id]);
 }
 
 function advanceGuessSubject(state: GuessTheFakeState, roundGuesses: Record<string, GuessResult>) {
-  if (state.modeId !== 'all-guess') return {};
-  const nextPlayerIndex = state.players.findIndex(player => !roundGuesses[player.id]);
+  if (!isEveryoneGuessesMode(state.modeId)) return {};
+  const guesserIds = new Set(getRoundGuessers(state).map(player => player.id));
+  const nextPlayerIndex = state.players.findIndex(player => guesserIds.has(player.id) && !roundGuesses[player.id]);
   return nextPlayerIndex >= 0 ? { activePlayerIndex: nextPlayerIndex } : {};
+}
+
+function getMatchBluffers(
+  modeId: GuessTheFakeModeId,
+  players: GuessTheFakePlayer[],
+  rounds: GuessTheFakeRound[]
+): Array<string | null> {
+  if (modeId === 'about-us') {
+    return rounds.map(round => players.some(player => player.id === round.authorPlayerId) ? round.authorPlayerId ?? null : null);
+  }
+  if (modeId === 'bluff-master') return rounds.map((_, index) => players[index % players.length]?.id ?? null);
+  return rounds.map(() => null);
+}
+
+// First player at or after `preferredIndex` (wrapping) who is not the bluffer.
+function getFirstGuesserIndex(players: GuessTheFakePlayer[], blufferId: string | null, preferredIndex: number) {
+  const count = players.length;
+  if (!count) return 0;
+  for (let offset = 0; offset < count; offset += 1) {
+    const index = (((preferredIndex + offset) % count) + count) % count;
+    if (players[index].id !== blufferId) return index;
+  }
+  return 0;
+}
+
+function awardBluffer(state: GuessTheFakeState): GuessTheFakeState {
+  if (!isBluffMode(state.modeId)) return state;
+  const outcome = getBluffOutcome(state);
+  if (!outcome?.points) return state;
+  return {
+    ...state,
+    players: state.players.map(player => player.id === outcome.blufferId ? { ...player, score: player.score + outcome.points } : player)
+  };
 }

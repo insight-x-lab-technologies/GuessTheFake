@@ -36,3 +36,16 @@ a {
     overflow: auto;
   }
 }
+
+/* W15-06: short cross-fade between match phases (View Transitions API). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

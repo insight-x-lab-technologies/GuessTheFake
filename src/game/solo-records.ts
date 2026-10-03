@@ -10,6 +10,8 @@ export type SoloChallenge = {
   specialRounds?: boolean;
   // W13-07: installed packs active in the match change the challenge.
   packIds?: string[];
+  // W17-03: kids-only content changes the challenge.
+  kids?: boolean;
 };
 
 export type SoloResult = {
@@ -47,6 +49,7 @@ export function getSoloChallengeKey(challenge: SoloChallenge) {
   if (challenge.specialRounds) segments.push('special');
   const packIds = [...(challenge.packIds ?? [])].sort();
   if (packIds.length) segments.push(`packs:${packIds.join('+')}`);
+  if (challenge.kids) segments.push('kids');
   return segments.join('|');
 }
 
@@ -58,7 +61,8 @@ export function parseSoloChallengeKey(key: string): SoloChallenge {
     categoryId,
     difficulty: (['easy', 'medium', 'hard'].includes(difficulty) ? difficulty : 'all') as SoloChallenge['difficulty'],
     specialRounds: rest.includes('special'),
-    packIds: packs ? packs.slice('packs:'.length).split('+').filter(Boolean) : []
+    packIds: packs ? packs.slice('packs:'.length).split('+').filter(Boolean) : [],
+    kids: rest.includes('kids')
   };
 }
 
@@ -68,7 +72,8 @@ export function getSoloChallengeFromState(state: GuessTheFakeState): SoloChallen
     categoryId: state.challenge?.categoryId ?? 'all',
     difficulty: state.challenge?.difficulty ?? 'all',
     specialRounds: state.specialRoundsEnabled,
-    packIds: state.challenge?.packIds ?? []
+    packIds: state.challenge?.packIds ?? [],
+    kids: state.challenge?.kids === true
   };
 }
 

@@ -7,7 +7,7 @@ export type LocalProfile = {
   id: string;
   name: string;
   nickname: string;
-  avatar: string;
+  avatar: ProfileAvatarId;
   color: ProfileColor;
   createdAt: string;
 };
@@ -16,7 +16,30 @@ export type ProfilesModel = {
   profiles: LocalProfile[];
 };
 
-export const PROFILE_AVATARS = ['🦊', '🐼', '🦉', '🐙', '🦁', '🐢', '🐧', '🦄', '🐝', '🐳', '🌵', '🚀'] as const;
+// W16-02: avatar ids, drawn as SVG by the shell. The first twelve replace
+// the emoji avatars of W13-03 one to one (see LEGACY_EMOJI_AVATARS).
+export const PROFILE_AVATARS = [
+  'fox', 'panda', 'owl', 'octopus', 'lion', 'turtle', 'penguin', 'unicorn', 'bee', 'whale', 'cactus', 'rocket',
+  'cat', 'dog', 'frog', 'bear', 'rabbit', 'koala', 'monkey', 'pig', 'chick', 'robot', 'alien', 'ghost'
+] as const;
+export type ProfileAvatarId = typeof PROFILE_AVATARS[number];
+
+// Profiles saved before W16-02 hold an emoji; loading maps it to its id, so
+// no storage version bump is needed.
+export const LEGACY_EMOJI_AVATARS: Record<string, ProfileAvatarId> = {
+  '🦊': 'fox',
+  '🐼': 'panda',
+  '🦉': 'owl',
+  '🐙': 'octopus',
+  '🦁': 'lion',
+  '🐢': 'turtle',
+  '🐧': 'penguin',
+  '🦄': 'unicorn',
+  '🐝': 'bee',
+  '🐳': 'whale',
+  '🌵': 'cactus',
+  '🚀': 'rocket'
+};
 export const PROFILE_COLORS = ['coral', 'amber', 'lime', 'teal', 'sky', 'violet', 'rose', 'slate'] as const;
 export type ProfileColor = typeof PROFILE_COLORS[number];
 
@@ -134,10 +157,14 @@ export function saveProfiles(model: ProfilesModel, storage: StorageAdapter = loc
   writeVersioned(storage, PROFILES_KEY, normalizeProfiles(model), PROFILES_VERSION);
 }
 
-function normalizeAvatar(value: unknown, index: number) {
-  return PROFILE_AVATARS.includes(value as typeof PROFILE_AVATARS[number])
-    ? value as string
-    : PROFILE_AVATARS[index % PROFILE_AVATARS.length];
+export function isProfileAvatarId(value: unknown): value is ProfileAvatarId {
+  return PROFILE_AVATARS.includes(value as ProfileAvatarId);
+}
+
+function normalizeAvatar(value: unknown, index: number): ProfileAvatarId {
+  if (isProfileAvatarId(value)) return value;
+  const legacy = typeof value === 'string' ? LEGACY_EMOJI_AVATARS[value] : undefined;
+  return legacy ?? PROFILE_AVATARS[index % PROFILE_AVATARS.length];
 }
 
 function normalizeColor(value: unknown, index: number): ProfileColor {

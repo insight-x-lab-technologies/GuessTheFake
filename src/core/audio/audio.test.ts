@@ -4,9 +4,11 @@ import {
   getMusicZone,
   getToneForEvent,
   getTrackThemeId,
+  THEME_TRACK_MAP,
   shouldPlayMusic,
   shouldPlaySound
 } from './audio';
+import { THEMES } from '../themes/themes';
 
 describe('audio helpers', () => {
   it('respects sound and music settings', () => {
@@ -19,6 +21,9 @@ describe('audio helpers', () => {
   it('maps contextual events to tones', () => {
     expect(getToneForEvent('correct').frequency).toBeGreaterThan(getToneForEvent('wrong').frequency);
     expect(getToneForEvent('navigation').durationMs).toBeLessThan(getToneForEvent('match-finished').durationMs);
+    // The last-seconds tick is higher and longer than the regular one.
+    expect(getToneForEvent('tick-strong').frequency).toBeGreaterThan(getToneForEvent('tick').frequency);
+    expect(getToneForEvent('tick-strong').durationMs).toBeGreaterThan(getToneForEvent('tick').durationMs);
   });
 
   it('maps screen and phase to menu or gameplay music zones', () => {
@@ -33,6 +38,13 @@ describe('audio helpers', () => {
     expect(getTrackThemeId('material3')).toBe('spring');
     expect(getTrackThemeId('liquid-glass')).toBe('autumn');
     expect(getTrackThemeId('high-contrast')).toBe('cosmic');
+    expect(getTrackThemeId('halloween')).toBe('autumn');
+    expect(getTrackThemeId('festive')).toBe('cosmic');
+    expect(getTrackThemeId('unknown')).toBe('cosmic');
+  });
+
+  it('maps every theme to a track on purpose (W16-04)', () => {
+    THEMES.forEach(theme => expect(THEME_TRACK_MAP[theme.id], theme.id).toMatch(/^(cosmic|spring|autumn)$/));
   });
 
   it('clamps invalid audio volumes', () => {

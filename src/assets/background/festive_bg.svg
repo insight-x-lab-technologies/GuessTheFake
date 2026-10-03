@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#06231f"/>
+      <stop offset=".6" stop-color="#0b3a33"/>
+      <stop offset="1" stop-color="#14524a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ffe08a" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ffe08a" stop-opacity="0"/>
+    </radialGradient>
+    <g id="flake" stroke="#e8fbff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".8">
+      <path d="M0-14v28M-12-7l24 14M-12 7l24-14"/>
+      <path d="M-4-10l4 4 4-4M-4 10l4-4 4 4"/>
+    </g>
+    <g id="tree">
+      <path d="M0-150l70 110h-34l52 80h-38l60 90H-110l60-90h-38l52-80h-34z" fill="#0e5e3f"/>
+      <rect x="-14" y="130" width="28" height="34" fill="#5b3418"/>
+      <path d="M0-176l8 18 20 2-15 13 5 20L0-133l-18 10 5-20-15-13 20-2z" fill="#ffd166"/>
+      <g fill="#ff5d73"><circle cx="-30" cy="-20" r="7"/><circle cx="38" cy="50" r="7"/><circle cx="-56" cy="110" r="7"/></g>
+      <g fill="#ffe08a"><circle cx="20" cy="-60" r="6"/><circle cx="-24" cy="60" r="6"/><circle cx="60" cy="118" r="6"/></g>
+    </g>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#sky)"/>
+  <path d="M-20 70q200 90 410 10t410 0 410 0 410 0" stroke="#0a1f1b" stroke-width="4" fill="none"/>
+  <g>
+    <circle cx="80" cy="100" r="34" fill="url(#glow)"/><circle cx="80" cy="100" r="9" fill="#ffd166"/>
+    <circle cx="250" cy="122" r="34" fill="url(#glow)"/><circle cx="250" cy="122" r="9" fill="#ff5d73"/>
+    <circle cx="420" cy="104" r="34" fill="url(#glow)"/><circle cx="420" cy="104" r="9" fill="#7ee0ff"/>
+    <circle cx="610" cy="88" r="34" fill="url(#glow)"/><circle cx="610" cy="88" r="9" fill="#ffd166"/>
+    <circle cx="820" cy="80" r="34" fill="url(#glow)"/><circle cx="820" cy="80" r="9" fill="#ff5d73"/>
+    <circle cx="1020" cy="92" r="34" fill="url(#glow)"/><circle cx="1020" cy="92" r="9" fill="#7ee0ff"/>
+    <circle cx="1220" cy="96" r="34" fill="url(#glow)"/><circle cx="1220" cy="96" r="9" fill="#ffd166"/>
+    <circle cx="1420" cy="86" r="34" fill="url(#glow)"/><circle cx="1420" cy="86" r="9" fill="#ff5d73"/>
+  </g>
+  <use href="#flake" transform="translate(180 300)"/>
+  <use href="#flake" transform="translate(520 240) scale(.7)"/>
+  <use href="#flake" transform="translate(760 380) scale(1.2)"/>
+  <use href="#flake" transform="translate(1080 260) scale(.8)"/>
+  <use href="#flake" transform="translate(1360 380)"/>
+  <use href="#flake" transform="translate(340 520) scale(.6)"/>
+  <use href="#flake" transform="translate(1500 560) scale(.7)"/>
+  <use href="#flake" transform="translate(940 560) scale(.5)"/>
+  <g fill="#e8fbff" opacity=".55">
+    <circle cx="60" cy="420" r="3"/><circle cx="420" cy="380" r="2.4"/><circle cx="660" cy="480" r="3"/>
+    <circle cx="880" cy="200" r="2.4"/><circle cx="1180" cy="470" r="3"/><circle cx="1540" cy="240" r="2.4"/>
+  </g>
+  <use href="#tree" transform="translate(1340 690)"/>
+  <use href="#tree" transform="translate(1500 760) scale(.7)"/>
+  <use href="#tree" transform="translate(180 760) scale(.75)"/>
+  <path d="M0 820c260-60 520-70 800-30s520 30 800-20v230H0z" fill="#2f6f67"/>
+  <path d="M0 900c300-40 560-30 820 0s500 20 780-10v110H0z" fill="#3f857c"/>
+  <path d="M0 820c260-60 520-70 800-30s520 30 800-20" fill="none" stroke="#e8fbff" stroke-width="6" opacity=".5"/>
+  <g transform="translate(330 860)">
+    <rect x="-40" y="-40" width="80" height="60" rx="6" fill="#ff5d73"/>
+    <rect x="-6" y="-40" width="12" height="60" fill="#ffd166"/>
+    <path d="M0-40c-20-24-36-8-18 0M0-40c20-24 36-8 18 0" stroke="#ffd166" stroke-width="6" fill="none"/>
+  </g>
+</svg>
