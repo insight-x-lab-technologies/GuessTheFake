@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, Copy, Download, Link2, ListChecks, QrCode, Radio, RotateCcw, Unplug, Upload, Wifi } from 'lucide-react';
+import { CheckCircle2, Clock, Copy, Download, Link2, ListChecks, MonitorUp, QrCode, Radio, RotateCcw, Tv, Unplug, Upload, Wifi } from 'lucide-react';
 import { Button } from '../../core/ui/Button';
 import type { Translate } from '../app-types';
 import type { MultiDeviceController } from '../hooks/useMultiDevice';
@@ -206,6 +206,17 @@ export function MultiDeviceScreen({ t, multiDevice }: { t: Translate; multiDevic
           ) : (
             <p>{t('multiDevice.waiting')}</p>
           )}
+          <p className={styles.helperText}>{t('presenter.description')}</p>
+          <div className={styles.actionCluster}>
+            <Button variant="secondary" icon={<Tv size={18} />} onClick={multiDevice.openPresenter}>
+              {t('presenter.open')}
+            </Button>
+            {session.role !== 'guest' ? (
+              <Button variant="ghost" icon={<MonitorUp size={18} />} onClick={multiDevice.openPresenterWindow}>
+                {t('presenter.openWindow')}
+              </Button>
+            ) : null}
+          </div>
         </article>
       </div>
     </section>

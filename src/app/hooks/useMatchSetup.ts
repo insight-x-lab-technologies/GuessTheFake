@@ -1,28 +1,54 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { AchievementCounters } from '../../core/achievements/achievements';
 import type { ContentPack } from '../../core/content-packs/content-packs';
-import { shouldSkipRound, type ContentFeedbackModel } from '../../core/content-feedback/content-feedback';
+import { shouldSkipRound, type ContentFeedbackModel, type ContentFeedbackStats } from '../../core/content-feedback/content-feedback';
+import type { PlatformSettings } from '../../core/settings/settings';
 import type { GuessTheFakePackContent } from '../../game/types';
-import { GAME_MODES } from '../../game/modes';
+import { GAME_MODES, isSoloMode } from '../../game/modes';
+import { suggestMatchSetup, type MatchSuggestion } from '../../game/match-suggestion';
 import { sanitizeRoundCount } from '../../game/rules';
+import {
+  getSoloChallengeKey,
+  getSoloRecord,
+  listSoloRecords,
+  type SoloChallenge,
+  type SoloRecordsModel
+} from '../../game/solo-records';
 import type { GuessTheFakeDifficulty, GuessTheFakeModeId } from '../../game/types';
 import { normalizeSetupFilters } from '../setup-filters';
 
 export type MatchSetupController = ReturnType<typeof useMatchSetup>;
 
+export const SUGGESTION_MINUTE_OPTIONS = [5, 10, 15, 20, 30, 45];
+
 // Form state of the New Match screen and the content it would draw from.
 export function useMatchSetup({
   enabledPacks,
-  contentFeedback
+  contentFeedback,
+  settings,
+  updateSettings,
+  counters,
+  feedbackSummary,
+  soloRecords,
+  getSoloKeyForName
 }: {
   enabledPacks: Array<ContentPack<GuessTheFakePackContent>>;
   contentFeedback: ContentFeedbackModel;
+  settings: PlatformSettings;
+  updateSettings: (next: Partial<PlatformSettings>) => void;
+  counters: AchievementCounters;
+  feedbackSummary: ContentFeedbackStats;
+  soloRecords: SoloRecordsModel;
+  getSoloKeyForName: (name: string) => string;
 }) {
   const [playerNames, setPlayerNames] = useState('Ana, Bruno');
+  const [soloPlayerName, setSoloPlayerName] = useState(settings.lastSoloPlayerName);
   const [selectedModeId, setSelectedModeId] = useState<GuessTheFakeModeId>('classic');
   const [roundCountInput, setRoundCountInput] = useState('5');
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<GuessTheFakeDifficulty | 'all'>('all');
   const [setupError, setSetupError] = useState('');
+  const [suggestionApplied, setSuggestionApplied] = useState(false);
 
   const availableCategories = useMemo(() => {
     const categories = new Map<string, Record<string, string>>();
@@ -56,7 +82,54 @@ export function useMatchSetup({
     && playableRounds.length > 0
     && requestedRounds > playableRounds.length;
   const selectedMode = GAME_MODES.find(mode => mode.id === selectedModeId) ?? GAME_MODES[0];
-  const players = playerNames.split(',').map(name => name.trim()).filter(Boolean);
+  const solo = isSoloMode(selectedModeId);
+  const tablePlayers = playerNames.split(',').map(name => name.trim()).filter(Boolean);
+  const players = solo ? [soloPlayerName.trim()].filter(Boolean) : tablePlayers;
+  // Installed packs (not the builtin one) are part of a solo challenge.
+  const installedPackIds = useMemo(
+    () => enabledPacks.filter(pack => !pack.builtin).map(pack => pack.id).sort(),
+    [enabledPacks]
+  );
+  const challenge: SoloChallenge = {
+    totalRounds: playableRounds.length ? roundCount : 0,
+    categoryId: selectedCategoryId,
+    difficulty: selectedDifficulty,
+    specialRounds: settings.specialRoundsEnabled,
+    packIds: installedPackIds
+  };
+  const soloPlayerKey = solo && soloPlayerName.trim() ? getSoloKeyForName(soloPlayerName) : '';
+  const soloRecord = soloPlayerKey ? getSoloRecord(soloRecords, soloPlayerKey, getSoloChallengeKey(challenge)) : null;
+
+  const weakCategoryIds = useMemo(
+    () => feedbackSummary.byCategory.filter(row => row.down > row.up).map(row => row.id),
+    [feedbackSummary.byCategory]
+  );
+  const suggestion: MatchSuggestion = useMemo(() => suggestMatchSetup({
+    playerCount: solo ? 1 : tablePlayers.length,
+    minutesAvailable: settings.suggestionMinutes,
+    roundTimeSeconds: settings.roundTimeSeconds,
+    availableRounds: languageAvailableRounds,
+    history: {
+      guessesByDifficulty: counters.guessesByDifficulty,
+      correctByDifficulty: counters.correctByDifficulty,
+      categoriesPlayed: counters.categoriesPlayed
+    },
+    weakCategoryIds,
+    soloRecords: solo && soloPlayerKey
+      ? listSoloRecords({ records: { [soloPlayerKey]: soloRecords.records[soloPlayerKey] ?? {} } })
+        .map(row => ({ challenge: row.challenge, result: row }))
+      : []
+  }), [
+    counters,
+    languageAvailableRounds,
+    settings.roundTimeSeconds,
+    settings.suggestionMinutes,
+    solo,
+    soloPlayerKey,
+    soloRecords,
+    tablePlayers.length,
+    weakCategoryIds
+  ]);
 
   useEffect(() => {
     const normalized = normalizeSetupFilters(
@@ -77,26 +150,84 @@ export function useMatchSetup({
     }
   }, [availableCategories, languageAvailableRounds, selectedCategoryId, selectedDifficulty]);
 
+  function touch() {
+    setSetupError('');
+    setSuggestionApplied(false);
+  }
+
+  function selectMode(modeId: GuessTheFakeModeId) {
+    setSelectedModeId(modeId);
+    touch();
+  }
+
+  // Adds a family profile to the table, or picks it as the solo player.
+  function addPlayerName(name: string) {
+    touch();
+    if (solo) {
+      setSoloPlayerName(name);
+      return;
+    }
+    if (tablePlayers.some(player => player.toLocaleLowerCase() === name.toLocaleLowerCase())) {
+      setPlayerNames(tablePlayers.filter(player => player.toLocaleLowerCase() !== name.toLocaleLowerCase()).join(', '));
+      return;
+    }
+    setPlayerNames([...tablePlayers, name].join(', '));
+  }
+
+  function applySuggestion() {
+    setSelectedModeId(suggestion.modeId);
+    setRoundCountInput(String(suggestion.roundCount));
+    setSelectedCategoryId(suggestion.categoryId);
+    setSelectedDifficulty(suggestion.difficulty);
+    setSetupError('');
+    setSuggestionApplied(true);
+  }
+
   return {
     playerNames,
-    setPlayerNames,
+    setPlayerNames: (value: string) => {
+      setPlayerNames(value);
+      touch();
+    },
+    soloPlayerName,
+    setSoloPlayerName: (value: string) => {
+      setSoloPlayerName(value);
+      touch();
+    },
     players,
+    tablePlayers,
+    addPlayerName,
     selectedModeId,
     selectedMode,
-    selectMode: (modeId: GuessTheFakeModeId) => {
-      setSelectedModeId(modeId);
-      setSetupError('');
-    },
+    solo,
+    selectMode,
     roundCountInput,
     changeRoundCount: (value: string) => {
       setRoundCountInput(value.replace(/[^\d]/g, ''));
-      setSetupError('');
+      touch();
     },
     roundCount,
     selectedCategoryId,
-    setSelectedCategoryId,
+    setSelectedCategoryId: (value: string) => {
+      setSelectedCategoryId(value);
+      touch();
+    },
     selectedDifficulty,
-    setSelectedDifficulty,
+    setSelectedDifficulty: (value: GuessTheFakeDifficulty | 'all') => {
+      setSelectedDifficulty(value);
+      touch();
+    },
+    tableMomentsEnabled: settings.tableMomentsEnabled,
+    setTableMomentsEnabled: (enabled: boolean) => updateSettings({ tableMomentsEnabled: enabled }),
+    specialRoundsEnabled: settings.specialRoundsEnabled,
+    setSpecialRoundsEnabled: (enabled: boolean) => updateSettings({ specialRoundsEnabled: enabled }),
+    suggestionMinutes: settings.suggestionMinutes,
+    setSuggestionMinutes: (minutes: number) => updateSettings({ suggestionMinutes: minutes }),
+    suggestion,
+    suggestionApplied,
+    applySuggestion,
+    installedPackIds,
+    soloRecord,
     setupError,
     setSetupError,
     availableCategories,

@@ -1,4 +1,4 @@
-import { Play, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
+import { Play, ShieldCheck, Sparkles, Trophy, User } from 'lucide-react';
 import { Button } from '../../core/ui/Button';
 import type { Translate } from '../app-types';
 import styles from '../App.module.css';
@@ -11,16 +11,21 @@ const homePreviewKeys = [
   'home.previewFive'
 ];
 
-export function HomeScreen({ t, onNewMatch }: { t: Translate; onNewMatch: () => void }) {
+export function HomeScreen({ t, onNewMatch, onPlaySolo }: { t: Translate; onNewMatch: () => void; onPlaySolo: () => void }) {
   return (
     <section className={styles.hero}>
       <div className={styles.heroCopy}>
         <p className={styles.kicker}>{t('app.kicker')}</p>
         <h2 className={styles.heroTitle}>{t('game.description')}</h2>
         <p>{t('home.subtitle')}</p>
-        <Button icon={<Play size={18} />} onClick={onNewMatch}>
-          {t('app.newGame')}
-        </Button>
+        <div className={styles.actionCluster}>
+          <Button icon={<Play size={18} />} onClick={onNewMatch}>
+            {t('app.newGame')}
+          </Button>
+          <Button variant="secondary" icon={<User size={18} />} onClick={onPlaySolo}>
+            {t('solo.playSolo')}
+          </Button>
+        </div>
       </div>
       <div className={`${styles.contextArt} ${styles.contextHome}`} aria-label={t('visual.homeArt')}>
         <Sparkles size={28} />

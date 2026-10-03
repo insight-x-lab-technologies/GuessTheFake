@@ -10,6 +10,25 @@ export type MultiplayerScoreRow = {
   score: number;
 };
 
+// W13-06: what a presenter (TV/projector) screen draws. Texts arrive already
+// localized by the host, so a display never needs the content pack.
+export type MultiplayerBoardItemState = 'idle' | 'hidden' | 'picked' | 'fake' | 'wrong';
+
+export type MultiplayerBoardItem = {
+  id: string;
+  text: string;
+  state: MultiplayerBoardItemState;
+  label?: string;
+};
+
+export type MultiplayerBoard = {
+  prompt: string;
+  caption?: string;
+  badge?: string;
+  explanation?: string;
+  items: MultiplayerBoardItem[];
+};
+
 export type MultiplayerGameSnapshot = {
   gameId: string;
   modeId: string;
@@ -20,6 +39,7 @@ export type MultiplayerGameSnapshot = {
   timerSeconds: number;
   revealed: boolean;
   scoreboard: MultiplayerScoreRow[];
+  board?: MultiplayerBoard | null;
   updatedAt: string;
 };
 
@@ -423,5 +443,20 @@ function isSnapshot(value: unknown): value is MultiplayerGameSnapshot {
     && typeof snapshot.revealed === 'boolean'
     && Array.isArray(snapshot.scoreboard)
     && snapshot.scoreboard.every(row => row && typeof row.name === 'string' && typeof row.score === 'number')
+    && (snapshot.board === undefined || snapshot.board === null || isBoard(snapshot.board))
     && typeof snapshot.updatedAt === 'string';
+}
+
+const boardItemStates: MultiplayerBoardItemState[] = ['idle', 'hidden', 'picked', 'fake', 'wrong'];
+
+function isBoard(value: unknown): value is MultiplayerBoard {
+  if (!value || typeof value !== 'object') return false;
+  const board = value as Partial<MultiplayerBoard>;
+  return typeof board.prompt === 'string'
+    && Array.isArray(board.items)
+    && board.items.length <= 10
+    && board.items.every(item => item
+      && typeof item.id === 'string'
+      && typeof item.text === 'string'
+      && boardItemStates.includes(item.state));
 }

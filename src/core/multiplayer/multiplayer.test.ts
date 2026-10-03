@@ -147,6 +147,18 @@ describe('multiplayer session helpers', () => {
     expect(importMultiplayerSnapshot('{"snapshot":{"gameId":"bad"}}')).toBeNull();
   });
 
+  it('carries an optional presenter board and rejects a malformed one', () => {
+    const board = {
+      prompt: 'Choose the fake statement',
+      caption: 'Science',
+      items: [{ id: 'a', text: 'One', state: 'idle' as const }, { id: 'b', text: '', state: 'hidden' as const }]
+    };
+    expect(importMultiplayerSnapshot(exportMultiplayerSnapshot({ ...snapshot, board }))?.board).toEqual(board);
+    expect(importMultiplayerSnapshot(exportMultiplayerSnapshot({ ...snapshot, board: null }))?.board).toBeNull();
+    const broken = { ...snapshot, board: { prompt: 'x', items: [{ id: 'a', text: 'One', state: 'glowing' }] } };
+    expect(importMultiplayerSnapshot(JSON.stringify({ snapshot: broken }))).toBeNull();
+  });
+
   it('persists session state and falls back for invalid storage', () => {
     const storage = createMemoryStorage();
     const hosted = hostMultiplayerSession(createInitialMultiplayerSessionState(), { random: () => 0.1 });

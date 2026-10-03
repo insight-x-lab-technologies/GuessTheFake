@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { getBuiltinRounds } from '../test/builtin';
 import { GAME_ID } from '../game/modes';
-import { createInitialGuessTheFakeState, startMatch } from '../game/rules';
-import { buildMultiplayerSnapshot, getLeaderboardRows, getScoreRows } from './match-summary';
+import { beginPlaying, createInitialGuessTheFakeState, startMatch, submitGuess } from '../game/rules';
+import { buildMultiplayerSnapshot, buildPresenterBoard, getLeaderboardRows, getScoreRows } from './match-summary';
 
 function createMatch(modeId: 'classic' | 'teams') {
   return startMatch(createInitialGuessTheFakeState(), {
@@ -50,5 +50,37 @@ describe('match summary helpers', () => {
 
   it('reports round zero before a match starts', () => {
     expect(buildMultiplayerSnapshot(createInitialGuessTheFakeState(), 0).roundNumber).toBe(0);
+  });
+});
+
+describe('presenter board (W13-06)', () => {
+  const t = (key: string) => key;
+  const text = (value: unknown, fallback = '') => (typeof value === 'object' && value ? Object.values(value as Record<string, string>)[0] : String(value ?? fallback));
+
+  it('shows no board outside the statement phases', () => {
+    expect(buildPresenterBoard(createMatch('classic'), { t, text })).toBeNull();
+  });
+
+  it('hides the fake until the reveal and marks it afterwards', () => {
+    const playing = beginPlaying(createMatch('classic'));
+    const round = playing.rounds[0];
+    const board = buildPresenterBoard(playing, { t, text });
+    expect(board?.items.every(item => item.state === 'idle' && !item.label)).toBe(true);
+    expect(board?.explanation).toBeUndefined();
+
+    const revealed = submitGuess(playing, round.fakeStatementId).state;
+    const revealedBoard = buildPresenterBoard(revealed, { t, text });
+    expect(revealedBoard?.items.find(item => item.id === round.fakeStatementId)).toMatchObject({ state: 'fake', label: 'game.fakeLabel' });
+    expect(revealedBoard?.explanation).toBeTruthy();
+    expect(buildMultiplayerSnapshot(revealed, 0, 'now', revealedBoard).board).toBe(revealedBoard);
+  });
+
+  it('keeps gradual clue statements hidden on the display', () => {
+    const playing = beginPlaying(createMatch('classic'));
+    const gradual = { ...playing, specialRoundsEnabled: true, specialRounds: ['gradual-clue' as const, null, null] };
+    const board = buildPresenterBoard(gradual, { t, text });
+    expect(board?.badge).toBe('specials.gradual-clue.title');
+    expect(board?.items.filter(item => item.state === 'hidden')).toHaveLength(3);
+    expect(board?.items.filter(item => item.state === 'hidden').every(item => item.text === '')).toBe(true);
   });
 });

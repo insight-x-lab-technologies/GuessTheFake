@@ -24,7 +24,7 @@ import {
   type MultiplayerTransportKind
 } from '../../core/multiplayer/multiplayer';
 import type { Translate } from '../app-types';
-import { copyTextToClipboard, downloadJson } from '../browser';
+import { copyTextToClipboard, downloadJson, openExternalUrl } from '../browser';
 import {
   createSessionQrCells,
   getIceServers,
@@ -73,6 +73,8 @@ export function useMultiDevice({
   const [signalInput, setSignalInput] = useState('');
   const [signalOutput, setSignalOutput] = useState('');
   const [qrDataUrl, setQrDataUrl] = useState('');
+  // W13-06: big-screen presenter view of the mirrored snapshot.
+  const [presenterOpen, setPresenterOpen] = useState(false);
   // Data-channel callbacks fire long after they are wired up.
   const latestRef = useRef({ session, joinCodeInput, hostSnapshot });
   latestRef.current = { session, joinCodeInput, hostSnapshot };
@@ -122,11 +124,13 @@ export function useMultiDevice({
 
   useEffect(() => {
     if (autoJoinHandledRef.current || typeof window === 'undefined') return;
-    const code = new URL(window.location.href).searchParams.get('join');
+    const params = new URL(window.location.href).searchParams;
+    const code = params.get('join');
     if (!code) return;
     autoJoinHandledRef.current = true;
     connect(code);
     onInviteLinkOpened();
+    if (params.get('presenter') === '1') setPresenterOpen(true);
     // Runs once for the invite link present at boot.
   }, []);
 
@@ -184,6 +188,18 @@ export function useMultiDevice({
     const hosted = hostMultiplayerSession(session, { transport });
     setSession({ ...hosted, lastSnapshot: hostSnapshot });
     setStatus(t(transport === 'webrtc-manual' ? 'multiDevice.peerReady' : transport === 'broadcast-channel' ? 'multiDevice.hostReady' : 'multiDevice.offlineReady'));
+    return hosted.sessionCode;
+  }
+
+  // Host/controller keeps the match; a second window on this device joins the
+  // session as a display. Other devices join by code and open the presenter.
+  function openPresenterWindow() {
+    const code = session.role === 'host' && session.sessionCode ? session.sessionCode : host();
+    if (!code || typeof window === 'undefined') return;
+    const url = new URL(createInviteUrl(window.location.href, code));
+    url.searchParams.set('presenter', '1');
+    openExternalUrl(url.toString());
+    setStatus(t('presenter.windowOpened'));
   }
 
   function connect(value = joinCodeInput) {
@@ -425,6 +441,10 @@ export function useMultiDevice({
     resetPeerConnection,
     copyText,
     downloadSnapshot,
-    applyManualSnapshot
+    applyManualSnapshot,
+    presenterOpen,
+    openPresenter: () => setPresenterOpen(true),
+    closePresenter: () => setPresenterOpen(false),
+    openPresenterWindow
   };
 }

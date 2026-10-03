@@ -71,3 +71,30 @@ autoconferidas por IA e aceitas em revisao humana do pack inteiro em
 2026-10-03 (`review.status: 'reviewed'`, default em `catalog.ts`). Rodada
 editada depois disso deve ser reconferida e registrada em `reviews.ts`. Tres rodadas `10+`
 (`science-hard-05`, `-07`, `-13`).
+
+## Themed pack metadata (W13-07)
+
+Packs may carry an optional `meta` block, validated by `content-schema.ts`:
+
+```json
+{
+  "meta": {
+    "cover": { "emoji": "🦖", "color": "#16a34a" },
+    "description": { "en": "Dinosaurs and fossils", "pt": "Dinossauros e fósseis" },
+    "audience": "family",
+    "difficulty": "mixed",
+    "version": "1.0.0",
+    "author": "Your name",
+    "changelog": [{ "version": "1.0.0", "date": "2026-10-03", "notes": { "en": "First release" } }],
+    "license": { "kind": "community" }
+  }
+}
+```
+
+`audience` is `family | kids | teens | adults`; `difficulty` is
+`easy | medium | hard | mixed`. A pack without `meta` or with
+`license.kind: "community"` is a community pack and always installs. A
+`premium` license with a `signature` shows as "signature not verified": no
+cryptographic verification exists yet. The future signature covers
+`canonicalizePackForSigning(pack)` (sorted keys, without `enabled`, `builtin`,
+local `signature`, or the license signature itself).

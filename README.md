@@ -8,14 +8,18 @@ It is a single, self-contained game: no backend, no accounts, no game launcher.
 ## Current Scope
 
 - Responsive web app for desktop, tablet, and mobile, installable as a PWA.
-- Classic, all-guess, and teams modes, with speed bonus, streaks, category and
-  difficulty filters, and resumable matches.
+- Solo challenge with personal records, plus classic, all-guess, and teams
+  modes, with speed bonus, streaks, category and difficulty filters, and
+  resumable matches.
+- Optional table moments and special rounds, local family profiles, progress
+  tracks with a next objective, match suggestions, a presenter (TV) view, and
+  themed pack metadata.
 - 315 curated built-in rounds (15 per category and difficulty) in six
   languages, loaded per language on demand.
 - Local scores, trophies, content packs, content feedback, themes, and settings,
   all persisted in versioned localStorage.
 - Optional local-first multi-device companion screen (no server).
-- 27 test files / 103 tests in Vitest, including a responsive smoke across five
+- 34 test files / 170 tests in Vitest, including a responsive smoke across five
   viewports and a content coverage audit.
 
 Known limits: multi-device pairing is manual.

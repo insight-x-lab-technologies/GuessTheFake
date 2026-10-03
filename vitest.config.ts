@@ -6,6 +6,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts']
+    setupFiles: ['./src/test/setup.ts'],
+    // Full-App jsdom flows take several seconds on small CI/dev machines.
+    testTimeout: 20000
   }
 });

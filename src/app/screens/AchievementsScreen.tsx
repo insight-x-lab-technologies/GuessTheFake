@@ -1,19 +1,24 @@
-import { BadgeCheck, ListChecks, ThumbsUp } from 'lucide-react';
+import { BadgeCheck, ListChecks, Route, ThumbsUp } from 'lucide-react';
 import { GAME_MODES } from '../../game/modes';
 import type { Translate } from '../app-types';
 import type { ProgressController } from '../hooks/useProgress';
+import type { ProgressTrackView } from '../progress-tracks';
 import { ScreenHeader } from './ScreenHeader';
 import styles from '../App.module.css';
 
 export function AchievementsScreen({
   t,
-  progress
+  progress,
+  trackViews = [],
+  categoryLabel = id => id
 }: {
   t: Translate;
   progress: Pick<
     ProgressController,
     'achievementView' | 'achievementModeFilter' | 'setAchievementModeFilter' | 'contentFeedbackSummary'
   >;
+  trackViews?: ProgressTrackView[];
+  categoryLabel?: (categoryId: string) => string;
 }) {
   const { achievementView: view, contentFeedbackSummary: feedback } = progress;
   const selectedMode = GAME_MODES.find(mode => mode.id === progress.achievementModeFilter);
@@ -114,6 +119,30 @@ export function AchievementsScreen({
           </div>
         </article>
       </div>
+      {view.hasData && trackViews.length ? (
+        <section className={styles.trackSection} aria-label={t('tracks.title')}>
+          <h3 className={styles.cardTitle}><Route size={18} /> {t('tracks.title')}</h3>
+          <p className={styles.helperText}>{t('tracks.subtitle')}</p>
+          <div className={styles.trackGrid}>
+            {trackViews.map(({ track, progress: value, completedSteps, totalSteps, nextTarget }) => (
+              <article key={track.id} className={styles.trackCard} data-group={track.group}>
+                <span className={styles.trackGroup}>{t(`tracks.group.${track.group}`)}</span>
+                <b>{t(track.titleKey, {
+                  category: track.categoryId ? categoryLabel(track.categoryId) : '',
+                  difficulty: track.difficulty ? t(`setup.${track.difficulty}`) : ''
+                })}</b>
+                <progress value={nextTarget ? value : 1} max={nextTarget ?? 1} />
+                <span>
+                  {t('tracks.level', { level: completedSteps, total: totalSteps })}
+                  {' · '}
+                  {nextTarget ? `${value} / ${nextTarget}` : t('tracks.complete')}
+                </span>
+                {track.tableOnly ? <small>{t('tracks.tableOnly')}</small> : null}
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
       {view.hasData ? (
         <div className={styles.cardGrid}>
           {view.items.map(({ definition, progress: value, unlocked }) => (

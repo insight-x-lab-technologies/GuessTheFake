@@ -17,6 +17,12 @@ export type AchievementCounters = {
   categoriesPlayed: Record<string, number>;
   packsUsed: Record<string, number>;
   contentFeedbackCount: number;
+  // Onda 13 progress tracks. Keys are opaque ids (difficulty, category).
+  guessesByDifficulty: Record<string, number>;
+  correctByDifficulty: Record<string, number>;
+  correctByCategory: Record<string, number>;
+  soloMatches: number;
+  tableMatches: number;
 };
 
 export type AchievementState = {
@@ -24,6 +30,8 @@ export type AchievementState = {
   // Same counters split by the mode a round or match was played in. Unlocks
   // stay global; per-mode unlocks are derived from these counters.
   modeCounters: Record<string, AchievementCounters>;
+  // Same counters per local player (normalized name), for personal trophies.
+  playerCounters: Record<string, AchievementCounters>;
   unlocked: Record<string, string>;
 };
 
@@ -47,7 +55,12 @@ export function createDefaultAchievementCounters(): AchievementCounters {
     perfectMatches: 0,
     categoriesPlayed: {},
     packsUsed: {},
-    contentFeedbackCount: 0
+    contentFeedbackCount: 0,
+    guessesByDifficulty: {},
+    correctByDifficulty: {},
+    correctByCategory: {},
+    soloMatches: 0,
+    tableMatches: 0
   };
 }
 
@@ -55,6 +68,7 @@ export function createDefaultAchievementState(): AchievementState {
   return {
     counters: createDefaultAchievementCounters(),
     modeCounters: {},
+    playerCounters: {},
     unlocked: {}
   };
 }
@@ -83,6 +97,7 @@ export function evaluateAchievementsWithUnlocks(
   const next: AchievementState = {
     counters: { ...state.counters },
     modeCounters: { ...state.modeCounters },
+    playerCounters: { ...state.playerCounters },
     unlocked: { ...state.unlocked }
   };
   const newlyUnlocked: AchievementDefinition[] = [];
@@ -100,10 +115,14 @@ export function evaluateAchievementsWithUnlocks(
 
 export function normalizeAchievementState(state: Partial<AchievementState>): AchievementState {
   const modeCounters = isRecord(state.modeCounters) ? state.modeCounters : {};
+  const playerCounters = isRecord(state.playerCounters) ? state.playerCounters : {};
   return {
     counters: normalizeCounters(state.counters),
     modeCounters: Object.fromEntries(
       Object.entries(modeCounters).map(([modeId, counters]) => [modeId, normalizeCounters(counters)])
+    ),
+    playerCounters: Object.fromEntries(
+      Object.entries(playerCounters).map(([playerKey, counters]) => [playerKey, normalizeCounters(counters)])
     ),
     unlocked: { ...state.unlocked }
   };
@@ -115,7 +134,12 @@ function normalizeCounters(counters: Partial<AchievementCounters> | undefined): 
     ...defaults,
     ...counters,
     categoriesPlayed: { ...defaults.categoriesPlayed, ...counters?.categoriesPlayed },
-    packsUsed: { ...defaults.packsUsed, ...counters?.packsUsed }
+    packsUsed: { ...defaults.packsUsed, ...counters?.packsUsed },
+    guessesByDifficulty: { ...counters?.guessesByDifficulty },
+    correctByDifficulty: { ...counters?.correctByDifficulty },
+    correctByCategory: { ...counters?.correctByCategory },
+    soloMatches: Number.isFinite(counters?.soloMatches) ? counters?.soloMatches ?? 0 : 0,
+    tableMatches: Number.isFinite(counters?.tableMatches) ? counters?.tableMatches ?? 0 : 0
   };
 }
 
@@ -133,6 +157,27 @@ export function updateModeCounters(
     ...state,
     modeCounters: { ...state.modeCounters, [modeId]: update(current) }
   };
+}
+
+export function updatePlayerCounters(
+  state: AchievementState,
+  playerKey: string,
+  update: (counters: AchievementCounters) => AchievementCounters
+): AchievementState {
+  const current = state.playerCounters[playerKey] ?? createDefaultAchievementCounters();
+  return {
+    ...state,
+    playerCounters: { ...state.playerCounters, [playerKey]: update(current) }
+  };
+}
+
+// Personal trophies: derived from a player's own counters, like per-mode.
+export function getCountersProgressView(counters: AchievementCounters, definitions: AchievementDefinition[]) {
+  const items: AchievementProgressItem[] = definitions.map(definition => {
+    const progress = Math.min(definition.getProgress(counters), definition.target);
+    return { definition, progress, unlocked: progress >= definition.target };
+  });
+  return { items, unlockedCount: items.filter(item => item.unlocked).length, totalCount: definitions.length };
 }
 
 export function exportAchievements(state: AchievementState) {

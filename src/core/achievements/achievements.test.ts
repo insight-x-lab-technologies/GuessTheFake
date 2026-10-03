@@ -6,7 +6,9 @@ import {
   getAchievementProgressView,
   getAchievementSummary,
   normalizeAchievementState,
-  updateModeCounters
+  getCountersProgressView,
+  updateModeCounters,
+  updatePlayerCounters
 } from './achievements';
 
 describe('achievement helpers', () => {
@@ -138,5 +140,32 @@ describe('achievement progress by mode', () => {
     expect(view.hasData).toBe(false);
     expect(view.counters.roundsPlayed).toBe(0);
     expect(view.items[0]).toMatchObject({ progress: 0, unlocked: false });
+  });
+});
+
+describe('Onda 13 counters', () => {
+  it('fills new counters and player counters for old data', () => {
+    const state = normalizeAchievementState({ counters: { roundsPlayed: 3 } as never });
+    expect(state.playerCounters).toEqual({});
+    expect(state.counters).toMatchObject({
+      roundsPlayed: 3,
+      guessesByDifficulty: {},
+      correctByDifficulty: {},
+      correctByCategory: {},
+      soloMatches: 0,
+      tableMatches: 0
+    });
+    expect(normalizeAchievementState({ playerCounters: [] as never }).playerCounters).toEqual({});
+  });
+
+  it('updates one player and derives personal trophies from their counters', () => {
+    const state = updatePlayerCounters(createDefaultAchievementState(), 'ana', counters => ({ ...counters, correctGuesses: 1, roundsPlayed: 5 }));
+    expect(state.playerCounters.ana.correctGuesses).toBe(1);
+    expect(state.counters.correctGuesses).toBe(0);
+    const view = getCountersProgressView(state.playerCounters.ana, [
+      { id: 'one', titleKey: 'a', descriptionKey: 'b', target: 1, getProgress: counters => counters.correctGuesses },
+      { id: 'ten', titleKey: 'a', descriptionKey: 'b', target: 10, getProgress: counters => counters.roundsPlayed }
+    ]);
+    expect(view).toMatchObject({ unlockedCount: 1, totalCount: 2 });
   });
 });

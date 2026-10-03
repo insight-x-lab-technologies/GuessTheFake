@@ -108,3 +108,17 @@ disclosures so the primary content stays above the fold.
 
 New screens should reuse the same shell behavior unless the interaction genuinely
 needs a custom surface.
+
+## Presenter View
+
+`PresenterView` (W13-06) is a fixed full-screen overlay for TV/projector. It is
+display-only (Escape or "Exit" closes it) and is the one place where type
+scales with the viewport (`vw` + `vh` clamps), because it is read from across a
+room. Five statement columns above `1100px`, auto-fit below, one column at
+`<= 680px`. Validated at 1440x900 and 820x1180.
+
+## Game Board Additions
+
+Special-round banners live inside the game header so the board keeps its four
+rows. The table-moment panel takes the result panel's row while the phase is
+`discussing`.

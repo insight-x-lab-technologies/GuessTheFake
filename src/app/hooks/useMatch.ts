@@ -1,39 +1,68 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Language } from '../../core/i18n/i18n';
 import type { PlatformSettings } from '../../core/settings/settings';
 import { clearPersistedGuessTheFakeMatch, savePersistedGuessTheFakeMatch } from '../../game/match-storage';
+import { isSoloMode } from '../../game/modes';
+import { getDeprioritizedRoundIds } from '../../game/round-history';
 import {
   advanceRound,
   beginPlaying,
   beginPreparation,
+  changeGuessInDiscussion,
   createInitialGuessTheFakeState,
   getActiveGuessSubject,
   getCurrentRound,
+  getCurrentSpecialRound,
+  getRoundTimeSeconds,
   getWinners,
   recalibrateScores,
+  revealDiscussion,
+  revealNextClue,
   startMatch,
   submitGuess,
-  timeOutRound
+  timeOutRound,
+  voteInDiscussion
 } from '../../game/rules';
+import type { SoloResult } from '../../game/solo-records';
 import type { GuessTheFakeState } from '../../game/types';
 import type { ContentRating } from '../../core/content-feedback/content-feedback';
 import type { Screen, Translate } from '../app-types';
 import type { MatchBoot } from '../match-boot';
 import { getNewMatchNavigationDecision, hasMatchInProgress } from '../new-match-flow';
+import { buildProgressTracks, getNextObjective } from '../progress-tracks';
 import type { AudioController } from './useAudio';
 import type { MatchSetupController } from './useMatchSetup';
 import type { ProgressController } from './useProgress';
 
 export type MatchController = ReturnType<typeof useMatch>;
 
+export type SoloOutcome = {
+  result: SoloResult;
+  previous: SoloResult | null;
+  isNewRecord: boolean;
+};
+
 type MatchOptions = {
   boot: MatchBoot;
   settings: PlatformSettings;
+  updateSettings: (next: Partial<PlatformSettings>) => void;
   t: Translate;
   setup: MatchSetupController;
   audio: Pick<AudioController, 'unlock' | 'play'>;
-  progress: Pick<ProgressController, 'recordRound' | 'recordMatchFinished' | 'rateRound' | 'contentFeedback'>;
+  progress: Pick<
+    ProgressController,
+    | 'recordRound'
+    | 'recordMatchFinished'
+    | 'recordSoloMatch'
+    | 'rateRound'
+    | 'contentFeedback'
+    | 'achievementState'
+    | 'roundHistory'
+    | 'weakRoundIds'
+  >;
+  getSoloKeyForName: (name: string) => string;
   enabledPackIds: string[];
+  categoryIds: string[];
   screen: Screen;
   setScreen: (screen: Screen) => void;
 };
@@ -43,11 +72,14 @@ type MatchOptions = {
 export function useMatch({
   boot,
   settings,
+  updateSettings,
   t,
   setup,
   audio,
   progress,
+  getSoloKeyForName,
   enabledPackIds,
+  categoryIds,
   screen,
   setScreen
 }: MatchOptions) {
@@ -56,6 +88,9 @@ export function useMatch({
   const [showNewMatchChoices, setShowNewMatchChoices] = useState(boot.restored);
   const [activeMatchLanguage, setActiveMatchLanguage] = useState<Language | null>(boot.activeMatchLanguage);
   const [scoreResetStatus, setScoreResetStatus] = useState<'confirm' | 'done' | null>(null);
+  const [soloOutcome, setSoloOutcome] = useState<SoloOutcome | null>(null);
+  // `change-mind` moment: whose guess the next statement click replaces.
+  const [changingSubjectId, setChangingSubjectId] = useState<string | null>(null);
   const restoredTimerRef = useRef(boot.restored);
   const demoPendingRef = useRef(boot.demo);
   // Timer callbacks run later than the render that scheduled them.
@@ -63,6 +98,9 @@ export function useMatch({
   latestRef.current = { settings, audio, progress };
 
   const round = getCurrentRound(gameState);
+  const solo = isSoloMode(gameState.modeId);
+  const specialRound = getCurrentSpecialRound(gameState);
+  const roundTimeSeconds = getRoundTimeSeconds(gameState, settings.roundTimeSeconds);
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const activeSubject = getActiveGuessSubject(gameState);
   const activeSubjectName = activeSubject?.name ?? activePlayer?.name ?? '-';
@@ -73,9 +111,19 @@ export function useMatch({
   const activeMatchUsesPreviousLanguage = hasMatchInProgress(gameState.phase)
     && Boolean(activeMatchLanguage)
     && activeMatchLanguage !== settings.language;
+  const tracks = useMemo(() => buildProgressTracks(categoryIds), [categoryIds]);
+  const nextObjective = useMemo(() => {
+    if (gameState.phase !== 'finished') return null;
+    return getNextObjective(tracks, progress.achievementState.counters, {
+      solo,
+      categoryIds: [...new Set(gameState.rounds.map(matchRound => matchRound.categoryId))],
+      difficulty: gameState.challenge.difficulty === 'all' ? undefined : gameState.challenge.difficulty
+    });
+  }, [gameState.challenge.difficulty, gameState.phase, gameState.rounds, progress.achievementState.counters, solo, tracks]);
 
   useEffect(() => {
     setScoreResetStatus(null);
+    setChangingSubjectId(null);
   }, [screen, gameState.phase, gameState.currentRoundIndex]);
 
   // `?demo=game` waits for the lazily loaded rounds of the active language.
@@ -119,12 +167,12 @@ export function useMatch({
     }
 
     if (gameState.phase === 'playing') {
-      setTimerSeconds(settings.roundTimeSeconds);
+      setTimerSeconds(roundTimeSeconds);
       return;
     }
 
     setTimerSeconds(0);
-  }, [gameState.phase, gameState.currentRoundIndex, settings.preparationTimeSeconds, settings.roundTimeSeconds]);
+  }, [gameState.phase, gameState.currentRoundIndex, settings.preparationTimeSeconds, roundTimeSeconds]);
 
   useEffect(() => {
     if (showNewMatchChoices) return undefined;
@@ -158,7 +206,7 @@ export function useMatch({
     const wakeLock = (navigator as Navigator & {
       wakeLock?: { request: (type: 'screen') => Promise<{ release: () => Promise<void> }> };
     }).wakeLock;
-    if (!wakeLock || !['preparing', 'playing', 'revealed'].includes(gameState.phase)) return undefined;
+    if (!wakeLock || !['preparing', 'playing', 'discussing', 'revealed'].includes(gameState.phase)) return undefined;
 
     let released = false;
     let sentinel: { release: () => Promise<void> } | null = null;
@@ -183,6 +231,7 @@ export function useMatch({
     setTimerSeconds(0);
     setShowNewMatchChoices(false);
     setActiveMatchLanguage(null);
+    setSoloOutcome(null);
     setGameState(createInitialGuessTheFakeState());
     setScreen('play');
   }
@@ -195,6 +244,12 @@ export function useMatch({
     }
 
     openCleanSetup();
+  }
+
+  // Home "Play solo": the setup opens with the solo mode selected.
+  function requestSoloMatch() {
+    requestNewMatch();
+    if (getNewMatchNavigationDecision(gameState.phase) !== 'show-choice') setup.selectMode('solo');
   }
 
   function continueCurrentMatch() {
@@ -218,35 +273,89 @@ export function useMatch({
     const parsedRounds = Number(setup.roundCountInput);
     if (!Number.isFinite(parsedRounds) || parsedRounds < 1) return fail(t('setup.invalidRounds'));
 
+    const soloMatch = isSoloMode(setup.selectedModeId);
     const next = startMatch(createInitialGuessTheFakeState(), {
       modeId: setup.selectedModeId,
       playerNames: effectiveNames,
       totalRounds: parsedRounds,
       rounds: setup.playableRounds,
-      shuffleRounds: settings.shuffleRounds
+      shuffleRounds: settings.shuffleRounds,
+      challenge: {
+        categoryId: setup.selectedCategoryId,
+        difficulty: setup.selectedDifficulty,
+        packIds: setup.installedPackIds
+      },
+      tableMoments: setup.tableMomentsEnabled,
+      specialRounds: setup.specialRoundsEnabled,
+      deprioritizedRoundIds: getDeprioritizedRoundIds(progress.roundHistory, progress.weakRoundIds)
     });
+    if (soloMatch) updateSettings({ lastSoloPlayerName: next.players[0]?.name ?? '' });
     setShowNewMatchChoices(false);
     setActiveMatchLanguage(settings.language);
-    setGameState(settings.autoStartRounds ? beginPreparation(next) : next);
+    setSoloOutcome(null);
+    // Solo skips the pass-the-device ceremony: straight to the statements.
+    if (soloMatch) {
+      audio.play('round-start');
+      setGameState(beginPlaying(next));
+    } else {
+      setGameState(settings.autoStartRounds ? beginPreparation(next) : next);
+    }
     setScreen('play');
     return true;
   }
 
   function chooseStatement(statementId: string) {
     audio.unlock();
+    if (gameState.phase === 'discussing') {
+      if (changingSubjectId) changeGuessInMoment(changingSubjectId, statementId);
+      return;
+    }
     setGameState(current => {
       if (current.phase !== 'playing') return current;
       const latest = latestRef.current;
-      const { state } = submitGuess(current, statementId, getScoring(latest.settings), {
-        remainingSeconds: timerSeconds,
-        totalSeconds: latest.settings.roundTimeSeconds
-      });
-      const anyCorrect = Object.values(state.roundGuesses).some(guess => guess.correct);
-      latest.audio.play(state.phase === 'revealed' ? (anyCorrect ? 'correct' : 'wrong') : 'card-select');
-      if (state.phase === 'revealed') {
-        latest.progress.recordRound(state, Object.values(state.roundGuesses), getCurrentRound(current));
+      let next: GuessTheFakeState;
+      try {
+        next = submitGuess(current, statementId, getScoring(latest.settings), {
+          remainingSeconds: timerSeconds,
+          totalSeconds: getRoundTimeSeconds(current, latest.settings.roundTimeSeconds)
+        }).state;
+      } catch {
+        // A hidden `gradual-clue` statement cannot be chosen yet.
+        return current;
       }
-      return state;
+      const anyCorrect = Object.values(next.roundGuesses).some(guess => guess.correct);
+      latest.audio.play(next.phase === 'revealed' ? (anyCorrect ? 'correct' : 'wrong') : 'card-select');
+      if (next.phase === 'revealed') {
+        latest.progress.recordRound(next, Object.values(next.roundGuesses), getCurrentRound(current));
+      }
+      return next;
+    });
+  }
+
+  function showNextClue() {
+    audio.unlock();
+    setGameState(current => revealNextClue(current));
+  }
+
+  function voteInMoment(subjectId: string) {
+    setGameState(current => voteInDiscussion(current, subjectId));
+  }
+
+  function changeGuessInMoment(subjectId: string, statementId: string) {
+    setChangingSubjectId(null);
+    setGameState(current => changeGuessInDiscussion(current, subjectId, statementId, getScoring(latestRef.current.settings)));
+  }
+
+  function revealMoment() {
+    audio.unlock();
+    setGameState(current => {
+      if (current.phase !== 'discussing') return current;
+      const latest = latestRef.current;
+      const next = revealDiscussion(current);
+      const anyCorrect = Object.values(next.roundGuesses).some(guess => guess.correct);
+      latest.audio.play(anyCorrect ? 'correct' : 'wrong');
+      latest.progress.recordRound(next, Object.values(next.roundGuesses), getCurrentRound(current));
+      return next;
     });
   }
 
@@ -270,11 +379,30 @@ export function useMatch({
     const next = advanceRound(gameState);
 
     if (next.phase === 'finished') {
-      audio.play('match-finished');
       progress.recordMatchFinished(next, enabledPackIds);
+      if (isSoloMode(next.modeId)) {
+        const outcome = progress.recordSoloMatch(next, getSoloKeyForName(next.players[0]?.name ?? ''));
+        setSoloOutcome(outcome);
+        audio.play(outcome?.isNewRecord ? 'correct' : 'match-finished');
+      } else {
+        audio.play('match-finished');
+      }
+      setGameState(next);
+      return;
+    }
+
+    if (isSoloMode(next.modeId)) {
+      audio.play('round-start');
+      setGameState(beginPlaying(next));
+      return;
     }
 
     setGameState(next);
+  }
+
+  // Solo "Play again": same challenge, fresh rounds.
+  function replaySoloChallenge() {
+    startNewMatch({ onValidationError: 'show-setup' });
   }
 
   function rateCurrentRound(rating: ContentRating) {
@@ -286,9 +414,17 @@ export function useMatch({
     gameState,
     timerSeconds,
     round,
+    solo,
+    specialRound,
+    roundTimeSeconds,
     activeSubjectName,
     winners,
     currentRoundFeedbackRating,
+    soloOutcome,
+    nextObjective,
+    tracks,
+    changingSubjectId,
+    startChangingGuess: (subjectId: string | null) => setChangingSubjectId(subjectId),
     showNewMatchChoices,
     hideNewMatchChoices: () => setShowNewMatchChoices(false),
     activeMatchLanguage,
@@ -299,10 +435,16 @@ export function useMatch({
     resetScores,
     openCleanSetup,
     requestNewMatch,
+    requestSoloMatch,
     continueCurrentMatch,
     restartCurrentMatch: () => startNewMatch({ onValidationError: 'show-setup' }),
     startNewMatch,
+    replaySoloChallenge,
     chooseStatement,
+    showNextClue,
+    voteInMoment,
+    changeGuessInMoment,
+    revealMoment,
     beginTurn,
     showStatementsNow,
     continueRound,

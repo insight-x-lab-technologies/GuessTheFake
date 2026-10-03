@@ -46,7 +46,7 @@ export function shouldPlayMusic(settings: AudioSettings, zone: MusicZone) {
 export function getMusicZone(screen: string, phase: string): MusicZone {
   if (screen !== 'play') return 'menu';
   if (phase === 'setup' || phase === 'finished') return 'menu';
-  if (phase === 'intro' || phase === 'preparing' || phase === 'playing' || phase === 'revealed') return 'gameplay';
+  if (phase === 'intro' || phase === 'preparing' || phase === 'playing' || phase === 'discussing' || phase === 'revealed') return 'gameplay';
   return 'silent';
 }
 

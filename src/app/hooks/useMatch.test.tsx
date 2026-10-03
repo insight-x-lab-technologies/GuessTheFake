@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { translate } from '../../core/i18n/i18n';
 import { DEFAULT_SETTINGS, type PlatformSettings } from '../../core/settings/settings';
@@ -19,12 +20,24 @@ const settings: PlatformSettings = {
 };
 const t = (key: string, params: Record<string, string | number> = {}) => translate(translations, 'en', key, params);
 
-function renderMatch() {
+function renderMatch(overrides: Partial<PlatformSettings> = {}) {
   const audio = { unlock: vi.fn(), play: vi.fn() };
   const setScreen = vi.fn<(screen: Screen) => void>();
   const hook = renderHook(() => {
+    const [currentSettings, setSettings] = useState<PlatformSettings>({ ...settings, ...overrides });
+    const updateSettings = (next: Partial<PlatformSettings>) => setSettings(current => ({ ...current, ...next }));
     const progress = useProgress();
-    const setup = useMatchSetup({ enabledPacks: [sampleGuessTheFakePack], contentFeedback: progress.contentFeedback });
+    const getSoloKeyForName = (name: string) => name.trim().toLocaleLowerCase();
+    const setup = useMatchSetup({
+      enabledPacks: [sampleGuessTheFakePack],
+      contentFeedback: progress.contentFeedback,
+      settings: currentSettings,
+      updateSettings,
+      counters: progress.achievementState.counters,
+      feedbackSummary: progress.contentFeedbackSummary,
+      soloRecords: progress.soloRecords,
+      getSoloKeyForName
+    });
     const match = useMatch({
       boot: {
         hasMatch: false,
@@ -34,16 +47,19 @@ function renderMatch() {
         restored: false,
         demo: false
       },
-      settings,
+      settings: currentSettings,
+      updateSettings,
       t,
       setup,
       audio,
       progress,
+      getSoloKeyForName,
       enabledPackIds: [sampleGuessTheFakePack.id],
+      categoryIds: sampleGuessTheFakePack.content.categories.map(category => category.id),
       screen: 'play',
       setScreen
     });
-    return { match, progress };
+    return { match, progress, setup, settings: currentSettings };
   });
   return { ...hook, audio, setScreen };
 }
@@ -145,5 +161,76 @@ describe('useMatch', () => {
     expect(result.current.progress.leaderboard.entries.length).toBeGreaterThan(0);
     expect(result.current.progress.achievementState.modeCounters.classic.matchesFinished).toBe(1);
     expect(result.current.progress.achievementState.counters.matchesFinished).toBe(1);
+  });
+
+  it('plays a solo challenge straight to the statements and keeps the record', () => {
+    const { result } = renderMatch();
+    act(() => {
+      result.current.setup.selectMode('solo');
+    });
+    act(() => {
+      result.current.setup.setSoloPlayerName('Ana');
+      result.current.setup.changeRoundCount('2');
+    });
+
+    function playSolo(correct: boolean) {
+      act(() => {
+        result.current.match.startNewMatch();
+      });
+      for (let step = 0; step < 10 && result.current.match.gameState.phase !== 'finished'; step += 1) {
+        act(() => {
+          const { gameState, round } = result.current.match;
+          if (gameState.phase === 'playing' && round) {
+            const pick = correct ? round.fakeStatementId : round.statements.find(statement => statement.id !== round.fakeStatementId)!.id;
+            result.current.match.chooseStatement(pick);
+          } else if (gameState.phase === 'revealed') {
+            result.current.match.continueRound();
+          }
+        });
+      }
+    }
+
+    act(() => {
+      result.current.match.startNewMatch();
+    });
+    // No turn ceremony and no preparation in solo.
+    expect(result.current.match.gameState.phase).toBe('playing');
+    expect(result.current.settings.lastSoloPlayerName).toBe('Ana');
+
+    playSolo(true);
+    expect(result.current.match.gameState.phase).toBe('finished');
+    expect(result.current.match.soloOutcome).toMatchObject({ isNewRecord: true, previous: null, result: { correct: 2 } });
+    expect(result.current.match.winners).toEqual([]);
+    expect(result.current.progress.leaderboard.entries).toEqual([]);
+    expect(result.current.progress.achievementState.counters.soloMatches).toBe(1);
+    expect(result.current.setup.soloRecord?.correct).toBe(2);
+
+    playSolo(false);
+    expect(result.current.match.soloOutcome).toMatchObject({ isNewRecord: false, previous: { correct: 2 }, result: { correct: 0 } });
+    expect(result.current.match.nextObjective).not.toBeNull();
+  });
+
+  it('holds the reveal for a table moment and records the round when it is revealed', () => {
+    const { result } = renderMatch({ tableMomentsEnabled: true });
+    act(() => {
+      result.current.match.startNewMatch();
+    });
+    act(() => {
+      result.current.match.showStatementsNow();
+    });
+    act(() => {
+      result.current.match.chooseStatement(result.current.match.round?.fakeStatementId ?? '');
+    });
+
+    expect(result.current.match.gameState.phase).toBe('discussing');
+    expect(result.current.progress.achievementState.counters.roundsPlayed).toBe(0);
+
+    act(() => {
+      result.current.match.revealMoment();
+    });
+    expect(result.current.match.gameState.phase).toBe('revealed');
+    expect(result.current.progress.achievementState.counters.roundsPlayed).toBe(1);
+    expect(result.current.progress.achievementState.playerCounters.ana.correctGuesses).toBe(1);
+    expect(result.current.progress.roundHistory.recentRoundIds).toHaveLength(1);
   });
 });

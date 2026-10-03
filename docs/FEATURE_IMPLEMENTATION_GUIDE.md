@@ -117,7 +117,7 @@ Para features que mudam fluxo de tela:
 ### Comandos padrao
 
 ```bash
-npm test        # vitest run (27 arquivos, 103 testes hoje)
+npm test        # vitest run (34 arquivos, 170 testes hoje)
 npm run build   # tsc -b && vite build (typecheck + bundle)
 ```
 

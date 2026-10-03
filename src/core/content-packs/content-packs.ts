@@ -9,8 +9,39 @@ export type ContentPack<TContent> = {
   enabled: boolean;
   builtin?: boolean;
   signature?: string;
+  // W13-07: themed pack presentation. Optional; community packs stay valid
+  // without it.
+  meta?: ContentPackMeta;
   content: TContent;
 };
+
+export type PackAudience = 'family' | 'kids' | 'teens' | 'adults';
+export type PackDifficulty = 'easy' | 'medium' | 'hard' | 'mixed';
+
+export type ContentPackMeta = {
+  cover?: { emoji?: string; color?: string };
+  description?: Record<string, string>;
+  audience?: PackAudience;
+  difficulty?: PackDifficulty;
+  version?: string;
+  author?: string;
+  changelog?: Array<{ version: string; date: string; notes: Record<string, string> }>;
+  license?: ContentPackLicense;
+};
+
+// Ground work for future licensed packs. Nothing is verified yet: a
+// signature is only shown as "unverified", and a pack without a license is a
+// community pack that always installs.
+export type ContentPackLicense = {
+  kind: 'community' | 'premium';
+  publisher?: string;
+  signature?: { algorithm: string; keyId: string; value: string };
+};
+
+export type PackLicenseStatus = 'community' | 'premium-unverified' | 'premium-unsigned';
+
+export const PACK_AUDIENCES: PackAudience[] = ['family', 'kids', 'teens', 'adults'];
+export const PACK_DIFFICULTIES: PackDifficulty[] = ['easy', 'medium', 'hard', 'mixed'];
 
 export type InstalledContentPacksModel<TContent> = {
   packs: Array<ContentPack<TContent>>;
@@ -81,4 +112,38 @@ export function parsePackImport<TContent>(raw: string): ContentPack<TContent> | 
   } catch {
     return null;
   }
+}
+
+export function getPackDescription<TContent>(pack: ContentPack<TContent>, language: string) {
+  const description = pack.meta?.description;
+  if (!description) return '';
+  return description[language] ?? description.en ?? description.pt ?? '';
+}
+
+export function getPackLicenseStatus<TContent>(pack: ContentPack<TContent>): PackLicenseStatus {
+  const license = pack.meta?.license;
+  if (!license || license.kind !== 'premium') return 'community';
+  return license.signature?.value ? 'premium-unverified' : 'premium-unsigned';
+}
+
+// Stable text a future signature will cover: sorted keys, without local
+// state (`enabled`, `builtin`) and without the signatures themselves.
+export function canonicalizePackForSigning<TContent>(pack: ContentPack<TContent>) {
+  const { enabled: _enabled, builtin: _builtin, signature: _signature, ...rest } = pack;
+  const license = rest.meta?.license;
+  const unsigned = license
+    ? { ...rest, meta: { ...rest.meta, license: { kind: license.kind, publisher: license.publisher } } }
+    : rest;
+  return stableStringify(unsigned);
+}
+
+function stableStringify(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(item => stableStringify(item)).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, item]) => item !== undefined)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${stableStringify(item)}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
 }

@@ -4,7 +4,7 @@ Documento de avaliacao do estado atual e plano de evolucao do Guess the Fake:
 um jogo unico, local-first, hobby-friendly, publicado como PWA estatico.
 
 Data da revisao: 2026-09-22
-Ultima atualizacao de implementacao: 2026-10-03 (Onda 9 completa: W9-03 fechado com revisao humana do pack)
+Ultima atualizacao de implementacao: 2026-10-03 (modo solo e Onda 13 completa: W13-01 a W13-07)
 
 > Nota de 2026-08-07: o projeto deixou de ser descrito como "plataforma de
 > varios jogos". Guess the Fake e um jogo isolado. A antiga Onda 6 (registry
@@ -19,11 +19,11 @@ Ultima atualizacao de implementacao: 2026-10-03 (Onda 9 completa: W9-03 fechado 
 
 A base em Vite, React, TypeScript e PWA esta madura. O jogo e completavel do
 inicio ao fim, as regras principais estao cobertas por testes unitarios, e
-`npm test` (27 arquivos, 103 testes) e `npm run build` passam.
+`npm test` (34 arquivos, 170 testes) e `npm run build` passam.
 
-O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8, 9, 10, 11 e 12 completas; Ondas 5
-e 7 entregues com um item parcial cada (adiados); pendencia maior em
-mecanicas sociais novas (Onda 13).
+O ponto atual do roadmap e: **Ondas 0 a 4, 6, 8 a 13 completas; Ondas 5 e 7
+entregues com um item parcial cada (adiados).** O modo solo (desafio pessoal
+com recorde) foi entregue junto com a Onda 13.
 
 Itens parciais e a razao de cada um:
 
@@ -55,7 +55,13 @@ Resumo executivo:
 - **Arquitetura de UI:** `src/app/App.tsx` e so o shell (~215 linhas). Estado,
   timers e efeitos vivem em hooks de `src/app/hooks/`; cada tela e um
   componente visual em `src/app/screens/`.
-- **Proxima prioridade:** validar o modo single player e Onda 13.
+- **Onda 13 e modo solo:** modo `solo` com recordes, momentos de mesa,
+  rodadas especiais, perfis familiares, trilhas de progresso, sugestao de
+  partida, modo apresentador e packs tematicos. Design em
+  `docs/superpowers/specs/2026-10-03-solo-mode-design.md` e
+  `docs/superpowers/specs/2026-10-03-onda-13-design.md`.
+- **Proxima prioridade:** validacao manual em aparelhos reais (apresentador em
+  TV, multi-device com dois aparelhos) e teste de navegador real.
 
 ---
 
@@ -67,7 +73,7 @@ Resumo executivo:
   `preview`.
 - Estrutura de fonte separada em `app`, `core`, `game` e `styles`.
 - Identidade e modos do jogo em `src/game/modes.ts` (`GAME_ID`, `GAME_MODES`),
-  com os modos `classic`, `all-guess` e `teams`.
+  com os modos `solo`, `classic`, `all-guess` e `teams`.
 - Regras puras principais: iniciar partida, normalizar jogadores, iniciar
   rodada, submeter palpite, aplicar pontuacao, avancar rodada, finalizar partida
   e calcular vencedores.
@@ -106,12 +112,17 @@ Resumo executivo:
   editoriais, auditoria automatizada e revisao humana aceita (Onda 9).
 - CI de deploy para GitHub Pages em `.github/workflows/static.yml`, rodando
   `npm test` e `npm run build` a cada push em `main`.
+- Modo solo com recordes por desafio e Onda 13: momentos de mesa, rodadas
+  especiais, perfis familiares, trilhas de progresso, sugestao de partida,
+  modo apresentador e packs tematicos.
 
 ### Parcial
 
 - **Packs:** ha validacao de schema, import/export JSON, ativacao granular,
   persistencia de packs instalados e mensagens de erro. Assinatura atual e um
-  checksum local, nao validacao criptografica/licenciamento.
+  checksum local, nao validacao criptografica/licenciamento. Packs tematicos
+  (W13-07) ja carregam metadados de licenca e string canonica para assinatura,
+  mas nada e verificado ainda.
 - **Multi-device:** transporte funciona por `BroadcastChannel` (abas do mesmo
   dispositivo), WebRTC com troca manual de offer/answer por copiar-colar e
   snapshot offline. Falta pareamento automatico entre dispositivos fisicos e
@@ -131,9 +142,6 @@ Resumo executivo:
 - Ferramenta de autoria de conteudo com UI.
 - Pareamento peer-to-peer automatico entre dispositivos fisicos.
 - Assinatura criptografica/licenciamento de packs.
-- Toda a Onda 13 (momentos de mesa, rodadas especiais, perfis familiares,
-  narrativa de progresso, balanceamento dinamico, modo apresentador e packs
-  tematicos).
 - Lint/format configurados (nao ha ESLint/Prettier no repositorio).
 - Teste de navegador real (Playwright ou equivalente).
 
@@ -735,46 +743,79 @@ contraste, responsividade e acessibilidade.
 Objetivo: evoluir de "quiz funcional" para uma experiencia social unica,
 repetivel e divertida em familia.
 
-1. `[ ]` **W13-01 - Momentos de mesa**
+1. `[x]` **W13-01 - Momentos de mesa**
    - Adicionar prompts opcionais de discussao antes da revelacao: "defenda sua
      escolha", "vote em quem blefou melhor" ou "chance de mudar de ideia".
    - Manter como configuracao para nao alongar partidas rapidas.
    - Testar impacto em modos classico, todos palpitam e times.
+   - Implementado: toggle no setup (lembrado em settings), fase `discussing`
+     em `rules.ts` com `defend`/`vote`/`change-mind` em rodizio, voto +2 pts,
+     troca unica sem bonus de velocidade; timeout revela direto. Testes em
+     `game/rules-variations.test.ts` cobrem os tres modos.
+   - Solo: some (toggle oculto no setup solo, regra forca `false`).
 
-2. `[ ]` **W13-02 - Rodadas especiais**
+2. `[x]` **W13-02 - Rodadas especiais**
    - Criar tipos opcionais de rodada: morte subita, dobro ou nada, pista
      gradual, rodada relampago e desafio por categoria.
    - Modelar em regras puras antes da UI.
    - Permitir desligar rodadas especiais para experiencia classica.
+   - Implementado: `assignSpecialRounds` (uma a cada 3, ultima morte subita),
+     pontuacao em `scoreGuess`, `getRoundTimeSeconds`, `revealNextClue`;
+     banner no tabuleiro e nota no resultado. Desligado por padrao.
+   - Solo: igual; ligar muda a chave do desafio (segmento `special`).
 
-3. `[ ]` **W13-03 - Perfis familiares locais**
+3. `[x]` **W13-03 - Perfis familiares locais**
    - Evoluir jogadores recorrentes com avatar local, cor, apelido, estatisticas
      e trofeus pessoais.
    - Manter tudo local-first e exportavel.
    - Evitar criar conta obrigatoria.
+   - Implementado: `core/profiles` (`gtf.platform.profiles.v1`), tela
+     `profiles` ("Familia"), chips de perfil no setup, avatar no placar,
+     trofeus pessoais via `achievements.playerCounters`; entra no
+     export/import de dados.
+   - Solo: variante; recordes passam para `profile:<id>` e migram ao criar o
+     perfil; o cartao do perfil mostra recordes solo e estatisticas de mesa.
 
-4. `[ ]` **W13-04 - Narrativa de progresso**
+4. `[x]` **W13-04 - Narrativa de progresso**
    - Criar trilhas de conquistas por categoria, dificuldade e estilo de jogo.
    - Mostrar "proximo objetivo" contextual apos partidas.
    - Conectar progresso a packs e curadoria de conteudo.
+   - Implementado: `app/progress-tracks.ts` (categoria, dificuldade, estilo,
+     curadoria) sobre contadores novos; secao "Trilhas" em Trofeus e
+     "Proximo objetivo" nos finais.
+   - Solo: variante; trilha "Mesa" fica fora do objetivo solo.
 
-5. `[ ]` **W13-05 - Balanceamento dinamico de partida**
+5. `[x]` **W13-05 - Balanceamento dinamico de partida**
    - Sugerir dificuldade, quantidade de rodadas e modo com base em jogadores,
      tempo disponivel e historico local.
    - Evitar repetir categorias ou rodadas marcadas como fracas.
    - Manter o usuario no controle final da configuracao.
+   - Implementado: `game/match-suggestion.ts`, cartao "Sugestao" com tempo
+     disponivel e "Aplicar sugestao"; `game/round-history.ts`
+     (`gtf.game.guess-the-fake.round-history.v1`) e rodadas "fracas" vao para
+     o fim do sorteio.
+   - Solo: igual; sugere o desafio perto do recorde.
 
-6. `[ ]` **W13-06 - Modo apresentador**
+6. `[x]` **W13-06 - Modo apresentador**
    - Criar visual de sala para TV/projetor com placar, timer, revelacao e
      efeitos maiores.
    - Integrar com multi-device para host/controlador e tela de exibicao.
    - Validar em desktop widescreen e tablet.
+   - Implementado: `PresenterView` le o snapshot (com `board` localizado);
+     "Tela de exibicao" abre `?join=CODE&presenter=1` em nova janela, guest
+     liga pelo Multi-device. Validado em 1440x900 e 820x1180 (build de
+     producao); falta validacao em TV real.
+   - Solo: some (sem atalho no tabuleiro solo).
 
-7. `[ ]` **W13-07 - Packs tematicos premium/local-first**
+7. `[x]` **W13-07 - Packs tematicos premium/local-first**
    - Criar formato de packs tematicos com capa, descricao, publico recomendado,
      idioma, dificuldade e changelog.
    - Preparar terreno para licenciamento/assinatura criptografica futura sem
      bloquear packs comunitarios locais.
+   - Implementado: `ContentPack.meta` validado em `content-schema`,
+     `getPackLicenseStatus` e `canonicalizePackForSigning`; pack builtin com
+     meta; tela Packs mostra capa, publico, versao, licenca e changelog.
+   - Solo: igual; packs instalados ativos entram na chave do desafio.
 
 ---
 

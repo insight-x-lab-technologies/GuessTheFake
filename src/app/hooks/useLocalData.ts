@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { normalizeAchievementState } from '../../core/achievements/achievements';
 import { normalizeContentFeedback } from '../../core/content-feedback/content-feedback';
 import { exportLeaderboard, importLeaderboard } from '../../core/leaderboard/leaderboard';
+import { normalizeProfiles } from '../../core/profiles/profiles';
 import { normalizeSettings, type PlatformSettings } from '../../core/settings/settings';
 import {
   exportLocalData,
@@ -10,10 +11,13 @@ import {
   saveUserIdentity,
   type UserIdentity
 } from '../../core/user-data/user-data';
+import { normalizeRoundHistory } from '../../game/round-history';
+import { normalizeSoloRecords } from '../../game/solo-records';
 import type { GuessTheFakePackContent } from '../../game/types';
 import type { Translate } from '../app-types';
 import { downloadJson, readTextFile } from '../browser';
 import type { PacksController } from './usePacks';
+import type { ProfilesController } from './useProfiles';
 import type { ProgressController } from './useProgress';
 
 export type LocalDataController = ReturnType<typeof useLocalData>;
@@ -24,13 +28,15 @@ export function useLocalData({
   settings,
   setSettings,
   progress,
-  packs
+  packs,
+  profiles
 }: {
   t: Translate;
   settings: PlatformSettings;
   setSettings: (settings: PlatformSettings) => void;
   progress: ProgressController;
   packs: PacksController;
+  profiles: Pick<ProfilesController, 'profiles' | 'setProfiles'>;
 }) {
   const [userIdentity, setUserIdentity] = useState<UserIdentity>(() => {
     if (typeof localStorage === 'undefined') return { userId: 'gtf-local-demo' };
@@ -47,7 +53,12 @@ export function useLocalData({
         leaderboard: progress.leaderboard,
         achievements: progress.achievementState,
         installedPacks: packs.installedPacks,
-        contentFeedback: progress.contentFeedback
+        contentFeedback: progress.contentFeedback,
+        profiles: profiles.profiles,
+        gameData: {
+          soloRecords: progress.soloRecords,
+          roundHistory: progress.roundHistory
+        }
       })
     );
     setDataStatus(t('settings.dataExported'));
@@ -67,6 +78,9 @@ export function useLocalData({
       progress.setAchievementState(normalizeAchievementState(data.achievements));
       packs.setInstalledPacks(data.installedPacks);
       if (data.contentFeedback) progress.setContentFeedback(normalizeContentFeedback(data.contentFeedback));
+      if (data.profiles) profiles.setProfiles(normalizeProfiles(data.profiles));
+      if (data.gameData?.soloRecords) progress.setSoloRecords(normalizeSoloRecords(data.gameData.soloRecords));
+      if (data.gameData?.roundHistory) progress.setRoundHistory(normalizeRoundHistory(data.gameData.roundHistory));
       setDataStatus(t('settings.dataImported'));
     }, () => setDataStatus(t('settings.dataInvalid')));
   }

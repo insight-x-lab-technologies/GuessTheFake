@@ -2156,6 +2156,629 @@
   }
 }
 
+/* Onda 13 ------------------------------------------------------------- */
+
+/* W13-03 profiles */
+.profileAvatar {
+  align-items: center;
+  background: var(--profile-color, var(--accent));
+  border-radius: 999px;
+  display: inline-flex;
+  flex: none;
+  font-size: 1.15rem;
+  height: 2.2rem;
+  justify-content: center;
+  line-height: 1;
+  width: 2.2rem;
+}
+
+.scoreStrip span.profileAvatar,
+.finalScores span.profileAvatar,
+.profileAvatar[data-size="sm"] {
+  border: 0;
+  font-size: 0.9rem;
+  height: 1.55rem;
+  margin-right: 0.35rem;
+  padding: 0;
+  vertical-align: middle;
+  width: 1.55rem;
+}
+
+.profileAvatar[data-size="lg"] {
+  font-size: 1.7rem;
+  height: 3.2rem;
+  width: 3.2rem;
+}
+
+[data-color="coral"] { --profile-color: #fb7185; }
+[data-color="amber"] { --profile-color: #fbbf24; }
+[data-color="lime"] { --profile-color: #a3e635; }
+[data-color="teal"] { --profile-color: #2dd4bf; }
+[data-color="sky"] { --profile-color: #38bdf8; }
+[data-color="violet"] { --profile-color: #a78bfa; }
+[data-color="rose"] { --profile-color: #f472b6; }
+[data-color="slate"] { --profile-color: #94a3b8; }
+
+.profileChips,
+.momentChoices,
+.avatarPicker,
+.colorPicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.profileChips {
+  margin-top: 0.7rem;
+}
+
+.profileChips button,
+.momentChoices button,
+.avatarPicker button {
+  align-items: center;
+  background: var(--ghost-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 900;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.8rem 0.35rem 0.4rem;
+  transition: transform var(--motion-press), background var(--motion-surface), border-color var(--motion-surface);
+}
+
+.momentChoices button {
+  padding-left: 0.8rem;
+}
+
+.profileChips button[aria-pressed="true"],
+.momentChoices button[aria-pressed="true"],
+.avatarPicker button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.momentChoices button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.avatarPicker button {
+  font-size: 1.3rem;
+  justify-content: center;
+  min-width: 2.75rem;
+  padding: 0.3rem;
+}
+
+.colorPicker button {
+  background: var(--profile-color);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  height: 2.75rem;
+  width: 2.75rem;
+}
+
+.colorPicker button[aria-pressed="true"] {
+  border-color: var(--text);
+  outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.pickerField {
+  border: 0;
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.pickerField legend {
+  color: var(--muted);
+  font-weight: 850;
+  margin-bottom: 0.45rem;
+}
+
+.profilesLayout {
+  align-items: start;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  min-height: 0;
+  overflow: auto;
+}
+
+.profilesLayout form {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.profileList {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+
+.profileCard {
+  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--profile-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  display: grid;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 1rem;
+}
+
+.profileCard header {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.profileCard header span:not(.profileAvatar) {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.profileCard .helperText {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* W13-01 / W13-02 table moments and special rounds */
+.switchField span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.switchField small {
+  font-size: var(--text-small);
+  font-weight: 700;
+}
+
+.specialBanner {
+  align-items: center;
+  animation: scorePop 260ms ease-out both;
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--border));
+  border-radius: 999px;
+  color: var(--text);
+  display: inline-flex;
+  flex-wrap: wrap;
+  font-size: var(--text-small);
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+  max-width: 100%;
+  padding: 0.4rem 0.8rem;
+}
+
+.specialBanner span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.specialNote {
+  color: var(--text) !important;
+  font-weight: 850;
+  margin-top: 0.4rem !important;
+}
+
+.statementHidden {
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.statementHidden strong {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.statementPicked {
+  border-color: var(--accent);
+}
+
+.momentPanel {
+  align-items: center;
+  animation: scorePop 260ms ease-out both;
+  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--card-border));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 1rem;
+}
+
+.momentPanel p:not(.kicker) {
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0 0 0.5rem;
+}
+
+.momentPanel h3 {
+  margin: 0 0 0.25rem;
+}
+
+.momentPanel .helperText {
+  margin-top: 0.5rem;
+}
+
+.guessSummary i {
+  font-style: normal;
+}
+
+/* Solo mode and W13-04 objective */
+.recordLine {
+  align-items: center;
+  display: flex;
+  font-weight: 900;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+}
+
+.recordBadge {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-weight: 900;
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+}
+
+.recordBadge[data-state="new"] {
+  animation: scorePop 320ms ease-out both;
+  background: color-mix(in srgb, var(--correct) 26%, var(--surface));
+  border-color: var(--correct);
+}
+
+.finalScores span svg {
+  margin-right: 0.3rem;
+  vertical-align: -0.15rem;
+}
+
+.objectiveCard {
+  align-items: center;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  gap: 0.7rem;
+  max-width: min(100%, 32rem);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+
+.objectiveCard div {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.objectiveCard span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.objectiveCard progress,
+.trackCard progress {
+  width: 100%;
+}
+
+.soloRecords,
+.trackSection {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.sectionHeading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: space-between;
+}
+
+.sectionHeading h3,
+.trackSection h3,
+.smallCard h3.cardTitle {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.trackGrid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+}
+
+.trackCard {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.trackCard span,
+.trackCard small {
+  color: var(--muted);
+  font-size: var(--text-small);
+  font-weight: 800;
+}
+
+.trackGroup {
+  text-transform: uppercase;
+}
+
+/* W13-05 suggestion */
+.reasonList {
+  color: var(--muted);
+  display: grid;
+  font-size: var(--text-small);
+  font-weight: 800;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+/* W13-07 themed packs */
+.packCover {
+  align-items: center;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  font-size: 1.6rem;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.tagList span[data-license="community"] {
+  border-color: color-mix(in srgb, var(--correct) 50%, var(--border));
+}
+
+.tagList span[data-license^="premium"] {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+}
+
+.changelog summary {
+  cursor: pointer;
+  font-weight: 900;
+  min-height: 2.75rem;
+  padding: 0.6rem 0;
+}
+
+.changelog ul {
+  color: var(--muted);
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+/* W13-06 presenter: a room view for TV/projector. Big type is the point. */
+.presenter {
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  gap: clamp(1rem, 2.4vh, 2rem);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  inset: 0;
+  overflow: auto;
+  padding: clamp(1rem, 3vw, 3rem);
+  position: fixed;
+  z-index: 50;
+}
+
+.presenterHeader {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.presenterHeader h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.2vw, 4.5rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.presenterBadge,
+.presenterTimer {
+  align-items: center;
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: clamp(1.1rem, 2vw, 2rem);
+  font-weight: 950;
+  gap: 0.6rem;
+  padding: 0.5rem 1.2rem;
+}
+
+.presenterTimer strong {
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 1;
+}
+
+.presenterClose {
+  align-items: center;
+  background: var(--ghost-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 900;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+}
+
+.presenterBoard {
+  align-content: center;
+  display: grid;
+  gap: clamp(0.8rem, 2vh, 1.6rem);
+  min-height: 0;
+}
+
+.presenterPrompt {
+  font-size: clamp(1.4rem, 2vw + 1vh, 3rem);
+  font-weight: 950;
+  margin: 0;
+  text-align: center;
+}
+
+.presenterPrompt span {
+  color: var(--muted);
+}
+
+.presenterStatements {
+  display: grid;
+  gap: clamp(0.6rem, 1.4vw, 1.2rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.presenterStatements li {
+  background: var(--word-card-bg);
+  border: 2px solid var(--word-card-border);
+  border-radius: var(--radius-lg);
+  display: grid;
+  gap: 0.6rem;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: clamp(0.8rem, 1.6vw, 1.6rem);
+}
+
+.presenterStatements li strong {
+  font-size: clamp(1.15rem, 1.4vw + 0.9vh, 2.1rem);
+  line-height: 1.3;
+}
+
+.presenterStatements li em {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: clamp(0.9rem, 1.2vw, 1.3rem);
+  font-style: normal;
+  font-weight: 900;
+  gap: 0.3rem;
+  text-transform: uppercase;
+}
+
+.presenterStatements li[data-state="hidden"] {
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.presenterStatements li[data-state="picked"] {
+  border-color: var(--accent);
+}
+
+.presenterStatements li[data-state="fake"] {
+  animation: revealLift 260ms ease-out both;
+  border-color: var(--correct);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--correct) 35%, transparent);
+}
+
+.presenterStatements li[data-state="wrong"] {
+  border-color: var(--wrong);
+}
+
+.presenterNumber {
+  align-items: center;
+  background: var(--accent);
+  border-radius: 999px;
+  color: var(--accent-contrast);
+  display: inline-flex;
+  font-size: clamp(1rem, 1.4vw, 1.5rem);
+  font-weight: 950;
+  height: 2.4em;
+  justify-content: center;
+  width: 2.4em;
+}
+
+.presenterExplanation {
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1.6vw, 1.8rem);
+  line-height: 1.45;
+  margin: 0 auto;
+  max-width: 70rem;
+  text-align: center;
+}
+
+.presenterScores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.presenterScores li {
+  align-items: center;
+  background: var(--current-player-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: clamp(1.1rem, 1.8vw, 2rem);
+  gap: 0.7rem;
+  padding: 0.5rem 1.2rem;
+}
+
+.presenterScores li[data-leader="true"] {
+  border-color: var(--correct);
+}
+
+@media (min-width: 1101px) {
+  .presenterStatements {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .profilesLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .momentPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .presenterStatements {
+    grid-template-columns: 1fr;
+  }
+
+  .objectiveCard {
+    width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ambientBackdrop::before,
   .ambientBackdrop::after,
@@ -2168,7 +2791,14 @@
   .nav button,
   .statementCard,
   .guessSummary span,
-  .themePreview {
+  .themePreview,
+  .specialBanner,
+  .momentPanel,
+  .recordBadge,
+  .presenterStatements li,
+  .profileChips button,
+  .momentChoices button,
+  .avatarPicker button {
     animation: none;
     transition: none;
   }

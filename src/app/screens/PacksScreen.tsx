@@ -1,6 +1,6 @@
 import { Download, ListChecks, Star, Upload } from 'lucide-react';
 import { useRef } from 'react';
-import { getPackTitle } from '../../core/content-packs/content-packs';
+import { getPackDescription, getPackLicenseStatus, getPackTitle } from '../../core/content-packs/content-packs';
 import type { Language } from '../../core/i18n/i18n';
 import { Button } from '../../core/ui/Button';
 import type { LocalizeText, Translate } from '../app-types';
@@ -56,8 +56,25 @@ export function PacksScreen({
         <div className={styles.list}>
           {packs.packValidations.map(({ pack, validation }) => (
             <article key={pack.id} className={styles.smallCard}>
-              <ListChecks size={22} />
+              {pack.meta?.cover?.emoji ? (
+                <span
+                  className={styles.packCover}
+                  style={pack.meta.cover.color ? { background: pack.meta.cover.color } : undefined}
+                  aria-hidden="true"
+                >
+                  {pack.meta.cover.emoji}
+                </span>
+              ) : <ListChecks size={22} />}
               <h3 className={styles.cardTitle}>{getPackTitle(pack, language)}</h3>
+              {getPackDescription(pack, language) ? <p>{getPackDescription(pack, language)}</p> : null}
+              <div className={styles.tagList}>
+                <span data-license={getPackLicenseStatus(pack)}>{t(`packMeta.license.${getPackLicenseStatus(pack)}`)}</span>
+                {pack.meta?.audience ? <span>{t(`packMeta.audience.${pack.meta.audience}`)}</span> : null}
+                {pack.meta?.difficulty ? <span>{t(`packMeta.difficulty.${pack.meta.difficulty}`)}</span> : null}
+                {pack.meta?.version ? <span>{t('packMeta.version', { version: pack.meta.version })}</span> : null}
+                {pack.languages?.length ? <span>{pack.languages.map(code => code.toUpperCase()).join(' · ')}</span> : null}
+              </div>
+              {pack.meta?.author ? <span>{t('packMeta.author', { author: pack.meta.author })}</span> : null}
               <p>
                 {t('packs.roundSummary', {
                   rounds: pack.content.rounds.length,
@@ -66,6 +83,18 @@ export function PacksScreen({
               </p>
               <span>{t('packs.signature')}: {pack.signature ?? 'local-builtin-v1'}</span>
               {!validation.ok ? <p className={styles.errorText}>{validation.issues[0]?.message}</p> : null}
+              {pack.meta?.changelog?.length ? (
+                <details className={styles.changelog}>
+                  <summary>{t('packMeta.changelog')}</summary>
+                  <ul>
+                    {pack.meta.changelog.map(entry => (
+                      <li key={`${entry.version}-${entry.date}`}>
+                        <b>{entry.version}</b> · {entry.date} · {entry.notes[language] ?? entry.notes.en ?? Object.values(entry.notes)[0]}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : null}
               <div className={styles.feedbackActions}>
                 <label className={styles.switchField}>
                   <input

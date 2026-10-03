@@ -7,6 +7,7 @@ import {
   normalizeAchievementState,
   saveAchievements,
   updateModeCounters,
+  updatePlayerCounters,
   type AchievementCounters,
   type AchievementDefinition,
   type AchievementModeFilter,
@@ -31,10 +32,23 @@ import {
   type LeaderboardModel,
   type LeaderboardSort
 } from '../../core/leaderboard/leaderboard';
-import { GAME_ID } from '../../game/modes';
+import { GAME_ID, isSoloMode } from '../../game/modes';
+import { loadRoundHistory, recordPlayedRounds, saveRoundHistory, type RoundHistoryModel } from '../../game/round-history';
+import {
+  createEmptySoloRecords,
+  getSoloChallengeFromState,
+  getSoloChallengeKey,
+  getSoloResult,
+  listSoloRecords,
+  loadSoloRecords,
+  recordSoloResult,
+  saveSoloRecords,
+  type SoloRecordsModel,
+  type SoloResult
+} from '../../game/solo-records';
 import type { GuessResult, GuessTheFakeRound, GuessTheFakeState } from '../../game/types';
 import { achievementDefinitions } from '../achievement-definitions';
-import { getLeaderboardRows } from '../match-summary';
+import { getLeaderboardRows, getPlayerCounterKey, getResultPlayerNames } from '../match-summary';
 import { memoryStorage } from './storage-fallback';
 
 export type ProgressController = ReturnType<typeof useProgress>;
@@ -51,6 +65,12 @@ export function useProgress() {
   });
   const [contentFeedback, setContentFeedback] = useState<ContentFeedbackModel>(() =>
     loadContentFeedback(typeof localStorage === 'undefined' ? memoryStorage : localStorage)
+  );
+  const [soloRecords, setSoloRecordsState] = useState<SoloRecordsModel>(() =>
+    loadSoloRecords(typeof localStorage === 'undefined' ? memoryStorage : localStorage)
+  );
+  const [roundHistory, setRoundHistoryState] = useState<RoundHistoryModel>(() =>
+    loadRoundHistory(typeof localStorage === 'undefined' ? memoryStorage : localStorage)
   );
   const [achievementNotice, setAchievementNotice] = useState<AchievementDefinition | null>(null);
   const [leaderboardSort, setLeaderboardSort] = useState<LeaderboardSort>('wins');
@@ -88,6 +108,22 @@ export function useProgress() {
     [achievementModeFilter, achievementState]
   );
 
+  const soloRecordRows = useMemo(() => listSoloRecords(soloRecords), [soloRecords]);
+  const weakRoundIds = useMemo(
+    () => contentFeedback.entries.filter(entry => entry.rating === 'down').map(entry => entry.roundId),
+    [contentFeedback.entries]
+  );
+
+  function setSoloRecords(next: SoloRecordsModel) {
+    if (typeof localStorage !== 'undefined') saveSoloRecords(next);
+    setSoloRecordsState(next);
+  }
+
+  function setRoundHistory(next: RoundHistoryModel) {
+    if (typeof localStorage !== 'undefined') saveRoundHistory(next);
+    setRoundHistoryState(next);
+  }
+
   function setLeaderboard(next: LeaderboardModel) {
     saveLeaderboard(next);
     setLeaderboardState(next);
@@ -113,32 +149,89 @@ export function useProgress() {
 
   function recordRound(nextState: GuessTheFakeState, results: GuessResult[], round: GuessTheFakeRound | null) {
     const correctCount = results.filter(result => result.correct).length;
-    updateCounters(nextState.modeId, counters => ({
+    const addRound = (counters: AchievementCounters, guesses: number, correct: number, streak: number): AchievementCounters => ({
       ...counters,
       roundsPlayed: counters.roundsPlayed + 1,
-      correctGuesses: counters.correctGuesses + correctCount,
-      longestStreak: Math.max(counters.longestStreak, nextState.longestStreakInMatch),
+      correctGuesses: counters.correctGuesses + correct,
+      longestStreak: Math.max(counters.longestStreak, streak),
       categoriesPlayed: round
-        ? {
-          ...counters.categoriesPlayed,
-          [round.categoryId]: (counters.categoriesPlayed[round.categoryId] ?? 0) + 1
-        }
-        : counters.categoriesPlayed
-    }));
+        ? { ...counters.categoriesPlayed, [round.categoryId]: (counters.categoriesPlayed[round.categoryId] ?? 0) + 1 }
+        : counters.categoriesPlayed,
+      guessesByDifficulty: round
+        ? { ...counters.guessesByDifficulty, [round.difficulty]: (counters.guessesByDifficulty[round.difficulty] ?? 0) + guesses }
+        : counters.guessesByDifficulty,
+      correctByDifficulty: round
+        ? { ...counters.correctByDifficulty, [round.difficulty]: (counters.correctByDifficulty[round.difficulty] ?? 0) + correct }
+        : counters.correctByDifficulty,
+      correctByCategory: round
+        ? { ...counters.correctByCategory, [round.categoryId]: (counters.correctByCategory[round.categoryId] ?? 0) + correct }
+        : counters.correctByCategory
+    });
+    updateAchievements(current => {
+      let next = updateModeCounters(
+        { ...current, counters: addRound(current.counters, results.length, correctCount, nextState.longestStreakInMatch) },
+        nextState.modeId,
+        counters => addRound(counters, results.length, correctCount, nextState.longestStreakInMatch)
+      );
+      // Personal trophies: each player behind a guess (team members too).
+      results.forEach(result => {
+        const streak = result.correct ? (result.previousStreak ?? 0) + 1 : 0;
+        getResultPlayerNames(nextState, result).forEach(name => {
+          next = updatePlayerCounters(next, getPlayerCounterKey(name), counters =>
+            addRound(counters, 1, result.correct ? 1 : 0, streak)
+          );
+        });
+      });
+      return next;
+    });
+    if (round) setRoundHistory(recordPlayedRounds(roundHistory, [round.id]));
   }
 
   function recordMatchFinished(finalState: GuessTheFakeState, packIds: string[]) {
-    setLeaderboard(recordLeaderboardMatch(leaderboard, GAME_ID, finalState.modeId, getLeaderboardRows(finalState)));
-    updateCounters(finalState.modeId, counters => ({
+    const solo = isSoloMode(finalState.modeId);
+    // A solo challenge has a record, not a win: it stays off the leaderboard.
+    if (!solo) {
+      setLeaderboard(recordLeaderboardMatch(leaderboard, GAME_ID, finalState.modeId, getLeaderboardRows(finalState)));
+    }
+    const finishMatch = (counters: AchievementCounters, perfect: boolean): AchievementCounters => ({
       ...counters,
       matchesFinished: counters.matchesFinished + 1,
-      perfectMatches: counters.perfectMatches + (finalState.correctGuessesInMatch === finalState.totalRounds ? 1 : 0),
+      perfectMatches: counters.perfectMatches + (perfect ? 1 : 0),
       longestStreak: Math.max(counters.longestStreak, finalState.longestStreakInMatch),
+      soloMatches: counters.soloMatches + (solo ? 1 : 0),
+      tableMatches: counters.tableMatches + (solo ? 0 : 1),
       packsUsed: packIds.reduce(
         (used, packId) => ({ ...used, [packId]: (used[packId] ?? 0) + 1 }),
         { ...counters.packsUsed }
       )
-    }));
+    });
+    const perfect = finalState.correctGuessesInMatch === finalState.totalRounds;
+    updateAchievements(current => {
+      let next = updateModeCounters(
+        { ...current, counters: finishMatch(current.counters, perfect) },
+        finalState.modeId,
+        counters => finishMatch(counters, perfect)
+      );
+      finalState.players.forEach(player => {
+        next = updatePlayerCounters(next, getPlayerCounterKey(player.name), counters =>
+          finishMatch(counters, solo && perfect)
+        );
+      });
+      return next;
+    });
+  }
+
+  // Solo: keeps the best result per player and challenge.
+  function recordSoloMatch(finalState: GuessTheFakeState, playerKey: string): {
+    result: SoloResult;
+    previous: SoloResult | null;
+    isNewRecord: boolean;
+  } | null {
+    const result = getSoloResult(finalState);
+    if (!result) return null;
+    const recorded = recordSoloResult(soloRecords, playerKey, getSoloChallengeKey(getSoloChallengeFromState(finalState)), result);
+    if (recorded.isNewRecord) setSoloRecords(recorded.model);
+    return { result, previous: recorded.previous, isNewRecord: recorded.isNewRecord };
   }
 
   function rateRound(round: GuessTheFakeRound, rating: ContentRating, modeId: string) {
@@ -178,8 +271,16 @@ export function useProgress() {
     contentFeedback,
     setContentFeedback,
     contentFeedbackSummary,
+    soloRecords,
+    soloRecordRows,
+    setSoloRecords,
+    clearSoloRecords: () => setSoloRecords(createEmptySoloRecords()),
+    roundHistory,
+    setRoundHistory,
+    weakRoundIds,
     recordRound,
     recordMatchFinished,
+    recordSoloMatch,
     rateRound
   };
 }

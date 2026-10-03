@@ -4,7 +4,7 @@ Guess the Fake is a single, self-contained local-first web game: among five
 statements, find the fake one. There is no backend, no account, and no
 multi-game shell. Everything ships as a static PWA.
 
-Verified against the code on 2026-09-22.
+Verified against the code on 2026-10-03.
 
 ## Goals
 
@@ -26,7 +26,7 @@ Verified against the code on 2026-09-22.
 - React 19 for component structure.
 - TypeScript 5 for explicit contracts.
 - CSS Modules plus global design tokens.
-- Vitest 4 + jsdom + Testing Library (27 test files, 103 tests).
+- Vitest 4 + jsdom + Testing Library (34 test files, 170 tests).
 - vite-plugin-pwa for manifest and service worker generation.
 - lucide-react for iconography, qrcode for local invite QR codes.
 
@@ -49,7 +49,9 @@ src/
     navigation.tsx       # screen list, icons, tone classes, label keys
     achievement-definitions.ts
     match-boot.ts        # ?demo=game / persisted match / clean boot
-    match-summary.ts     # pure: score rows, leaderboard rows, companion snapshot
+    match-summary.ts     # pure: score rows, leaderboard rows, companion snapshot, presenter board
+    progress-tracks.ts   # pure: progress tracks and the next objective (W13-04)
+    solo-labels.ts       # solo challenge / player labels
     browser.ts           # download, file read, clipboard, external links
     peer-connection.ts   # BroadcastChannel/WebRTC support, ICE, QR fallback
     accessibility.ts
@@ -67,11 +69,14 @@ src/
       useMatch.ts        # match state, countdown timers, persistence, wake lock
       useMultiDevice.ts  # companion session, BroadcastChannel, manual WebRTC, QR
       useGrowth.ts       # share, donations, PWA install prompt
+      useProfiles.ts     # local family profiles, stats, personal trophies
     screens/             # presentational components, data + callbacks by props
       HomeScreen, NewMatchChoiceScreen, SetupScreen, GameBoardScreen,
       StatementGrid, RoundResultPanel, FinalResultPanel, LeaderboardScreen,
       AchievementsScreen, PacksScreen, MultiDeviceScreen, GrowthScreen,
-      SettingsScreen, ScreenHeader (+ ResponsiveActions), ScoreResetFeedback
+      SettingsScreen, ScreenHeader (+ ResponsiveActions), ScoreResetFeedback,
+      ProfilesScreen, PresenterView, SoloResultPanel, TableMomentPanel,
+      NextObjectiveCard, ProfileAvatar
     *.test.ts(x)         # accessibility, new-match-flow, setup-filters,
                          # match-summary, match-persistence,
                          # gameplay-click-feedback, score-recalibration,
@@ -86,6 +91,7 @@ src/
     i18n/
     leaderboard/
     multiplayer/
+    profiles/            # local family profiles (W13-03)
     settings/
     share/
     storage/
@@ -93,8 +99,11 @@ src/
     ui/                  # Button.tsx + Button.module.css
     user-data/
   game/                  # Guess the Fake domain
-    modes.ts             # GAME_ID + GAME_MODES
-    rules.ts             # pure round/score logic
+    modes.ts             # GAME_ID + GAME_MODES + isSoloMode
+    rules.ts             # pure round/score logic, table moments, special rounds
+    solo-records.ts      # solo challenge keys and personal records
+    match-suggestion.ts  # pure suggested setup (W13-05)
+    round-history.ts     # recently played rounds, drawn last
     types.ts
     content-schema.ts
     match-storage.ts
@@ -154,11 +163,14 @@ completely.
 - `core/settings`: language, theme, font scale, audio, timers, scoring.
 - `core/leaderboard`: score history keyed by `gameId` and `modeId`.
 - `core/achievements`: declarative achievement definitions and progress,
-  with counters kept globally and per `modeId` (`getAchievementProgressView`).
+  with counters kept globally, per `modeId` (`getAchievementProgressView`),
+  and per local player (`playerCounters`, personal trophies).
 - `core/content-packs`: installable pack validation and activation.
 - `core/content-feedback`: per-round rating, "do not repeat", and aggregates.
 - `core/audio`: track library, fades, unlock-on-interaction, synthesized SFX.
-- `core/multiplayer`: companion-device session primitives and transports.
+- `core/multiplayer`: companion-device session primitives and transports;
+  snapshots may carry a localized `board` for the presenter view.
+- `core/profiles`: local family profiles (name, nickname, avatar, color).
 - `core/share`: Web Share API, clipboard fallback, and web intents.
 - `core/user-data`: local user id plus import/export of all local data.
 - `core/ui`: the shared `Button` component.
@@ -185,8 +197,14 @@ export type GameMode = {
   maxPlayers: number;
 };
 
-export const GAME_MODES: GameMode[] = [/* classic, all-guess, teams */];
+export const GAME_MODES: GameMode[] = [/* solo, classic, all-guess, teams */];
+export function isSoloMode(modeId: string): boolean;
 ```
+
+Rule: anything that behaves differently for one player asks
+`isSoloMode(modeId)`, never `players.length`. Every new mechanic declares its
+solo behavior as same, variant, or hidden (see
+`docs/superpowers/specs/2026-10-03-solo-mode-design.md`, section 4).
 
 `GAME_ID` is the key used by leaderboard entries, pack validation, and
 multiplayer snapshots. `GAME_MODES` drives the setup mode picker and the mode
@@ -214,8 +232,8 @@ There is deliberately no state library and no router.
 - Session state lives in `useState`/`useRef` inside the hooks of `app/hooks/`;
   `App()` only holds the active screen.
 - Screen selection is a string union rendered conditionally:
-  `'home' | 'play' | 'leaderboard' | 'achievements' | 'packs' | 'multiDevice' |
-  'growth' | 'settings'`. `?demo=game` is the only deep link.
+  `'home' | 'play' | 'leaderboard' | 'achievements' | 'profiles' | 'packs' | 'multiDevice' |
+  'growth' | 'settings'`. `?demo=game` and `?join=CODE[&presenter=1]` are the deep links.
 - Durable state goes through the versioned `core/*` modules, each exposing
   `load*`/`save*` over `core/storage`.
 - State transitions belong to pure functions in `game/rules.ts`. React holds the
@@ -239,7 +257,11 @@ export type GuessTheFakeStatement = {
 };
 ```
 
-Match flow: `setup -> intro -> preparing -> playing -> revealed -> finished`.
+Match flow: `setup -> intro -> preparing -> playing -> [discussing] -> revealed -> finished`.
+
+Solo skips `intro`/`preparing` in the hook (straight to `playing`).
+`discussing` only exists with table moments on (W13-01). Optional special
+rounds (W13-02) are assigned per match in `state.specialRounds`.
 
 1. Configure players, teams, rounds, categories, difficulty, and packs.
 2. Draw one round containing five statements.
@@ -284,8 +306,21 @@ gtf.platform.content-packs.v1
 gtf.platform.content-feedback.v2   # migrates from v1
 gtf.platform.multiplayer-session.v1
 gtf.platform.user-id.v1
+gtf.platform.profiles.v1
 gtf.game.guess-the-fake.quick-game.v1
+gtf.game.guess-the-fake.solo-records.v1
+gtf.game.guess-the-fake.round-history.v1
 ```
+
+Onda 13 additions that did not bump a version: the quick-game state gained
+`challenge`, `tableMoments`, `tableMoment`, `specialRoundsEnabled`,
+`specialRounds`, and `revealedClues` (`match-storage` fills defaults for older
+saves); achievements gained `playerCounters` and new counters
+(`guessesByDifficulty`, `correctByDifficulty`, `correctByCategory`,
+`soloMatches`, `tableMatches`), filled by `normalizeAchievementState`;
+settings gained `lastSoloPlayerName`, `tableMomentsEnabled`,
+`specialRoundsEnabled`, and `suggestionMinutes`. The local data export now
+includes `profiles` and `gameData` (solo records, round history).
 
 `gtf.platform.achievements.v1` gained an optional `modeCounters` record in
 2026-09. It is additive: `normalizeAchievementState` fills it with `{}` for old
@@ -339,13 +374,15 @@ Multi-device is optional and strictly serverless. Three transports exist in
   (copy/paste or QR), public STUN by default and `VITE_GTF_STUN_URLS` override.
 - `manual-offline`: exported/imported JSON snapshots.
 
-Guests are read-only spectators of a `MultiplayerGameSnapshot`. Do not add a
+Guests are read-only spectators of a `MultiplayerGameSnapshot`. The presenter
+view (W13-06) renders the same snapshot full screen; "Display screen" hosts the
+session if needed and opens `?join=CODE&presenter=1` in a new window. Do not add a
 signaling server, lobby, or room backend without an explicit product decision —
 it breaks the static-hosting constraint.
 
 ## Testing Strategy
 
-Present today (27 files, 103 tests):
+Present today (34 files, 170 tests):
 
 - Round and scoring rule tests (`game/rules.test.ts`).
 - Content validation tests (`game/content-schema.test.ts`).

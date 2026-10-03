@@ -1,4 +1,4 @@
-import { AtSign, Download, ListChecks, RotateCcw, Star, Trophy, Upload } from 'lucide-react';
+import { AtSign, Download, ListChecks, Medal, RotateCcw, Star, Trophy, Upload } from 'lucide-react';
 import { useRef } from 'react';
 import type { LeaderboardSort } from '../../core/leaderboard/leaderboard';
 import { Button } from '../../core/ui/Button';
@@ -12,11 +12,15 @@ import styles from '../App.module.css';
 export function LeaderboardScreen({
   t,
   progress,
-  localData
+  localData,
+  challengeLabel,
+  soloPlayerLabel
 }: {
   t: Translate;
   progress: ProgressController;
   localData: LocalDataController;
+  challengeLabel: (challengeKey: string) => string;
+  soloPlayerLabel: (playerKey: string) => string;
 }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const summary = progress.leaderboardSummary;
@@ -67,7 +71,7 @@ export function LeaderboardScreen({
           <span>{t('leaderboard.mode')}</span>
           <select value={progress.leaderboardModeFilter} onChange={event => progress.setLeaderboardModeFilter(event.target.value)}>
             <option value="all">{t('leaderboard.allModes')}</option>
-            {GAME_MODES.map(mode => (
+            {GAME_MODES.filter(mode => !mode.solo).map(mode => (
               <option key={mode.id} value={mode.id}>{t(mode.titleKey)}</option>
             ))}
           </select>
@@ -133,6 +137,38 @@ export function LeaderboardScreen({
       ) : (
         <p>{t('leaderboard.empty')}</p>
       )}
+      <section className={styles.soloRecords} aria-label={t('solo.recordsTitle')}>
+        <div className={styles.sectionHeading}>
+          <h3 className={styles.cardTitle}><Medal size={18} /> {t('solo.recordsTitle')}</h3>
+          {progress.soloRecordRows.length ? (
+            <Button variant="ghost" icon={<RotateCcw size={16} />} onClick={progress.clearSoloRecords}>
+              {t('solo.recordsClear')}
+            </Button>
+          ) : null}
+        </div>
+        {progress.soloRecordRows.length ? (
+          <div className={styles.list}>
+            {progress.soloRecordRows.map(row => (
+              <div key={`${row.playerKey}-${row.challengeKey}`} className={styles.listRow}>
+                <div className={styles.rankIdentity}>
+                  <strong>{row.points}</strong>
+                  <div>
+                    <b>{soloPlayerLabel(row.playerKey)}</b>
+                    <span>{challengeLabel(row.challengeKey)}</span>
+                  </div>
+                </div>
+                <span>{t('solo.recordRow', {
+                  correct: row.correct,
+                  total: row.totalRounds,
+                  date: row.achievedAt.slice(0, 10)
+                })}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className={styles.helperText}>{t('solo.recordsEmpty')}</p>
+        )}
+      </section>
       {localData.dataStatus ? <p className={styles.helperText}>{localData.dataStatus}</p> : null}
     </section>
   );

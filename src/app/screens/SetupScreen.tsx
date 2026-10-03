@@ -1,9 +1,11 @@
-import { AtSign, CheckCircle2, ListChecks, Play, Star } from 'lucide-react';
+import { AtSign, CheckCircle2, Lightbulb, ListChecks, Play, Sparkles, Star, Trophy } from 'lucide-react';
+import type { LocalProfile } from '../../core/profiles/profiles';
 import { Button } from '../../core/ui/Button';
 import { GAME_MODES } from '../../game/modes';
 import type { GuessTheFakeDifficulty, GuessTheFakeModeId } from '../../game/types';
 import type { LocalizeText, Translate } from '../app-types';
-import type { MatchSetupController } from '../hooks/useMatchSetup';
+import { SUGGESTION_MINUTE_OPTIONS, type MatchSetupController } from '../hooks/useMatchSetup';
+import { ProfileAvatar } from './ProfileAvatar';
 import { ScreenHeader } from './ScreenHeader';
 import styles from '../App.module.css';
 
@@ -11,12 +13,14 @@ export function SetupScreen({
   t,
   text,
   setup,
+  profiles,
   contentStatus,
   onStart
 }: {
   t: Translate;
   text: LocalizeText;
   setup: MatchSetupController;
+  profiles: LocalProfile[];
   contentStatus: 'loading' | 'ready' | 'error';
   onStart: () => void;
 }) {
@@ -26,6 +30,15 @@ export function SetupScreen({
     ? t('setup.contentLoading')
     : available === 0 && !setup.setupError ? t('setup.contentEmpty') : '';
   const categoryPreview = setup.availableCategories.slice(0, 6).map(category => text(category.title, category.id));
+  const categoryLabel = (id: string) => {
+    if (id === 'all') return t('setup.allCategories');
+    const category = setup.availableCategories.find(candidate => candidate.id === id);
+    return category ? text(category.title, id) : id;
+  };
+  const difficultyLabel = (difficulty: string) => (difficulty === 'all' ? t('setup.allDifficulties') : t(`setup.${difficulty}`));
+  const suggestion = setup.suggestion;
+  const suggestedMode = GAME_MODES.find(mode => mode.id === suggestion.modeId);
+  const selectedNames = setup.solo ? [setup.soloPlayerName.trim()] : setup.tablePlayers;
 
   return (
     <div className={styles.panel}>
@@ -71,11 +84,40 @@ export function SetupScreen({
 
           <article className={styles.smallCard}>
             <AtSign size={22} />
-            <h3 className={styles.cardTitle}>{t('setup.players')}</h3>
-            <label className={styles.field}>
-              <span>{t('setup.playersHint')}</span>
-              <input value={setup.playerNames} onChange={event => setup.setPlayerNames(event.target.value)} />
-            </label>
+            <h3 className={styles.cardTitle}>{setup.solo ? t('solo.playerTitle') : t('setup.players')}</h3>
+            {setup.solo ? (
+              <label className={styles.field}>
+                <span>{t('solo.nameLabel')}</span>
+                <input
+                  value={setup.soloPlayerName}
+                  placeholder={t('solo.namePlaceholder')}
+                  onChange={event => setup.setSoloPlayerName(event.target.value)}
+                />
+              </label>
+            ) : (
+              <label className={styles.field}>
+                <span>{t('setup.playersHint')}</span>
+                <input value={setup.playerNames} onChange={event => setup.setPlayerNames(event.target.value)} />
+              </label>
+            )}
+            {profiles.length ? (
+              <div className={styles.profileChips} aria-label={t('profiles.pickLabel')}>
+                {profiles.map(profile => {
+                  const picked = selectedNames.some(name => name.toLocaleLowerCase() === profile.name.toLocaleLowerCase());
+                  return (
+                    <button
+                      key={profile.id}
+                      type="button"
+                      aria-pressed={picked}
+                      onClick={() => setup.addPlayerName(profile.name)}
+                    >
+                      <ProfileAvatar profile={profile} size="sm" />
+                      <span>{profile.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
           </article>
 
           <article className={styles.smallCard}>
@@ -115,17 +157,94 @@ export function SetupScreen({
               </label>
             </div>
           </article>
+
+          <article className={styles.smallCard}>
+            <Sparkles size={22} />
+            <h3 className={styles.cardTitle}>{t('setup.variationsTitle')}</h3>
+            <label className={styles.switchField}>
+              <input
+                type="checkbox"
+                checked={setup.specialRoundsEnabled}
+                onChange={event => setup.setSpecialRoundsEnabled(event.target.checked)}
+              />
+              <span>
+                <b>{t('specials.toggle')}</b>
+                <small>{t(setup.solo ? 'specials.toggleHintSolo' : 'specials.toggleHint')}</small>
+              </span>
+            </label>
+            {!setup.solo ? (
+              <label className={styles.switchField}>
+                <input
+                  type="checkbox"
+                  checked={setup.tableMomentsEnabled}
+                  onChange={event => setup.setTableMomentsEnabled(event.target.checked)}
+                />
+                <span>
+                  <b>{t('moments.toggle')}</b>
+                  <small>{t('moments.toggleHint')}</small>
+                </span>
+              </label>
+            ) : null}
+          </article>
         </section>
 
         <aside className={styles.setupSummary} aria-label={t('setup.summaryTitle')}>
           <article className={styles.metricCard}>
             <span>{t('setup.summaryTitle')}</span>
             <strong className={styles.metricText}>{t(setup.selectedMode.titleKey)}</strong>
-            <p>{t('setup.summaryLine', {
-              players: Math.max(setup.players.length, 1),
-              rounds: selectedRounds,
-              available
+            <p>{setup.solo
+              ? t('solo.summaryLine', { rounds: selectedRounds, available })
+              : t('setup.summaryLine', {
+                players: Math.max(setup.players.length, 1),
+                rounds: selectedRounds,
+                available
+              })}</p>
+            {setup.solo ? (
+              <p className={styles.recordLine} role="status">
+                <Trophy size={16} />
+                {setup.soloRecord
+                  ? t('solo.recordLine', {
+                    points: setup.soloRecord.points,
+                    correct: setup.soloRecord.correct,
+                    total: setup.soloRecord.totalRounds
+                  })
+                  : t('solo.firstTime')}
+              </p>
+            ) : null}
+          </article>
+          <article className={styles.smallCard} aria-label={t('suggest.title')}>
+            <h3 className={styles.cardTitle}><Lightbulb size={18} /> {t('suggest.title')}</h3>
+            {!setup.solo ? (
+              <label className={styles.field}>
+                <span>{t('suggest.minutes')}</span>
+                <select
+                  value={setup.suggestionMinutes}
+                  onChange={event => setup.setSuggestionMinutes(Number(event.target.value))}
+                >
+                  {SUGGESTION_MINUTE_OPTIONS.map(minutes => (
+                    <option key={minutes} value={minutes}>{t('suggest.minutesOption', { minutes })}</option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+            <p className={styles.helperText}>{t('suggest.summary', {
+              mode: suggestedMode ? t(suggestedMode.titleKey) : suggestion.modeId,
+              rounds: suggestion.roundCount,
+              difficulty: difficultyLabel(suggestion.difficulty),
+              category: categoryLabel(suggestion.categoryId)
             })}</p>
+            <ul className={styles.reasonList}>
+              {suggestion.reasons.map(reason => (
+                <li key={reason.key}>{t(reason.key, {
+                  ...reason.params,
+                  ...(reason.params?.category ? { category: categoryLabel(String(reason.params.category)) } : {})
+                })}</li>
+              ))}
+            </ul>
+            <Button variant="secondary" icon={<Lightbulb size={18} />} onClick={setup.applySuggestion}>
+              {t('suggest.apply')}
+            </Button>
+            {setup.suggestionApplied ? <p className={styles.helperText} role="status">{t('suggest.applied')}</p> : null}
           </article>
           <article className={styles.smallCard}>
             <h3 className={styles.cardTitle}>{t('setup.contentStatusTitle')}</h3>

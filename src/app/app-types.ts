@@ -1,6 +1,6 @@
 import type { LocalizedText } from '../game/types';
 
-export type Screen = 'home' | 'play' | 'leaderboard' | 'achievements' | 'packs' | 'multiDevice' | 'growth' | 'settings';
+export type Screen = 'home' | 'play' | 'leaderboard' | 'achievements' | 'profiles' | 'packs' | 'multiDevice' | 'growth' | 'settings';
 
 export type Translate = (key: string, params?: Record<string, string | number>) => string;
 

@@ -59,6 +59,26 @@ describe('platform settings', () => {
     });
   });
 
+  it('normalizes the remembered New Match options', () => {
+    expect(normalizeSettings({})).toMatchObject({
+      lastSoloPlayerName: '',
+      tableMomentsEnabled: false,
+      specialRoundsEnabled: false,
+      suggestionMinutes: 15
+    });
+    expect(normalizeSettings({
+      lastSoloPlayerName: 42,
+      tableMomentsEnabled: 'yes',
+      specialRoundsEnabled: true,
+      suggestionMinutes: 999
+    })).toMatchObject({
+      lastSoloPlayerName: '',
+      tableMomentsEnabled: false,
+      specialRoundsEnabled: true,
+      suggestionMinutes: 120
+    });
+  });
+
   it('normalizes font scale to one of the five supported levels', () => {
     expect(normalizeFontScale('xs')).toBe('xs');
     expect(normalizeFontScale('sm')).toBe('sm');

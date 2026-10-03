@@ -2,6 +2,7 @@ import type { AchievementState } from '../achievements/achievements';
 import type { InstalledContentPacksModel } from '../content-packs/content-packs';
 import type { ContentFeedbackModel } from '../content-feedback/content-feedback';
 import type { LeaderboardModel } from '../leaderboard/leaderboard';
+import type { ProfilesModel } from '../profiles/profiles';
 import type { PlatformSettings } from '../settings/settings';
 import { createStorageKey, readVersioned, writeVersioned, type StorageAdapter } from '../storage/storage';
 
@@ -17,6 +18,9 @@ export type LocalDataExport<TContent> = {
   achievements: AchievementState;
   installedPacks: InstalledContentPacksModel<TContent>;
   contentFeedback?: ContentFeedbackModel;
+  profiles?: ProfilesModel;
+  // Stores owned by the game layer (solo records, round history), opaque here.
+  gameData?: Record<string, unknown>;
 };
 
 export const USER_ID_VERSION = 1;

@@ -1,6 +1,7 @@
 import { createStorageKey, readVersioned, removeStored, writeVersioned, type StorageAdapter } from '../core/storage/storage';
 import type { Language } from '../core/i18n/i18n';
-import type { GuessTheFakeModeId, GuessTheFakePhase, GuessTheFakeState } from './types';
+import { DEFAULT_CHALLENGE, GRADUAL_CLUE_START } from './rules';
+import type { GuessTheFakeModeId, GuessTheFakePhase, GuessTheFakeState, SpecialRoundKind, TableMomentKind } from './types';
 
 export type PersistedGuessTheFakeMatch = {
   state: GuessTheFakeState;
@@ -15,8 +16,10 @@ export const GUESS_THE_FAKE_QUICK_GAME_KEY = createStorageKey(
   GUESS_THE_FAKE_QUICK_GAME_VERSION
 );
 
-const activePhases: GuessTheFakePhase[] = ['intro', 'preparing', 'playing', 'revealed'];
-const modes: GuessTheFakeModeId[] = ['classic', 'all-guess', 'teams'];
+const activePhases: GuessTheFakePhase[] = ['intro', 'preparing', 'playing', 'discussing', 'revealed'];
+const modes: GuessTheFakeModeId[] = ['solo', 'classic', 'all-guess', 'teams'];
+const specialKinds: SpecialRoundKind[] = ['double-or-nothing', 'sudden-death', 'gradual-clue', 'lightning', 'category-challenge'];
+const momentKinds: TableMomentKind[] = ['defend', 'vote', 'change-mind'];
 const languages: Language[] = ['pt', 'en', 'es', 'fr', 'de', 'it'];
 
 export function loadPersistedGuessTheFakeMatch(storage: StorageAdapter = localStorage): PersistedGuessTheFakeMatch | null {
@@ -52,11 +55,41 @@ function normalizePersistedMatch(value: PersistedGuessTheFakeMatch | null): Pers
   if (!languages.includes(value.activeMatchLanguage)) return null;
   if (!Number.isFinite(value.timerSeconds) || value.timerSeconds < 0) return null;
   if (!isValidState(value.state)) return null;
+  const state = withOnda13Defaults(value.state);
+  if (state.phase === 'discussing' && !state.tableMoment) return null;
 
   return {
     activeMatchLanguage: value.activeMatchLanguage,
     timerSeconds: Math.floor(value.timerSeconds),
-    state: value.state
+    state
+  };
+}
+
+// Matches saved before the solo mode and Onda 13 lack these fields.
+function withOnda13Defaults(state: GuessTheFakeState): GuessTheFakeState {
+  const challenge = state.challenge && typeof state.challenge === 'object' ? state.challenge : DEFAULT_CHALLENGE;
+  const specialRounds = Array.isArray(state.specialRounds) && state.specialRounds.length === state.rounds.length
+    ? state.specialRounds.map(kind => (specialKinds.includes(kind as SpecialRoundKind) ? kind : null))
+    : Array(state.rounds.length).fill(null);
+  const moment = state.tableMoment;
+  return {
+    ...state,
+    challenge: {
+      categoryId: typeof challenge.categoryId === 'string' ? challenge.categoryId : DEFAULT_CHALLENGE.categoryId,
+      difficulty: ['easy', 'medium', 'hard', 'all'].includes(challenge.difficulty) ? challenge.difficulty : 'all',
+      packIds: Array.isArray(challenge.packIds) ? challenge.packIds.filter(id => typeof id === 'string') : []
+    },
+    tableMoments: state.tableMoments === true,
+    tableMoment: moment && typeof moment === 'object' && momentKinds.includes(moment.kind)
+      ? {
+        kind: moment.kind,
+        votedSubjectId: typeof moment.votedSubjectId === 'string' ? moment.votedSubjectId : null,
+        changedSubjectIds: Array.isArray(moment.changedSubjectIds) ? moment.changedSubjectIds : []
+      }
+      : null,
+    specialRoundsEnabled: state.specialRoundsEnabled === true,
+    specialRounds,
+    revealedClues: Number.isInteger(state.revealedClues) && state.revealedClues >= 1 ? state.revealedClues : GRADUAL_CLUE_START
   };
 }
 

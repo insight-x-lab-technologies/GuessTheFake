@@ -2,7 +2,7 @@ import type { ContentPack } from '../../../core/content-packs/content-packs';
 import type { Language } from '../../../core/i18n/i18n';
 import { GAME_ID } from '../../modes';
 import type { GuessTheFakePackContent, GuessTheFakeRound } from '../../types';
-import { BUILTIN_CATEGORIES, BUILTIN_PACK_ID, BUILTIN_PACK_TITLE, BUILTIN_ROUNDS } from './catalog';
+import { BUILTIN_CATEGORIES, BUILTIN_PACK_ID, BUILTIN_PACK_META, BUILTIN_PACK_TITLE, BUILTIN_ROUNDS } from './catalog';
 
 export { BUILTIN_PACK_ID } from './catalog';
 
@@ -54,6 +54,7 @@ export function createBuiltinPack(language: Language, texts: BuiltinTexts): Cont
     enabled: true,
     title: BUILTIN_PACK_TITLE,
     languages: [language],
+    meta: BUILTIN_PACK_META,
     content: { categories: BUILTIN_CATEGORIES, rounds }
   };
 }

@@ -13,10 +13,11 @@ import { useMatch } from './hooks/useMatch';
 import { useMatchSetup } from './hooks/useMatchSetup';
 import { useMultiDevice } from './hooks/useMultiDevice';
 import { usePacks } from './hooks/usePacks';
+import { useProfiles } from './hooks/useProfiles';
 import { useProgress } from './hooks/useProgress';
 import { useSettings } from './hooks/useSettings';
 import { readMatchBoot } from './match-boot';
-import { buildMultiplayerSnapshot } from './match-summary';
+import { buildMultiplayerSnapshot, buildPresenterBoard } from './match-summary';
 import { hasMatchInProgress } from './new-match-flow';
 import { getScreenIcon, getScreenLabelKey, SCREENS } from './navigation';
 import { AchievementsScreen } from './screens/AchievementsScreen';
@@ -27,8 +28,12 @@ import { LeaderboardScreen } from './screens/LeaderboardScreen';
 import { MultiDeviceScreen } from './screens/MultiDeviceScreen';
 import { NewMatchChoiceScreen } from './screens/NewMatchChoiceScreen';
 import { PacksScreen } from './screens/PacksScreen';
+import { PresenterView } from './screens/PresenterView';
+import { ProfilesScreen } from './screens/ProfilesScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SetupScreen } from './screens/SetupScreen';
+import { formatSoloChallenge, formatSoloPlayer } from './solo-labels';
+import { getTrackViews } from './progress-tracks';
 import styles from './App.module.css';
 
 export function App() {
@@ -41,40 +46,81 @@ export function App() {
   const audio = useAudio(settings);
   const progress = useProgress();
   const packs = usePacks({ t, language: settings.language });
-  const localData = useLocalData({ t, settings, setSettings, progress, packs });
-  const setup = useMatchSetup({ enabledPacks: packs.enabledPacks, contentFeedback: progress.contentFeedback });
+  const profiles = useProfiles({ t, progress });
+  const localData = useLocalData({ t, settings, setSettings, progress, packs, profiles });
+  const setup = useMatchSetup({
+    enabledPacks: packs.enabledPacks,
+    contentFeedback: progress.contentFeedback,
+    settings,
+    updateSettings,
+    counters: progress.achievementState.counters,
+    feedbackSummary: progress.contentFeedbackSummary,
+    soloRecords: progress.soloRecords,
+    getSoloKeyForName: profiles.getSoloKeyForName
+  });
+  const categoryIds = useMemo(() => setup.availableCategories.map(category => category.id), [setup.availableCategories]);
   const match = useMatch({
     boot,
     settings,
+    updateSettings,
     t,
     setup,
     audio,
     progress,
+    getSoloKeyForName: profiles.getSoloKeyForName,
     enabledPackIds: packs.enabledPacks.map(pack => pack.id),
+    categoryIds,
     screen,
     setScreen
   });
   const { gameState, round, timerSeconds } = match;
 
-  const hostSnapshot = useMemo(() => buildMultiplayerSnapshot(gameState, timerSeconds), [
+  const text: LocalizeText = (value, fallback = '') => getLocalizedText(value, settings.language, fallback);
+  const categoryLabel = (categoryId: string) => {
+    if (categoryId === 'all') return t('setup.allCategories');
+    const category = setup.availableCategories.find(candidate => candidate.id === categoryId);
+    return category ? text(category.title, categoryId) : categoryId;
+  };
+  const challengeLabel = (challengeKey: string) => formatSoloChallenge(challengeKey, t, categoryLabel);
+
+  const hostSnapshot = useMemo(() => buildMultiplayerSnapshot(
+    gameState,
+    timerSeconds,
+    undefined,
+    buildPresenterBoard(gameState, {
+      t,
+      text,
+      categoryTitle: setup.availableCategories.find(category => category.id === round?.categoryId)?.title
+    })
+  ), [
     match.activeSubjectName,
-    gameState.modeId,
-    gameState.phase,
-    gameState.currentRoundIndex,
-    gameState.totalRounds,
-    gameState.players,
-    gameState.teams,
+    gameState,
+    setup.availableCategories,
+    settings.language,
     timerSeconds
   ]);
   const multiDevice = useMultiDevice({ t, hostSnapshot, onInviteLinkOpened: () => setScreen('multiDevice') });
   const growth = useGrowth({
     t,
     matchResult: gameState.phase === 'finished'
-      ? { winnerNames: match.winners.map(player => player.name), modeId: gameState.modeId, totalRounds: gameState.totalRounds }
+      ? {
+        winnerNames: match.winners.map(player => player.name),
+        modeId: gameState.modeId,
+        totalRounds: gameState.totalRounds,
+        solo: match.solo
+          ? {
+            points: gameState.players[0]?.score ?? 0,
+            correct: gameState.correctGuessesInMatch,
+            challengeLabel: [
+              categoryLabel(gameState.challenge.categoryId),
+              gameState.challenge.difficulty === 'all' ? t('setup.allDifficulties') : t(`setup.${gameState.challenge.difficulty}`)
+            ].join(', ')
+          }
+          : undefined
+      }
       : null
   });
 
-  const text: LocalizeText = (value, fallback = '') => getLocalizedText(value, settings.language, fallback);
   const matchLanguageNotice = match.activeMatchUsesPreviousLanguage ? match.activeMatchLanguage : null;
   const musicZone = getMusicZone(screen, gameState.phase);
 
@@ -161,7 +207,7 @@ export function App() {
           </aside>
         ) : null}
 
-        {screen === 'home' ? <HomeScreen t={t} onNewMatch={match.requestNewMatch} /> : null}
+        {screen === 'home' ? <HomeScreen t={t} onNewMatch={match.requestNewMatch} onPlaySolo={match.requestSoloMatch} /> : null}
 
         {screen === 'play' ? (
           <section className={styles.screenStack}>
@@ -177,7 +223,14 @@ export function App() {
             ) : null}
 
             {!match.showNewMatchChoices && gameState.phase === 'setup' ? (
-              <SetupScreen t={t} text={text} setup={setup} contentStatus={packs.builtinStatus} onStart={() => match.startNewMatch()} />
+              <SetupScreen
+                t={t}
+                text={text}
+                setup={setup}
+                profiles={profiles.profiles.profiles}
+                contentStatus={packs.builtinStatus}
+                onStart={() => match.startNewMatch()}
+              />
             ) : null}
 
             {!match.showNewMatchChoices && gameState.phase !== 'setup' && (round || gameState.phase === 'finished') ? (
@@ -187,14 +240,33 @@ export function App() {
                 match={match}
                 round={round}
                 growth={growth}
+                presenter={multiDevice}
+                categoryLabel={categoryLabel}
+                getProfileForName={profiles.getProfileForName}
                 statementButtonRefs={statementButtonRefs}
               />
             ) : null}
           </section>
         ) : null}
 
-        {screen === 'leaderboard' ? <LeaderboardScreen t={t} progress={progress} localData={localData} /> : null}
-        {screen === 'achievements' ? <AchievementsScreen t={t} progress={progress} /> : null}
+        {screen === 'leaderboard' ? (
+          <LeaderboardScreen
+            t={t}
+            progress={progress}
+            localData={localData}
+            challengeLabel={challengeLabel}
+            soloPlayerLabel={playerKey => formatSoloPlayer(playerKey, profiles.profiles)}
+          />
+        ) : null}
+        {screen === 'achievements' ? (
+          <AchievementsScreen
+            t={t}
+            progress={progress}
+            trackViews={getTrackViews(match.tracks, progress.achievementView.counters)}
+            categoryLabel={categoryLabel}
+          />
+        ) : null}
+        {screen === 'profiles' ? <ProfilesScreen t={t} profiles={profiles} challengeLabel={challengeLabel} /> : null}
         {screen === 'packs' ? <PacksScreen t={t} text={text} language={settings.language} packs={packs} /> : null}
         {screen === 'multiDevice' ? <MultiDeviceScreen t={t} multiDevice={multiDevice} /> : null}
         {screen === 'growth' ? <GrowthScreen t={t} growth={growth} /> : null}
@@ -210,6 +282,9 @@ export function App() {
           />
         ) : null}
       </main>
+      {multiDevice.presenterOpen ? (
+        <PresenterView t={t} snapshot={multiDevice.mirroredSnapshot} onClose={multiDevice.closePresenter} />
+      ) : null}
     </div>
   );
 }

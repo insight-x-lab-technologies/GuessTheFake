@@ -19,6 +19,8 @@ export type MatchResultSummary = {
   winnerNames: string[];
   modeId: string;
   totalRounds: number;
+  // Solo: the personal result replaces the winner line.
+  solo?: { points: number; correct: number; challengeLabel: string };
 };
 
 type ShareNavigator = Navigator & {
@@ -53,7 +55,14 @@ export function useGrowth({ t, matchResult }: { t: Translate; matchResult: Match
   };
   const resultShareData: PlatformShareData = {
     title: t('share.resultTitle'),
-    text: matchResult
+    text: matchResult?.solo
+      ? `${t('solo.shareText', {
+        points: matchResult.solo.points,
+        correct: matchResult.solo.correct,
+        total: matchResult.totalRounds,
+        challenge: matchResult.solo.challengeLabel
+      })} ${t('share.resultCallToAction')}`
+      : matchResult
       ? createMatchResultShareText({
         winnerNames: matchResult.winnerNames,
         modeLabel: t(GAME_MODES.find(mode => mode.id === matchResult.modeId)?.titleKey ?? 'game.title'),

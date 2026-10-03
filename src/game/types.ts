@@ -46,9 +46,31 @@ export type GuessTheFakeTeam = {
   score: number;
 };
 
-export type GuessTheFakeModeId = 'classic' | 'all-guess' | 'teams';
+export type GuessTheFakeModeId = 'solo' | 'classic' | 'all-guess' | 'teams';
 
-export type GuessTheFakePhase = 'setup' | 'intro' | 'preparing' | 'playing' | 'revealed' | 'finished';
+export type GuessTheFakePhase = 'setup' | 'intro' | 'preparing' | 'playing' | 'discussing' | 'revealed' | 'finished';
+
+// W13-02: optional round twists, assigned per match by assignSpecialRounds.
+export type SpecialRoundKind = 'double-or-nothing' | 'sudden-death' | 'gradual-clue' | 'lightning' | 'category-challenge';
+
+// W13-01: optional table moment between the last guess and the reveal.
+export type TableMomentKind = 'defend' | 'vote' | 'change-mind';
+
+export type TableMoment = {
+  kind: TableMomentKind;
+  // `vote`: player or team the table voted for (gets TABLE_VOTE_BONUS).
+  votedSubjectId: string | null;
+  // `change-mind`: subjects that already used their one change.
+  changedSubjectIds: string[];
+};
+
+// What a solo record is compared against; also used for match-level stats.
+export type GuessTheFakeChallenge = {
+  categoryId: string;
+  difficulty: GuessTheFakeDifficulty | 'all';
+  // Installed (non-builtin) packs active when the match started.
+  packIds: string[];
+};
 
 export type GuessTheFakeState = {
   phase: GuessTheFakePhase;
@@ -67,6 +89,14 @@ export type GuessTheFakeState = {
   longestStreakInMatch: number;
   currentStreakByPlayer: Record<string, number>;
   currentStreakByTeam: Record<string, number>;
+  challenge: GuessTheFakeChallenge;
+  tableMoments: boolean;
+  tableMoment: TableMoment | null;
+  specialRoundsEnabled: boolean;
+  // One entry per match round; null for a regular round.
+  specialRounds: Array<SpecialRoundKind | null>;
+  // `gradual-clue`: how many statements are visible in the current round.
+  revealedClues: number;
 };
 
 export type GuessResult = {
@@ -77,6 +107,11 @@ export type GuessResult = {
   basePoints: number;
   speedBonus: number;
   streakMultiplier: number;
+  // Streak of the subject before this guess; lets a table moment undo it.
+  previousStreak?: number;
+  longestStreakBefore?: number;
+  special?: SpecialRoundKind | null;
+  changedMind?: boolean;
   playerId?: string;
   playerName?: string;
   teamId?: string;

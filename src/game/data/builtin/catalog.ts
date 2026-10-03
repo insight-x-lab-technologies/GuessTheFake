@@ -1,3 +1,4 @@
+import type { ContentPackMeta } from '../../../core/content-packs/content-packs';
 import type { GuessTheFakeAgeRating, GuessTheFakeDifficulty, GuessTheFakePackContent, GuessTheFakeReview } from '../../types';
 import { BUILTIN_REVIEWS } from './reviews';
 
@@ -13,6 +14,50 @@ export const BUILTIN_PACK_TITLE: Record<string, string> = {
   fr: 'Faits en famille',
   de: 'Familienfakten',
   it: 'Fatti in famiglia'
+};
+
+// W13-07: themed pack presentation of the builtin pack.
+export const BUILTIN_PACK_META: ContentPackMeta = {
+  cover: { emoji: '🏡', color: '#f97316' },
+  description: {
+    pt: 'Sete categorias de fatos reais para jogar em família, do fácil ao difícil.',
+    en: 'Seven categories of real facts to play as a family, from easy to hard.',
+    es: 'Siete categorías de datos reales para jugar en familia, de fácil a difícil.',
+    fr: 'Sept catégories de faits réels à jouer en famille, du facile au difficile.',
+    de: 'Sieben Kategorien echter Fakten für die ganze Familie, von leicht bis schwer.',
+    it: 'Sette categorie di fatti reali da giocare in famiglia, da facile a difficile.'
+  },
+  audience: 'family',
+  difficulty: 'mixed',
+  version: '1.1.0',
+  author: 'Guess the Fake',
+  changelog: [
+    {
+      version: '1.1.0',
+      date: '2026-10-03',
+      notes: {
+        pt: 'Pack inteiro aceito em revisão humana.',
+        en: 'Whole pack accepted in human review.',
+        es: 'Pack completo aceptado en revisión humana.',
+        fr: 'Pack entier accepté en relecture humaine.',
+        de: 'Gesamtes Pack in menschlicher Prüfung angenommen.',
+        it: 'Pack intero accettato in revisione umana.'
+      }
+    },
+    {
+      version: '1.0.0',
+      date: '2026-09-22',
+      notes: {
+        pt: '315 rodadas: 7 categorias x 3 dificuldades x 15, em seis idiomas.',
+        en: '315 rounds: 7 categories x 3 difficulties x 15, in six languages.',
+        es: '315 rondas: 7 categorías x 3 dificultades x 15, en seis idiomas.',
+        fr: '315 manches : 7 catégories x 3 difficultés x 15, en six langues.',
+        de: '315 Runden: 7 Kategorien x 3 Schwierigkeiten x 15, in sechs Sprachen.',
+        it: '315 round: 7 categorie x 3 difficoltà x 15, in sei lingue.'
+      }
+    }
+  ],
+  license: { kind: 'community' }
 };
 
 export type BuiltinCategoryId = 'history' | 'geography' | 'science' | 'animals' | 'pop-culture' | 'sports' | 'weird-facts';

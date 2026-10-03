@@ -10,6 +10,8 @@ export function StatementGrid({
   round,
   gameState,
   buttonRefs,
+  visibleCount = round.statements.length,
+  changing = false,
   onChoose
 }: {
   t: Translate;
@@ -17,13 +19,19 @@ export function StatementGrid({
   round: GuessTheFakeRound;
   gameState: GuessTheFakeState;
   buttonRefs: MutableRefObject<Array<HTMLButtonElement | null>>;
+  // `gradual-clue`: statements past this index stay face down.
+  visibleCount?: number;
+  // Table moment `change-mind`: a statement click replaces a guess.
+  changing?: boolean;
   onChoose: (statementId: string) => void;
 }) {
   const revealed = gameState.phase === 'revealed';
+  const discussing = gameState.phase === 'discussing';
+  const interactive = gameState.phase === 'playing' || (discussing && changing);
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (gameState.phase !== 'playing') return;
-    const shortcutIndex = getStatementShortcutIndex(event.key, round.statements.length);
+    if (!interactive) return;
+    const shortcutIndex = getStatementShortcutIndex(event.key, Math.min(visibleCount, round.statements.length));
     if (shortcutIndex !== null) {
       event.preventDefault();
       onChoose(round.statements[shortcutIndex].id);
@@ -49,6 +57,23 @@ export function StatementGrid({
         {t('game.statementKeyboardHint')}
       </p>
       {round.statements.map((statement, index) => {
+        if (index >= visibleCount) {
+          return (
+            <button
+              key={statement.id}
+              ref={element => {
+                buttonRefs.current[index] = element;
+              }}
+              aria-disabled="true"
+              aria-label={t('specials.gradual-clue.hiddenLabel', { number: index + 1 })}
+              className={`${styles.statementCard} ${styles.statementHidden}`}
+              type="button"
+            >
+              <span>{index + 1}</span>
+              <strong>?</strong>
+            </button>
+          );
+        }
         const guessesForStatement = Object.values(gameState.roundGuesses).filter(
           guess => guess.selectedStatementId === statement.id
         );
@@ -71,19 +96,21 @@ export function StatementGrid({
               buttonRefs.current[index] = element;
             }}
             aria-describedby="statement-keyboard-hint"
-            aria-disabled={revealed}
+            aria-disabled={!interactive}
             aria-keyshortcuts={`${index + 1}`}
             aria-label={`${t('game.statementOptionLabel', { number: index + 1 })}: ${text(statement.text).replace(/\d+/g, '').trim()}`}
             aria-pressed={gameState.phase === 'playing' ? isSelected : undefined}
-            className={`${styles.statementCard} ${stateClass}`}
-            onClick={() => onChoose(statement.id)}
+            className={`${styles.statementCard} ${stateClass} ${discussing && isPicked ? styles.statementPicked : ''}`}
+            onClick={() => {
+              if (interactive) onChoose(statement.id);
+            }}
             type="button"
           >
             <span>{index + 1}</span>
             <strong>{text(statement.text)}</strong>
             {revealed && isFake ? <em>{t('game.fakeLabel')}</em> : null}
             {revealed && isSelected && !pickedNames ? <em>{t('game.selectedLabel')}</em> : null}
-            {revealed && pickedNames ? <em>{t('game.pickedByLabel', { names: pickedNames })}</em> : null}
+            {(revealed || discussing) && pickedNames ? <em>{t('game.pickedByLabel', { names: pickedNames })}</em> : null}
           </button>
         );
       })}

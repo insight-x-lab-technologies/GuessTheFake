@@ -17,6 +17,11 @@ export type PlatformSettings = {
   speedBonusPoints: number;
   autoStartRounds: boolean;
   shuffleRounds: boolean;
+  // Remembered by the New Match form.
+  lastSoloPlayerName: string;
+  tableMomentsEnabled: boolean;
+  specialRoundsEnabled: boolean;
+  suggestionMinutes: number;
 };
 
 export type FontScale = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -45,7 +50,11 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   wrongGuessPenalty: 0,
   speedBonusPoints: 5,
   autoStartRounds: false,
-  shuffleRounds: true
+  shuffleRounds: true,
+  lastSoloPlayerName: '',
+  tableMomentsEnabled: false,
+  specialRoundsEnabled: false,
+  suggestionMinutes: 15
 };
 
 export function createDefaultSettings(language: Language = DEFAULT_LANGUAGE): PlatformSettings {
@@ -90,7 +99,13 @@ export function normalizeSettings(value: unknown, fallback: PlatformSettings = D
     theme: normalizeTheme(candidate.theme),
     fontScale: normalizeFontScale(candidate.fontScale),
     soundVolume: normalizeVolume(candidate.soundVolume, fallback.soundVolume),
-    musicVolume: normalizeVolume(candidate.musicVolume, fallback.musicVolume)
+    musicVolume: normalizeVolume(candidate.musicVolume, fallback.musicVolume),
+    lastSoloPlayerName: typeof candidate.lastSoloPlayerName === 'string' ? candidate.lastSoloPlayerName.slice(0, 40) : fallback.lastSoloPlayerName,
+    tableMomentsEnabled: typeof candidate.tableMomentsEnabled === 'boolean' ? candidate.tableMomentsEnabled : fallback.tableMomentsEnabled,
+    specialRoundsEnabled: typeof candidate.specialRoundsEnabled === 'boolean' ? candidate.specialRoundsEnabled : fallback.specialRoundsEnabled,
+    suggestionMinutes: typeof candidate.suggestionMinutes === 'number' && Number.isFinite(candidate.suggestionMinutes)
+      ? Math.min(120, Math.max(5, Math.round(candidate.suggestionMinutes)))
+      : fallback.suggestionMinutes
   };
 }
 

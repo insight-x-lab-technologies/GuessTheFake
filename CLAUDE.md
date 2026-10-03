@@ -50,7 +50,7 @@ Deploy: GitHub Pages via `.github/workflows/static.yml` no push para `main`
 
 ---
 
-## 3. Estado real do codigo (2026-09-22)
+## 3. Estado real do codigo (2026-10-03)
 
 Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
 
@@ -60,7 +60,8 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   `useAudio`, `useProgress` (leaderboard, trofeus, feedback), `usePacks`,
   `useLocalData` (import/export), `useMatchSetup` (formulario de Nova
   Partida), `useMatch` (partida, timers, persistencia, wake lock),
-  `useMultiDevice` (BroadcastChannel/WebRTC/QR) e `useGrowth` (share/PWA).
+  `useMultiDevice` (BroadcastChannel/WebRTC/QR/apresentador), `useGrowth`
+  (share/PWA) e `useProfiles` (perfis familiares).
   Nao ha Context, reducer, Redux ou Zustand; o shell passa o controller de
   cada hook por props.
 - **Telas** em `src/app/screens/`: componentes visuais que recebem dados e
@@ -68,10 +69,21 @@ Confira sempre contra o codigo; o resumo abaixo evita as armadilhas mais comuns.
   `src/app/browser.ts` e `src/app/peer-connection.ts`; derivacoes puras da
   partida em `src/app/match-summary.ts`.
 - **Navegacao**: uniao de tipos
-  `'home' | 'play' | 'leaderboard' | 'achievements' | 'packs' | 'multiDevice' | 'growth' | 'settings'`
-  com render condicional. Nao ha router. Deep-link de demo: `?demo=game`.
+  `'home' | 'play' | 'leaderboard' | 'achievements' | 'profiles' | 'packs' | 'multiDevice' | 'growth' | 'settings'`
+  com render condicional. Nao ha router. Deep-links: `?demo=game` e
+  `?join=CODE[&presenter=1]` (tela de exibicao do modo apresentador).
 - **Identidade e modos** em `src/game/modes.ts`: `GAME_ID` e `GAME_MODES`
-  (`classic`, `all-guess`, `teams`). Nao ha objeto de manifesto nem registry.
+  (`solo`, `classic`, `all-guess`, `teams`). Nao ha objeto de manifesto nem
+  registry. Comportamento solo e decidido por `isSoloMode(modeId)`, nunca por
+  `players.length`; todo item novo declara se no solo e igual, variante ou
+  some (contrato em `docs/superpowers/specs/2026-10-03-solo-mode-design.md`).
+- **Onda 13** (todas opcionais, desligadas por padrao): momentos de mesa
+  (fase `discussing`) e rodadas especiais em `rules.ts`; recordes solo em
+  `game/solo-records.ts`; sugestao de partida em `game/match-suggestion.ts` e
+  historico de rodadas em `game/round-history.ts`; perfis em `core/profiles`;
+  trilhas em `app/progress-tracks.ts`; `PresenterView` le o snapshot do
+  multi-device; packs tematicos via `ContentPack.meta`. Design em
+  `docs/superpowers/specs/2026-10-03-onda-13-design.md`.
 - **Regras puras** em `src/game/rules.ts` - sem React, DOM, storage, timer,
   audio ou rede. Mantenha assim.
 - **i18n**: seis idiomas (`pt en es fr de it`) com UI traduzida de verdade.
@@ -124,7 +136,7 @@ Regras nao negociaveis:
 
 ```bash
 npm run dev      # vite --host 0.0.0.0
-npm test         # vitest run (27 arquivos, 103 testes)
+npm test         # vitest run (34 arquivos, 170 testes)
 npm run audit:content  # cobertura do conteudo builtin
 npm run review:content # folha de revisao humana (REVIEW_LANG, REVIEW_COMPARE)
 npm run build    # tsc -b && vite build (typecheck + bundle)

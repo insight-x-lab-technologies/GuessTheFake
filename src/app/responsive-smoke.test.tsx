@@ -39,6 +39,9 @@ describe('responsive app smoke', () => {
     fireEvent.click(screen.getByRole('button', { name: /leaderboard/i }));
     expect(screen.getByRole('heading', { name: /leaderboard/i })).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole('button', { name: /família|family/i }));
+    expect(screen.getByRole('heading', { name: /família|family/i, level: 2 })).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole('button', { name: /packs/i }));
     expect(screen.getByRole('heading', { name: /conteúdo e packs|content and packs/i })).toBeInTheDocument();
 
@@ -52,6 +55,21 @@ describe('responsive app smoke', () => {
     fireEvent.click(highContrastPreview);
     expect(document.documentElement.dataset.theme).toBe('high-contrast');
     expect(highContrastPreview).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it.each(viewports)('renders the solo setup and solo result at %s', async (_name, width, height) => {
+    setViewport(width, height);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /jogar sozinho|play solo/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: /começar|start/i })).toBeEnabled());
+    expect(screen.getByLabelText(/seu nome|your name/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/momentos de mesa|table moments/i)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '1' } });
+    fireEvent.click(screen.getByRole('button', { name: /começar|start/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /frase 1|statement 1/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /ver resultado|see result/i }));
+    expect(await screen.findByRole('button', { name: /novo desafio|new challenge/i })).toBeInTheDocument();
   });
 
   it('smokes setup, card click, feedback, recalibration, and leaderboard navigation', async () => {
